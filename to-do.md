@@ -14,7 +14,8 @@
 - [x] **P0-C1-S4: Set Up Code Editor**   
 - *Details:* Standardize on VS Code. Install Prettier, ESLint, GitLens.
 
-### P0-C2: Repository & Git Workflow Setup\n*Chunk Goal: Create the central code repository and establish branching/commit practices.
+### P0-C2: Repository & Git Workflow Setup
+*Chunk Goal: Create the central code repository and establish branching/commit practices.*
 - [x] **P0-C2-S1: Create Central Git Repository**
 - *Details:* Create on GitHub/GitLab. Add `.gitignore`, basic `package.json`.
 - [x] **P0-C2-S2: Define & Practice Branching Strategy**
@@ -22,7 +23,7 @@
 - [x] **P0-C2-S3: Initialize Project & First Commit**
 - *Details:* Clone. `npm init`. Add configs (`tsconfig.json`, `.prettierrc`, `.eslintrc.js`). Commit via `feature/initial-setup` -> PR -> merge/
 ### P0-C3: PS1 Analysis & Initial Design
-*Chunk Goal: Understand the existing PS1 code and sketch the high-level architecture.
+*Chunk Goal: Understand the existing PS1 code and sketch the high-level architecture.*
 - [x] **P0-C3-S1: Obtain and Analyze PS1 Code**
 - *Details:* Integrate relevant PS1 source code (`Card`, `Deck`).
 - [ ] **P0-C3-S2: Review PS1 ADTs (Card, Deck)**
@@ -41,7 +42,8 @@
 **Phase Goal:** Build the basic extension to capture text and save cards to an in-memory Deck.
 
 
-### P1-C1: Extension Manifest & Basic Structure\n*Chunk Goal: Create the core files and manifest for a loadable extension.*
+### P1-C1: Extension Manifest & Basic Structure
+*Chunk Goal: Create the core files and manifest for a loadable extension.*
 - [ ] **P1-C1-S1: Create `manifest.json` (Spec First)**
 - *Details:* `manifest_version: 3`, `name`, `version`, `description`. `action.default_popup: \"popup.html\"`. Permissions: `[\"activeTab\", \"scripting\"]`. (Add `storage` later if needed before Phase 3).
 - [ ] **P1-C1-S2: Create Basic `popup.html`**
@@ -56,7 +58,8 @@
 - *Details:* `feature/extension-skeleton` branch. Commit files. PR -> merge.
 
 
-### P1-C2: Text Capture (Content Script -> Popup)\n*Chunk Goal: Implement the mechanism to get selected text from the page into the popup.*
+### P1-C2: Text Capture (Content Script -> Popup)
+*Chunk Goal: Implement the mechanism to get selected text from the page into the popup.*
 
 - [ ] **P1-C2-S1: Implement Content Script Listener**
 - *Details:* `content.js`: `chrome.runtime.onMessage` listener for `'GET_SELECTED_TEXT'`. Use `document.getSelection().toString()` & `sendResponse`.
