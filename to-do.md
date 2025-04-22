@@ -4,7 +4,7 @@
 ## Phase 0: Setup, Planning & Foundation
 **Phase Goal:** Establish team, environment, repository, and understand PS1 baseline.
 ### P0-C1: Team & Environment Setup
-*Chunk Goal: Ensure all developers have the necessary tools and communication channels.
+*Chunk Goal: Ensure all developers have the necessary tools and communication channels.*
 - [x] **P0-C1-S1: Finalize Team & Roles**   
 - *Details:* Confirm members. Assign initial focus areas (flexible).
 - [x] **P0-C1-S2: Establish Communication Channels** 
