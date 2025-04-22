@@ -1,0 +1,143 @@
+* {
+  box-sizing: border-box;
+}
+
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  font-family: "Inter", "Segoe UI", Roboto, sans-serif;
+  color: #333;
+}
+
+.app-container {
+  background-color: #f8f9fa;
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  max-width: 700px;
+  margin: 40px auto;
+}
+
+.app-title {
+  color: #4361ee;
+  margin-bottom: 30px;
+  font-weight: 700;
+}
+
+.practice-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.day-counter {
+  background-color: #4361ee;
+  color: white;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+
+.card-counter {
+  color: #555;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+.flashcard {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  padding: 30px;
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.flashcard:hover {
+  transform: translateY(-4px);
+}
+
+.flashcard h2 {
+  margin-bottom: 10px;
+}
+
+.flashcard-back {
+  background-color: #e9f5ff;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 5px;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+.btn-primary {
+  background-color: #4361ee;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #3a56d4;
+}
+
+.btn-wrong {
+  background-color: #ef476f;
+  color: white;
+}
+
+.btn-hard {
+  background-color: #ffd166;
+  color: #333;
+}
+
+.btn-easy {
+  background-color: #06d6a0;
+  color: white;
+}
+
+.difficulty-text {
+  margin: 15px 0;
+  font-weight: 500;
+}
+
+.session-finished {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.error-message {
+  color: #ef476f;
+  padding: 20px;
+  border: 1px solid #ef476f;
+  border-radius: 8px;
+  background-color: #ffedf2;
+}
+
+.loading {
+  color: #4361ee;
+  font-size: 1.2rem;
+  margin: 40px 0;
+}
