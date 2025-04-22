@@ -5,25 +5,25 @@
 **Phase Goal:** Establish team, environment, repository, and understand PS1 baseline.
 ### P0-C1: Team & Environment Setup
 *Chunk Goal: Ensure all developers have the necessary tools and communication channels.
-- [ ] **P0-C1-S1: Finalize Team & Roles**   
+- [x] **P0-C1-S1: Finalize Team & Roles**   
 - *Details:* Confirm members. Assign initial focus areas (flexible).
-- [ ] **P0-C1-S2: Establish Communication Channels** 
+- [x] **P0-C1-S2: Establish Communication Channels** 
 - *Details:* Set up Slack/Discord. Define meeting schedule.
-- [ ] **P0-C1-S3: Install Required Software**  
+- [x] **P0-C1-S3: Install Required Software**  
 - *Details:* Verify Node.js, npm/yarn, TypeScript (`npm install -g typescript`), Git installations.
-- [ ] **P0-C1-S4: Set Up Code Editor**   
+- [x] **P0-C1-S4: Set Up Code Editor**   
 - *Details:* Standardize on VS Code. Install Prettier, ESLint, GitLens.
 
 ### P0-C2: Repository & Git Workflow Setup\n*Chunk Goal: Create the central code repository and establish branching/commit practices.
-- [ ] **P0-C2-S1: Create Central Git Repository**
+- [x] **P0-C2-S1: Create Central Git Repository**
 - *Details:* Create on GitHub/GitLab. Add `.gitignore`, basic `package.json`.
-- [ ] **P0-C2-S2: Define & Practice Branching Strategy**
+- [x] **P0-C2-S2: Define & Practice Branching Strategy**
 - *Details:* Strategy: `main` (stable), `develop` (integration), `feature/<name>`. Create `develop` branch.
-- [ ] **P0-C2-S3: Initialize Project & First Commit**
+- [x] **P0-C2-S3: Initialize Project & First Commit**
 - *Details:* Clone. `npm init`. Add configs (`tsconfig.json`, `.prettierrc`, `.eslintrc.js`). Commit via `feature/initial-setup` -> PR -> merge/
 ### P0-C3: PS1 Analysis & Initial Design
 *Chunk Goal: Understand the existing PS1 code and sketch the high-level architecture.
-- [ ] **P0-C3-S1: Obtain and Analyze PS1 Code**
+- [x] **P0-C3-S1: Obtain and Analyze PS1 Code**
 - *Details:* Integrate relevant PS1 source code (`Card`, `Deck`).
 - [ ] **P0-C3-S2: Review PS1 ADTs (Card, Deck)**
 - *Details:* Understand Spec, AF, RI, `checkRep`, methods, SRS logic.
