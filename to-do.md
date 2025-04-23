@@ -65,15 +65,15 @@
 - *Details:* `content.js`: `chrome.runtime.onMessage` listener for `'GET_SELECTED_TEXT'`. Use `document.getSelection().toString()` & `sendResponse`.
 - [x] **P1-C2-S2: Implement Popup Text Request**
 - *Details:* `popup.js` (on open): `chrome.tabs.query` + `chrome.tabs.sendMessage`.
-- [ ] **P1-C2-S3: Implement Popup Response Handling**
+- [x] **P1-C2-S3: Implement Popup Response Handling**
 - *Details:* `popup.js`: Handle `sendMessage` response, check errors, log text.
-- [ ] **P1-C2-S4: Update Popup HTML**
+- [x] **P1-C2-S4: Update Popup HTML**
 - *Details:* Add `<textarea id=\"card-front\">`.
-- [ ] **P1-C2-S5: Display Text in Popup**
+- [x] **P1-C2-S5: Display Text in Popup**
 - *Details:* `popup.js`: Populate `#card-front` from response.
-- [ ] **P1-C2-S6: Test: Text Capture Flow**
+- [x] **P1-C2-S6: Test: Text Capture Flow**
 - *Details:* Reload ext. Select text -> open popup -> verify text. Test no selection. Check consoles.
-- [ ] **P1-C2-S7: Git: Commit Text Capture Feature**
+- [x] **P1-C2-S7: Git: Commit Text Capture Feature**
 - *Details:* `feature/text-capture` branch. Commit changes. PR -> merge.
 
 
