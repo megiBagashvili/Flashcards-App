@@ -63,7 +63,7 @@
 
 - [x] **P1-C2-S1: Implement Content Script Listener**
 - *Details:* `content.js`: `chrome.runtime.onMessage` listener for `'GET_SELECTED_TEXT'`. Use `document.getSelection().toString()` & `sendResponse`.
-- [ ] **P1-C2-S2: Implement Popup Text Request**
+- [x] **P1-C2-S2: Implement Popup Text Request**
 - *Details:* `popup.js` (on open): `chrome.tabs.query` + `chrome.tabs.sendMessage`.
 - [ ] **P1-C2-S3: Implement Popup Response Handling**
 - *Details:* `popup.js`: Handle `sendMessage` response, check errors, log text.
