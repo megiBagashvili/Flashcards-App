@@ -61,7 +61,7 @@
 ### P1-C2: Text Capture (Content Script -> Popup)
 *Chunk Goal: Implement the mechanism to get selected text from the page into the popup.*
 
-- [ ] **P1-C2-S1: Implement Content Script Listener**
+- [x] **P1-C2-S1: Implement Content Script Listener**
 - *Details:* `content.js`: `chrome.runtime.onMessage` listener for `'GET_SELECTED_TEXT'`. Use `document.getSelection().toString()` & `sendResponse`.
 - [ ] **P1-C2-S2: Implement Popup Text Request**
 - *Details:* `popup.js` (on open): `chrome.tabs.query` + `chrome.tabs.sendMessage`.
