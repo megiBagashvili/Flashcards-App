@@ -61,19 +61,19 @@
 ### P1-C2: Text Capture (Content Script -> Popup)
 *Chunk Goal: Implement the mechanism to get selected text from the page into the popup.*
 
-- [ ] **P1-C2-S1: Implement Content Script Listener**
+- [x] **P1-C2-S1: Implement Content Script Listener**
 - *Details:* `content.js`: `chrome.runtime.onMessage` listener for `'GET_SELECTED_TEXT'`. Use `document.getSelection().toString()` & `sendResponse`.
-- [ ] **P1-C2-S2: Implement Popup Text Request**
+- [x] **P1-C2-S2: Implement Popup Text Request**
 - *Details:* `popup.js` (on open): `chrome.tabs.query` + `chrome.tabs.sendMessage`.
-- [ ] **P1-C2-S3: Implement Popup Response Handling**
+- [x] **P1-C2-S3: Implement Popup Response Handling**
 - *Details:* `popup.js`: Handle `sendMessage` response, check errors, log text.
-- [ ] **P1-C2-S4: Update Popup HTML**
+- [x] **P1-C2-S4: Update Popup HTML**
 - *Details:* Add `<textarea id=\"card-front\">`.
-- [ ] **P1-C2-S5: Display Text in Popup**
+- [x] **P1-C2-S5: Display Text in Popup**
 - *Details:* `popup.js`: Populate `#card-front` from response.
-- [ ] **P1-C2-S6: Test: Text Capture Flow**
+- [x] **P1-C2-S6: Test: Text Capture Flow**
 - *Details:* Reload ext. Select text -> open popup -> verify text. Test no selection. Check consoles.
-- [ ] **P1-C2-S7: Git: Commit Text Capture Feature**
+- [x] **P1-C2-S7: Git: Commit Text Capture Feature**
 - *Details:* `feature/text-capture` branch. Commit changes. PR -> merge.
 
 
@@ -84,14 +84,12 @@
 - [ ] **P1-C3-S1: Integrate PS1 ADTs**
 - *Details:* Integrate PS1 `Card.ts`, `Deck.ts` into project. Ensure usable.
 - [ ] **P1-C3-S2: Instantiate Deck (In Popup or Background)**
-
 - *Details:* Import `Deck`. Create instance (`const deck = new Deck();`). Decide scope (Popup simpler start, Background better state). Document choice.
 - [ ] **P1-C3-S3: Add Save UI Elements**
 - *Details:* `popup.html`: Add `#card-back`, `#save-card`, `#status-message`.
 - [ ] **P1-C3-S4: Implement Save Button Logic**
 - *Details:* Listener for `#save-card`. Get text, validate, create `new Card()`, call `deck.addCard()` (or send message if Deck in Background). Log size, provide UI feedback.
 - [ ] **P1-C3-S5: Test: Card Saving Flow**
-
 - *Details:* Reload ext. Capture text, fill back, save. Check logs/state. Test validation.
 - [ ] **P1-C3-S6: Refactor (If needed): Move Deck to Background Worker**
 - *Details:* Implement background script, message passing if chosen in P1-C3-S2.
