@@ -44,17 +44,17 @@
 
 ### P1-C1: Extension Manifest & Basic Structure
 *Chunk Goal: Create the core files and manifest for a loadable extension.*
-- [ ] **P1-C1-S1: Create `manifest.json` (Spec First)**
+- [x] **P1-C1-S1: Create `manifest.json` (Spec First)**
 - *Details:* `manifest_version: 3`, `name`, `version`, `description`. `action.default_popup: \"popup.html\"`. Permissions: `[\"activeTab\", \"scripting\"]`. (Add `storage` later if needed before Phase 3).
-- [ ] **P1-C1-S2: Create Basic `popup.html`**
+- [x] **P1-C1-S2: Create Basic `popup.html`**
 - *Details:* Minimal HTML file. Link `popup.js` (`<script src=\"popup.js\" defer>`).
-- [ ] **P1-C1-S3: Create Empty `popup.js` and `content.js`**
+- [x] **P1-C1-S3: Create Empty `popup.js` and `content.js`**
 - *Details:* Placeholder JS files.
-- [ ] **P1-C1-S4: Define Content Script in Manifest**
+- [x] **P1-C1-S4: Define Content Script in Manifest**
 - *Details:* Add `content_scripts` section (`matches`, `js: [\"content.js\"]`).
-- [ ] **P1-C1-S5: Test: Load Unpacked Extension**
+- [x] **P1-C1-S5: Test: Load Unpacked Extension**
 - *Details:* Load in browser dev mode. Verify icon, popup, no manifest errors.
-- [ ] **P1-C1-S6: Git: Commit Skeleton**
+- [x] **P1-C1-S6: Git: Commit Skeleton**
 - *Details:* `feature/extension-skeleton` branch. Commit files. PR -> merge.
 
 
