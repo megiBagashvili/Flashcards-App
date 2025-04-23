@@ -6,12 +6,15 @@
     <title>Flashcard capture</title>
     <style> 
         body{width: 300px; font-family: sans-serif; padding: 10;}
+        textarea { width: 95%; min-height: 60px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
     <h1>Create Flashcard</h1>
-    <p>Content will go here...</p>
 
+    <label for="card-front"> Front (Selected Text):</label>
+    <textarea id="card-front" placeholder="Select text on the page first.."></textarea>
+    
     <script src="popup.js" defer></script>
 </body>
 </html>
