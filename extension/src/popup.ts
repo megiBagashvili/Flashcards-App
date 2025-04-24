@@ -1,5 +1,5 @@
-import { Deck } from './Deck';
 import { Card } from './Card';
+import { Deck } from './Deck';
 
 //Instantiating the Deck. Creating one Deck instance for the lifetime of the popup window.
 const deck = new Deck();
