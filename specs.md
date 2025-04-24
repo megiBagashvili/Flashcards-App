@@ -205,3 +205,21 @@ UpdateRequest (interface): { cardFront: string; cardBack: string; difficulty: An
 Backend: Run npm install, then npm run build, then npm start. For development: npm run dev.
 Frontend: Navigate to the frontend directory, run npm install, then npm run dev (or npm run build and serve the dist folder).
 Requires Node.js and npm installed.
+
+
+
+## Design Decisions
+
+### Deck Instance Scope (Phase 1)
+
+**Decision:** For Phase In-Memory Card Save, the `Deck` instance is created and managed within the **Popup script scope (`popup.ts`)**.
+
+**Rationale:**
+
+* **Simplicity:** This approach is simpler for the initial implementation, allowing direct access to the `deck` object from the popup's UI logic without requiring background script setup or message passing.
+* **Phase Goal Alignment:** It fulfills the basic "in-memory" requirement for this phase, focusing on card creation and adding to a temporary Deck.
+
+**Limitations & Future Plans:**
+
+* The deck state is **not persistent** and will be lost every time the popup is closed.
+* This scope will be revisited in later phases when implementing persistent storage using `chrome.storage` or backend integration. At that point, the primary data management logic will likely move to a background script (Service Worker) or rely on API calls.

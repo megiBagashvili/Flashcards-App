@@ -83,7 +83,7 @@
 
 - [x] **P1-C3-S1: Integrate PS1 ADTs**
 - *Details:* Integrate PS1 `Card.ts`, `Deck.ts` into project. Ensure usable.
-- [ ] **P1-C3-S2: Instantiate Deck (In Popup or Background)**
+- [x] **P1-C3-S2: Instantiate Deck (In Popup or Background)**
 - *Details:* Import `Deck`. Create instance (`const deck = new Deck();`). Decide scope (Popup simpler start, Background better state). Document choice.
 - [ ] **P1-C3-S3: Add Save UI Elements**
 - *Details:* `popup.html`: Add `#card-back`, `#save-card`, `#status-message`.
