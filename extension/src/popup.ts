@@ -1,6 +1,9 @@
 import { Card } from './Card';
 import { Deck } from './Deck';
 
+const deck = new Deck();
+console.log("Deck instance created:", deck);
+
 function fetchSelectedText() {
   // Use chrome.tabs specific types if needed, but 'any' often works for callbacks
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs: chrome.tabs.Tab[]) => {
