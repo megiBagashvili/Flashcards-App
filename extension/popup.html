@@ -3,18 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flashcard capture</title>
-    <style> 
-        body{width: 300px; font-family: sans-serif; padding: 10;}
-        textarea { width: 95%; min-height: 60px; margin-bottom: 10px; }
+    <title>Flashcard Capture</title>
+    <style>
+        body { width: 300px; font-family: sans-serif; padding: 10px; }
+        textarea { width: 95%; min-height: 60px; margin-bottom: 10px; display: block; }
+        label { display: block; margin-bottom: 3px; font-weight: bold; }
+        button { padding: 8px 15px; margin-top: 10px; cursor: pointer; }
+        #status-message { margin-top: 10px; font-style: italic; color: green; }
     </style>
 </head>
 <body>
     <h1>Create Flashcard</h1>
 
-    <label for="card-front"> Front (Selected Text):</label>
-    <textarea id="card-front" placeholder="Select text on the page first.."></textarea>
-    
+    <label for="card-front">Front (Selected Text):</label>
+    <textarea id="card-front" placeholder="Select text on the page first..."></textarea>
+
+    <label for="card-back">Back:</label>
+    <textarea id="card-back" placeholder="Enter the back of the card..."></textarea>
+
+    <button id="save-card">Save Card</button>
+
+    <div id="status-message"></div>
+
     <script src="dist/popup.js" defer></script>
 </body>
 </html>
