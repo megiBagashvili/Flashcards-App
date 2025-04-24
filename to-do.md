@@ -89,12 +89,12 @@
 - *Details:* `popup.html`: Add `#card-back`, `#save-card`, `#status-message`.
 - [x] **P1-C3-S4: Implement Save Button Logic**
 - *Details:* Listener for `#save-card`. Get text, validate, create `new Card()`, call `deck.addCard()` (or send message if Deck in Background). Log size, provide UI feedback.
-- [ ] **P1-C3-S5: Test: Card Saving Flow**
+- [x] **P1-C3-S5: Test: Card Saving Flow**
 - *Details:* Reload ext. Capture text, fill back, save. Check logs/state. Test validation.
 - [ ] **P1-C3-S6: Refactor (If needed): Move Deck to Background Worker**
 - *Details:* Implement background script, message passing if chosen in P1-C3-S2.
-- [ ] **P1-C3-S7: Git: Commit In-Memory Save Feature**
-- *Details:* `feature/in-memory-save` branch. Commit changes. PR -> merge.
+- [x] **P1-C3-S7: Git: Commit In-Memory Save Feature**
+- *Details:* `feature/in-Memory-Card-Save` branch. Commit changes. PR -> merge.
 
 ---
 
