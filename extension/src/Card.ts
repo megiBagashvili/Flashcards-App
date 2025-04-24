@@ -6,8 +6,7 @@ export class Card {
 
     // Representation Invariant: front and back must be non-empty strings.
     // Abstraction Function: Represents a flashcard with a front side, a back side,
-    // an optional hint, and optional tags.
-
+    
     constructor(
         front: string,
         back: string,
@@ -42,13 +41,10 @@ export class Card {
     public toString(): string {
         return `Card(Front: "<span class="math-inline">\{this\.front\}", Back\: "</span>{this.back}")`;
     }
-
-    // Add equals method if needed for comparing cards later
     public equals(other: Card): boolean {
         return this.front === other.front &&
                this.back === other.back &&
                this.hint === other.hint &&
-               // Simple tag comparison - order matters
                this.tags.length === other.tags.length &&
                this.tags.every((tag, index) => tag === other.tags[index]);
     }

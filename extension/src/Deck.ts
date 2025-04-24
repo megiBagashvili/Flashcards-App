@@ -14,8 +14,6 @@ export class Deck {
      * Checks that the representation invariant holds.
      */
     private checkRep(): void {
-        // For a Set, the main check is that all elements are indeed Card instances.
-        // The Set itself handles uniqueness.
         for (const item of this.cards) {
             if (!(item instanceof Card)) {
                 throw new Error("RI violated: Deck contains non-Card objects.");
