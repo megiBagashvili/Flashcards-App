@@ -81,7 +81,7 @@
 
 *Chunk Goal: Integrate PS1 ADTs and save created cards to an in-memory Deck.*
 
-- [ ] **P1-C3-S1: Integrate PS1 ADTs**
+- [x] **P1-C3-S1: Integrate PS1 ADTs**
 - *Details:* Integrate PS1 `Card.ts`, `Deck.ts` into project. Ensure usable.
 - [ ] **P1-C3-S2: Instantiate Deck (In Popup or Background)**
 - *Details:* Import `Deck`. Create instance (`const deck = new Deck();`). Decide scope (Popup simpler start, Background better state). Document choice.
