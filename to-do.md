@@ -87,7 +87,7 @@
 - *Details:* Import `Deck`. Create instance (`const deck = new Deck();`). Decide scope (Popup simpler start, Background better state). Document choice.
 - [x] **P1-C3-S3: Add Save UI Elements**
 - *Details:* `popup.html`: Add `#card-back`, `#save-card`, `#status-message`.
-- [ ] **P1-C3-S4: Implement Save Button Logic**
+- [x] **P1-C3-S4: Implement Save Button Logic**
 - *Details:* Listener for `#save-card`. Get text, validate, create `new Card()`, call `deck.addCard()` (or send message if Deck in Background). Log size, provide UI feedback.
 - [ ] **P1-C3-S5: Test: Card Saving Flow**
 - *Details:* Reload ext. Capture text, fill back, save. Check logs/state. Test validation.
