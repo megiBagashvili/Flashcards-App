@@ -205,3 +205,50 @@ UpdateRequest (interface): { cardFront: string; cardBack: string; difficulty: An
 Backend: Run npm install, then npm run build, then npm start. For development: npm run dev.
 Frontend: Navigate to the frontend directory, run npm install, then npm run dev (or npm run build and serve the dist folder).
 Requires Node.js and npm installed.
+
+
+
+## Design Decisions
+
+### Deck Instance Scope (Phase 1)
+
+**Decision:** For Phase In-Memory Card Save, the `Deck` instance is created and managed within the **Popup script scope (`popup.ts`)**.
+
+**Rationale:**
+
+* **Simplicity:** This approach is simpler for the initial implementation, allowing direct access to the `deck` object from the popup's UI logic without requiring background script setup or message passing.
+* **Phase Goal Alignment:** It fulfills the basic "in-memory" requirement for this phase, focusing on card creation and adding to a temporary Deck.
+
+**Limitations & Future Plans:**
+
+* The deck state is **not persistent** and will be lost every time the popup is closed.
+* This scope will be revisited in later phases when implementing persistent storage using `chrome.storage` or backend integration. At that point, the primary data management logic will likely move to a background script (Service Worker) or rely on API calls.
+
+
+## Changes made in `popup.ts`:**
+
+1.  **Import `Card`:** Added `import { Card } from './Card';`.
+2.  **`handleSaveCardClick` Function:** Created a dedicated function to contain the logic for saving.
+3.  **Get Elements:** Inside `handleSaveCardClick`, it gets references to the front/back textareas and the status message element using `document.getElementById` and type assertions (`as HTML...Element`).
+4.  **Input Validation:** It retrieves the `.value` from the textareas, `.trim()`s whitespace, and checks if either is empty. If so, it updates the status message with an error and exits.
+5.  **Create Card:** If valid, it creates `new Card(frontText, backText)`.
+6.  **Add to Deck:** It calls `deck.addCard(newCard)`.
+7.  **Feedback:** Updates the status message (`.textContent` and `.style.color`) for success or errors (using a `try...catch` block for safety).
+8.  **Console Logging:** Logs the deck size and contents upon successful save.
+9.  **Clear Back Field:** Clears `backTextArea.value` on success.
+10. **Button State:** Disables the button during the save operation and re-enables it afterward (using `setTimeout` for a brief visual cue) to prevent accidental double-clicks.
+11. **Event Listener Setup:** In the `DOMContentLoaded` listener, it finds the `#save-card` button and attaches the `handleSaveCardClick` function to its `click` event. Includes error handling in case the button isn't found.
+
+**Completion:**
+
+With these changes in `extension/src/popup.ts`, the task **P1-C3-S4** is complete. Your "Save Card" button is now functional within the popup's lifecycle. You can test it by:
+
+1.  Running `npm run build`.
+2.  Reloading the extension.
+3.  Selecting text on a page.
+4.  Opening the popup.
+5.  Typing text into the "Back" field.
+6.  Clicking "Save Card".
+7.  Checking the status message and the browser console logs.
+8.  Trying to save with empty fields to see the error message.
+Remember that closing and reopening the popup will reset the deck because it's currently only stored in the popup's memory.
