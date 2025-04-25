@@ -114,9 +114,9 @@
 - *Details:* `popup.ts`: Create `loadHandPoseModel()` using `handPoseDetection.createDetector`. Handle async load/errors. Update status UI.
 - [x] **P2-C1-S5: Orchestrate Setup**
 - *Details:* `popup.ts`: Call setup functions on init. Store model/video refs.
-- [ ] **P2-C1-S6: Test: Webcam and Model Load**
+- [x] **P2-C1-S6: Test: Webcam and Model Load**
 - *Details:* Reload ext. Verify permission, video feed, status messages.
-- [ ] **P2-C1-S7: Git: Commit TF.js Setup**
+- [x] **P2-C1-S7: Git: Commit TF.js Setup**
 - *Details:* `feature/tfjs-setup` branch. Commit changes. PR -> merge.
 
 

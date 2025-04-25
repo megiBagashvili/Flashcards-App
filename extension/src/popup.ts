@@ -2,9 +2,9 @@ import { Deck } from './Deck';
 import { Card } from './Card';
 
 import * as tf from '@tensorflow/tfjs';
+import '@tensorflow/tfjs-backend-webgl';
 import * as handPoseDetection from '@tensorflow-models/hand-pose-detection';
 import { MediaPipeHandsTfjsModelConfig } from '@tensorflow-models/hand-pose-detection';
-
 
 let videoElement: HTMLVideoElement | null = null;
 let tfStatusElement: HTMLElement | null = null;
@@ -38,9 +38,7 @@ async function setupWebcam(): Promise<boolean> {
 
         tfStatusElement.textContent = "Webcam access granted. Starting stream...";
         console.log("Webcam access granted.");
-
         videoElement.srcObject = stream;
-
         await new Promise<void>((resolve) => {
             videoElement?.addEventListener('loadedmetadata', () => {
                  console.log("Video metadata loaded.");
@@ -87,6 +85,10 @@ async function loadHandPoseModel(): Promise<handPoseDetection.HandDetector | nul
         return null;
     }
 
+    // Optional: Wait for TF backend to be ready (usually not needed if imported)
+    // await tf.ready();
+    // console.log("TF Backend Ready:", tf.getBackend()); // Log the backend being used
+
     tfStatusElement.textContent = "Loading hand pose model (MediaPipe)...";
     console.log("Loading hand pose model...");
 
@@ -111,6 +113,10 @@ async function loadHandPoseModel(): Promise<handPoseDetection.HandDetector | nul
     }
 }
 
+
+/**
+ * Fetches the selected text from the active tab and populates the front textarea.
+ */
 function fetchSelectedText() {
     if (typeof chrome === 'undefined' || !chrome.tabs) {
         console.error("Chrome tabs API not available.");
@@ -138,7 +144,7 @@ function fetchSelectedText() {
             { action: "GET_SELECTED_TEXT" },
             (response?: { selectedText?: string }) => {
                 if (chrome.runtime.lastError) {
-                    console.error("Error sending message:", chrome.runtime.lastError.message);
+                    console.warn("Error sending message (content script connection):", chrome.runtime.lastError.message);
                     const frontTextArea = document.getElementById('card-front') as HTMLTextAreaElement | null;
                     if (frontTextArea) frontTextArea.placeholder = `Error: ${chrome.runtime.lastError.message}. Try reloading the page?`;
                     return;
@@ -164,6 +170,9 @@ function fetchSelectedText() {
     });
 }
 
+/**
+ * Handles the logic when the Save Card button is clicked.
+ */
 function handleSaveCardClick() {
     const frontTextArea = document.getElementById("card-front") as HTMLTextAreaElement | null;
     const backTextArea = document.getElementById("card-back") as HTMLTextAreaElement | null;
@@ -215,7 +224,6 @@ function handleSaveCardClick() {
 async function initializeApp() {
     fetchSelectedText();
     const webcamReady = await setupWebcam();
-
     if (webcamReady && tfStatusElement) {
         console.log("Webcam ready, proceeding to load model...");
         handPoseModel = await loadHandPoseModel();
@@ -247,3 +255,4 @@ async function initializeApp() {
 document.addEventListener('DOMContentLoaded', initializeApp);
 
 console.log("Popup script loaded (ts).");
+
