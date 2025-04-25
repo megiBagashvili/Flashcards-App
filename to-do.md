@@ -106,7 +106,7 @@
 *Chunk Goal: Access webcam and load the hand pose detection model.*
 - [x] **P2-C1-S1: Add Dependencies**
 - *Details:* `npm install @tensorflow/tfjs @tensorflow-models/hand-pose-detection`.
-- [ ] **P2-C1-S2: Add Video Element & Status UI**
+- [x] **P2-C1-S2: Add Video Element & Status UI**
 - *Details:* `popup.html`: Add `<video id=\"webcam-feed\">`, status element `<p id=\"tf-status\">`.
 - [ ] **P2-C1-S3: Implement Webcam Access**
 - *Details:* `popup.js`: Create `setupWebcam()` using `navigator.mediaDevices.getUserMedia`. Handle success/failure/permissions.

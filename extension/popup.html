@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flashcard Capture</title>
     <style>
-        /* Basic styles from previous phase */
         body {
-            width: 350px; /* Slightly wider for video */
+            width: 350px;
             font-family: sans-serif;
             padding: 10px;
-            display: flex; /* Use flexbox for layout */
-            flex-direction: column; /* Stack elements vertically */
+            display: flex;
+            flex-direction: column;
         }
         textarea {
             width: 95%;
@@ -29,19 +28,18 @@
             margin-top: 10px;
             cursor: pointer;
         }
-        #status-message { /* Status for saving */
+        #status-message {
             margin-top: 10px;
             font-style: italic;
             color: green;
-            min-height: 1.2em; /* Reserve space */
+            min-height: 1.2em;
         }
-        /* --- Styles for new webcam/TF elements --- */
         #webcam-container {
             border: 1px solid #ccc;
             margin-bottom: 10px;
             position: relative;
-            background-color: #eee; /* Placeholder background */
-            min-height: 150px; /* Placeholder height */
+            background-color: #eee;
+            min-height: 150px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -49,19 +47,17 @@
         #webcam-feed {
             display: block;
             width: 100%;
-             /* Flip video horizontally (mirror image) */
             transform: scaleX(-1);
         }
-         #tf-status { /* Status for TF/Webcam */
+         #tf-status {
             font-size: 0.9em;
             color: #555;
             text-align: center;
             margin-top: 5px;
-            min-height: 1.2em; /* Reserve space */
+            min-height: 1.2em;
         }
-        /* --- End styles for new elements --- */
 
-        hr { /* Add a separator */
+        hr {
            width: 100%;
            margin: 15px 0;
            border: 0;
