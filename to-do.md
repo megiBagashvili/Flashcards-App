@@ -110,7 +110,7 @@
 - *Details:* `popup.html`: Add `<video id=\"webcam-feed\">`, status element `<p id=\"tf-status\">`.
 - [x] **P2-C1-S3: Implement Webcam Access**
 - *Details:* `popup.ts`: Create `setupWebcam()` using `navigator.mediaDevices.getUserMedia`. Handle success/failure/permissions.
-- [ ] **P2-C1-S4: Implement Model Loading**
+- [x] **P2-C1-S4: Implement Model Loading**
 - *Details:* `popup.ts`: Create `loadHandPoseModel()` using `handPoseDetection.createDetector`. Handle async load/errors. Update status UI.
 - [ ] **P2-C1-S5: Orchestrate Setup**
 - *Details:* `popup.ts`: Call setup functions on init. Store model/video refs.
