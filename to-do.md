@@ -108,12 +108,12 @@
 - *Details:* `npm install @tensorflow/tfjs @tensorflow-models/hand-pose-detection`.
 - [x] **P2-C1-S2: Add Video Element & Status UI**
 - *Details:* `popup.html`: Add `<video id=\"webcam-feed\">`, status element `<p id=\"tf-status\">`.
-- [ ] **P2-C1-S3: Implement Webcam Access**
-- *Details:* `popup.js`: Create `setupWebcam()` using `navigator.mediaDevices.getUserMedia`. Handle success/failure/permissions.
+- [x] **P2-C1-S3: Implement Webcam Access**
+- *Details:* `popup.ts`: Create `setupWebcam()` using `navigator.mediaDevices.getUserMedia`. Handle success/failure/permissions.
 - [ ] **P2-C1-S4: Implement Model Loading**
-- *Details:* `popup.js`: Create `loadHandPoseModel()` using `handPoseDetection.createDetector`. Handle async load/errors. Update status UI.
+- *Details:* `popup.ts`: Create `loadHandPoseModel()` using `handPoseDetection.createDetector`. Handle async load/errors. Update status UI.
 - [ ] **P2-C1-S5: Orchestrate Setup**
-- *Details:* `popup.js`: Call setup functions on init. Store model/video refs.
+- *Details:* `popup.ts`: Call setup functions on init. Store model/video refs.
 - [ ] **P2-C1-S6: Test: Webcam and Model Load**
 - *Details:* Reload ext. Verify permission, video feed, status messages.
 - [ ] **P2-C1-S7: Git: Commit TF.js Setup**
