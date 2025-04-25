@@ -2,20 +2,19 @@
 import { Deck } from './Deck'; // Import the Deck class
 import { Card } from './Card';   // Import the Card class
 
-// Import TensorFlow.js - Needed for subsequent steps
+// Import TensorFlow.js and Hand Pose Detection model
 import * as tf from '@tensorflow/tfjs';
-// Import handPoseDetection - Needed for subsequent steps
 import * as handPoseDetection from '@tensorflow-models/hand-pose-detection';
-// Import specific config type - Needed for subsequent steps
+// Import the specific model configuration type
 import { MediaPipeHandsTfjsModelConfig } from '@tensorflow-models/hand-pose-detection';
 
 
 // --- Global Variables ---
-// Store references to key elements
+// Store references to key elements and the model once loaded
 let videoElement: HTMLVideoElement | null = null;
 let tfStatusElement: HTMLElement | null = null;
-// Model variable will be assigned later
-// let handPoseModel: handPoseDetection.HandDetector | null = null;
+// Variable to store the loaded hand pose detection model
+let handPoseModel: handPoseDetection.HandDetector | null = null;
 
 // --- Instantiate the Deck ---
 const deck = new Deck();
@@ -41,26 +40,25 @@ async function setupWebcam(): Promise<boolean> {
     console.log("Requesting webcam access...");
 
     try {
-        // Request access to the webcam using the browser API
+        // Request access to the webcam
         const stream = await navigator.mediaDevices.getUserMedia({
             video: true, // We only need video
             audio: false // No audio needed
         });
 
-        // --- Success Case ---
+        // Webcam access granted
         tfStatusElement.textContent = "Webcam access granted. Starting stream...";
         console.log("Webcam access granted.");
 
         // Connect the stream to the video element
         videoElement.srcObject = stream;
 
-        // Wait for the video metadata to load (important for dimensions/readiness)
-        await new Promise<void>((resolve) => { // Changed resolve type to void
-            // Use optional chaining in case videoElement becomes null unexpectedly
+        // Wait for the video metadata to load to get dimensions etc.
+        await new Promise<void>((resolve) => {
             videoElement?.addEventListener('loadedmetadata', () => {
                  console.log("Video metadata loaded.");
-                 resolve(); // Resolve the promise without a value
-            }, { once: true }); // Ensure listener runs only once
+                 resolve();
+            }, { once: true });
         });
 
         // Optional: Hide placeholder background now that video might be ready
@@ -76,10 +74,9 @@ async function setupWebcam(): Promise<boolean> {
         return true; // Indicate success
 
     } catch (error) {
-        // --- Failure Case ---
+        // Handle errors
         console.error("Error accessing webcam:", error);
         let errorMessage = "Error accessing webcam.";
-        // Check the specific type of error
         if (error instanceof Error) {
             if (error.name === "NotAllowedError" || error.name === "PermissionDeniedError") {
                 errorMessage = "Webcam permission denied. Please grant access in browser settings.";
@@ -89,13 +86,51 @@ async function setupWebcam(): Promise<boolean> {
                  errorMessage = `Webcam Error: ${error.message}`;
             }
         }
-        // Display error message in the status element
         if (tfStatusElement) {
             tfStatusElement.textContent = errorMessage;
         }
         return false; // Indicate failure
     }
 }
+
+/**
+ * Loads the Hand Pose Detection model.
+ * @returns {Promise<handPoseDetection.HandDetector | null>} The loaded model or null if loading failed.
+ */
+async function loadHandPoseModel(): Promise<handPoseDetection.HandDetector | null> {
+    // Ensure tfStatusElement is available
+    if (!tfStatusElement) {
+        console.error("TF Status element not found during model load!");
+        return null;
+    }
+
+    tfStatusElement.textContent = "Loading hand pose model (MediaPipe)...";
+    console.log("Loading hand pose model...");
+
+    try {
+        // Define model configuration
+        const model = handPoseDetection.SupportedModels.MediaPipeHands;
+        const detectorConfig: MediaPipeHandsTfjsModelConfig = {
+            runtime: 'tfjs', // Use TensorFlow.js runtime
+            modelType: 'lite', // Use 'lite' or 'full' - 'lite' is faster
+            maxHands: 1        // Detect only one hand for simplicity
+        };
+
+        // Create the detector (loads the model)
+        const detector = await handPoseDetection.createDetector(model, detectorConfig);
+
+        console.log("Hand pose model loaded successfully.");
+        tfStatusElement.textContent = "Model loaded."; // Update status on success
+        return detector; // Return the loaded model
+
+    } catch (error) {
+        console.error("Error loading hand pose model:", error);
+        // Update status element with error message
+        tfStatusElement.textContent = "Error loading model. Please try reloading.";
+        return null; // Indicate failure by returning null
+    }
+}
+
 
 // --- fetchSelectedText function (Keep existing code) ---
 function fetchSelectedText() {
@@ -205,17 +240,27 @@ async function initializeApp() {
     fetchSelectedText();
 
     // Setup webcam (asynchronously)
-    const webcamReady = await setupWebcam(); // Call the new function
+    const webcamReady = await setupWebcam();
 
-    // If webcam setup is successful, proceed to load the model (in the next step)
-    if (webcamReady) {
-        console.log("Webcam ready, proceed to load model...");
-        // Placeholder for next step P2-C1-S4:
-        // handPoseModel = await loadHandPoseModel();
-        // if (handPoseModel) { ... }
+    // If webcam setup is successful, proceed to load the model
+    if (webcamReady && tfStatusElement) { // Also check if tfStatusElement is available
+        console.log("Webcam ready, proceeding to load model...");
+        // Load the model and store it in the global variable
+        handPoseModel = await loadHandPoseModel(); // Call the load function
+
+        // Check if model loading was successful
+        if (handPoseModel) {
+            tfStatusElement.textContent = "Ready for hand detection."; // Final ready status
+            // Placeholder for next step P2-C2:
+            // console.log("Starting detection loop...");
+            // detectHandsLoop();
+        } else {
+             // Status should already be updated by loadHandPoseModel() on failure
+            console.error("Model loading failed. Hand pose detection cannot proceed.");
+        }
     } else {
         console.error("Webcam setup failed. Hand pose detection cannot proceed.");
-        // Status should already be updated by setupWebcam()
+        // Status should already be updated by setupWebcam() on failure
     }
 
     // --- Setup Save Button Listener (Existing) ---
