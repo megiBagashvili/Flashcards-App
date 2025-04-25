@@ -6,9 +6,11 @@ import '@tensorflow/tfjs-backend-webgl';
 import * as handPoseDetection from '@tensorflow-models/hand-pose-detection';
 import { MediaPipeHandsTfjsModelConfig } from '@tensorflow-models/hand-pose-detection';
 
+
 let videoElement: HTMLVideoElement | null = null;
 let tfStatusElement: HTMLElement | null = null;
 let handPoseModel: handPoseDetection.HandDetector | null = null;
+let isDetecting = false;
 
 const deck = new Deck();
 console.log("Deck instance created:", deck);
@@ -35,10 +37,11 @@ async function setupWebcam(): Promise<boolean> {
             video: true,
             audio: false
         });
-
         tfStatusElement.textContent = "Webcam access granted. Starting stream...";
         console.log("Webcam access granted.");
+
         videoElement.srcObject = stream;
+
         await new Promise<void>((resolve) => {
             videoElement?.addEventListener('loadedmetadata', () => {
                  console.log("Video metadata loaded.");
@@ -85,10 +88,6 @@ async function loadHandPoseModel(): Promise<handPoseDetection.HandDetector | nul
         return null;
     }
 
-    // Optional: Wait for TF backend to be ready (usually not needed if imported)
-    // await tf.ready();
-    // console.log("TF Backend Ready:", tf.getBackend()); // Log the backend being used
-
     tfStatusElement.textContent = "Loading hand pose model (MediaPipe)...";
     console.log("Loading hand pose model...");
 
@@ -99,7 +98,6 @@ async function loadHandPoseModel(): Promise<handPoseDetection.HandDetector | nul
             modelType: 'lite',
             maxHands: 1
         };
-
         const detector = await handPoseDetection.createDetector(model, detectorConfig);
 
         console.log("Hand pose model loaded successfully.");
@@ -110,6 +108,40 @@ async function loadHandPoseModel(): Promise<handPoseDetection.HandDetector | nul
         console.error("Error loading hand pose model:", error);
         tfStatusElement.textContent = "Error loading model. Please try reloading.";
         return null;
+    }
+}
+
+/**
+ * Continuously detects hands in the video feed using the loaded model.
+ */
+async function detectHandsLoop() {
+    if (!handPoseModel || !videoElement || videoElement.readyState < 3) {
+        console.log("Model or video not ready yet, skipping frame.");
+        if (isDetecting) {
+             requestAnimationFrame(detectHandsLoop);
+        }
+        return;
+    }
+
+    try {
+        const hands = await handPoseModel.estimateHands(videoElement, {
+            flipHorizontal: false
+        });
+        if (hands.length > 0) {
+            console.log("Detected hands:", hands);
+            console.log("Detected landmarks:", hands[0]?.keypoints);
+        } else {
+            console.log("No hands detected.");
+        }
+
+    } catch (error) {
+        console.error("Error during hand detection:", error);
+        isDetecting = false;
+        if(tfStatusElement) tfStatusElement.textContent = "Hand detection error.";
+    }
+
+    if (isDetecting) {
+        requestAnimationFrame(detectHandsLoop);
     }
 }
 
@@ -145,8 +177,6 @@ function fetchSelectedText() {
             (response?: { selectedText?: string }) => {
                 if (chrome.runtime.lastError) {
                     console.warn("Error sending message (content script connection):", chrome.runtime.lastError.message);
-                    const frontTextArea = document.getElementById('card-front') as HTMLTextAreaElement | null;
-                    if (frontTextArea) frontTextArea.placeholder = `Error: ${chrome.runtime.lastError.message}. Try reloading the page?`;
                     return;
                 }
                 if (response && typeof response.selectedText === 'string') {
@@ -223,15 +253,18 @@ function handleSaveCardClick() {
  */
 async function initializeApp() {
     fetchSelectedText();
+
     const webcamReady = await setupWebcam();
+
     if (webcamReady && tfStatusElement) {
         console.log("Webcam ready, proceeding to load model...");
         handPoseModel = await loadHandPoseModel();
+
         if (handPoseModel) {
             tfStatusElement.textContent = "Ready for hand detection.";
-            // Placeholder for next step P2-C2:
-            // console.log("Starting detection loop...");
-            // detectHandsLoop();
+            console.log("Starting detection loop...");
+            isDetecting = true;
+            detectHandsLoop();
         } else {
             console.error("Model loading failed. Hand pose detection cannot proceed.");
         }
@@ -254,5 +287,10 @@ async function initializeApp() {
 
 document.addEventListener('DOMContentLoaded', initializeApp);
 
-console.log("Popup script loaded (ts).");
+window.addEventListener('unload', () => {
+    isDetecting = false;
+    console.log("Popup closing, stopping detection loop.");
+});
 
+
+console.log("Popup script loaded (ts).");
