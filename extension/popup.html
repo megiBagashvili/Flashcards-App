@@ -5,16 +5,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flashcard Capture</title>
     <style>
-        body { width: 300px; font-family: sans-serif; padding: 10px; }
-        textarea { width: 95%; min-height: 60px; margin-bottom: 10px; display: block; }
-        label { display: block; margin-bottom: 3px; font-weight: bold; }
-        button { padding: 8px 15px; margin-top: 10px; cursor: pointer; }
-        #status-message { margin-top: 10px; font-style: italic; color: green; }
+        /* Basic styles from previous phase */
+        body {
+            width: 350px; /* Slightly wider for video */
+            font-family: sans-serif;
+            padding: 10px;
+            display: flex; /* Use flexbox for layout */
+            flex-direction: column; /* Stack elements vertically */
+        }
+        textarea {
+            width: 95%;
+            min-height: 50px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        label {
+            display: block;
+            margin-bottom: 3px;
+            font-weight: bold;
+        }
+        button {
+            padding: 8px 15px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        #status-message { /* Status for saving */
+            margin-top: 10px;
+            font-style: italic;
+            color: green;
+            min-height: 1.2em; /* Reserve space */
+        }
+        /* --- Styles for new webcam/TF elements --- */
+        #webcam-container {
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            position: relative;
+            background-color: #eee; /* Placeholder background */
+            min-height: 150px; /* Placeholder height */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #webcam-feed {
+            display: block;
+            width: 100%;
+             /* Flip video horizontally (mirror image) */
+            transform: scaleX(-1);
+        }
+         #tf-status { /* Status for TF/Webcam */
+            font-size: 0.9em;
+            color: #555;
+            text-align: center;
+            margin-top: 5px;
+            min-height: 1.2em; /* Reserve space */
+        }
+        /* --- End styles for new elements --- */
+
+        hr { /* Add a separator */
+           width: 100%;
+           margin: 15px 0;
+           border: 0;
+           border-top: 1px solid #eee;
+        }
     </style>
 </head>
 <body>
-    <h1>Create Flashcard</h1>
-
+    <h2>Gesture Input</h2>
+    <div id="webcam-container">
+        <video id="webcam-feed" autoplay playsinline muted></video>
+    </div>
+    <p id="tf-status">Initializing...</p>
+    <hr> <h2>Create Flashcard</h2>
     <label for="card-front">Front (Selected Text):</label>
     <textarea id="card-front" placeholder="Select text on the page first..."></textarea>
 
@@ -22,9 +83,7 @@
     <textarea id="card-back" placeholder="Enter the back of the card..."></textarea>
 
     <button id="save-card">Save Card</button>
+    <div id="status-message"></div> <script src="dist/popup.bundle.js" defer></script>
 
-    <div id="status-message"></div>
-
-    <script src="dist/popup.bundle.js" defer></script>
-    </body>
+</body>
 </html>
