@@ -16,5 +16,9 @@
     "@types/chrome": "^0.0.316",
     "esbuild": "^0.25.3",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@tensorflow-models/hand-pose-detection": "^2.0.1",
+    "@tensorflow/tfjs": "^4.22.0"
   }
 }
