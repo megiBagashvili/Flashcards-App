@@ -124,11 +124,11 @@
 
 - [x] **P2-C2-S1: Implement Detection Loop Function**
 - *Details:* `popup.js`: Create `async detectHandsLoop(model, video)`. Call `model.estimateHands()`. Log landmarks. Schedule next frame via `requestAnimationFrame`.
-- [ ] **P2-C2-S2: Start the Loop**
+- [x] **P2-C2-S2: Start the Loop**
 - *Details:* After setup succeeds (P2-C1), call `detectHandsLoop()` once.
-- [ ] **P2-C2-S3: Test: Landmark Detection**
+- [x] **P2-C2-S3: Test: Landmark Detection**
 - *Details:* Reload ext. Check popup console for landmark data logging.
-- [ ] **P2-C2-S4: Git: Commit Detection Loop**
+- [x] **P2-C2-S4: Git: Commit Detection Loop**
 - *Details:* `feature/detection-loop` branch. Commit changes. PR -> merge.
 
 ### P2-C3: Gesture Recognizer ADT
