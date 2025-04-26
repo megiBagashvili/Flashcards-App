@@ -35,6 +35,7 @@ const PINKY_DIP = 19;
 const PINKY_TIP = 20;
 
 
+
 /**
  * @class GestureRecognizer
  *
@@ -73,58 +74,109 @@ export class GestureRecognizer {
      * @returns The recognized `Gesture` enum value. Returns `Gesture.Unknown` if
      * input is invalid or no specific gesture is confidently matched.
      *
-     * @specConditions
+     * @specConditions (Simplified for initial implementation)
      * - Requires `landmarks` to be a valid array of at least 21 `Keypoint` objects.
-     * - Geometric conditions (using Y-coordinates primarily, assuming standard
-     * image coordinates where lower Y is higher on the screen, and assuming
-     * the hand is mostly upright. X/Z coordinates might be needed for refinement):
+     * - Uses Y-coordinates primarily (lower Y is higher on screen).
      *
-     * 1. ThumbsUp:
-     * - Thumb tip (4) Y-coordinate is significantly *less* (higher on screen) than
-     * the thumb IP joint (3) Y-coordinate.
-     * - Thumb tip (4) Y-coordinate is significantly *less* than the Y-coordinates
-     * of the MCP joints of the other four fingers (5, 9, 13, 17).
-     * - The fingertips of the other four fingers (8, 12, 16, 20) have Y-coordinates
-     * *greater* (lower on screen) than their respective PIP joints (6, 10, 14, 18),
-     * indicating they are curled.
-     *
-     * 2. ThumbsDown:
-     * - Thumb tip (4) Y-coordinate is significantly *greater* (lower on screen) than
-     * the thumb MCP joint (2) Y-coordinate.
-     * - Thumb tip (4) Y-coordinate is significantly *greater* than the Y-coordinate
-     * of the wrist (0).
-     * - The fingertips of the other four fingers (8, 12, 16, 20) have Y-coordinates
-     * *greater* (lower on screen) than their respective PIP joints (6, 10, 14, 18),
-     * indicating they are curled.
-     *
-     * 3. FlatHand:
-     * - All five fingertips (4, 8, 12, 16, 20) have Y-coordinates *less* (higher
-     * on screen) than their respective base joints (e.g., MCP joints 2, 5, 9, 13, 17),
-     * indicating finger extension.
-     * - (Optional refinement: Fingertips are roughly horizontally aligned,
-     * considering potential hand rotation - might involve comparing Y values
-     * within a certain tolerance or using more complex geometry).
-     *
-     * - If none of the above conditions are met, returns `Gesture.Unknown`.
-     * - "Significantly" implies using appropriate thresholds during implementation.
-     *
-     * TODO(P2-C3-S4): Implement the actual gesture recognition logic based on these conditions.
+     * 1. ThumbsUp: Thumb tip is clearly above thumb IP joint and also above the index finger MCP joint. Other fingertips are below their respective PIP joints.
+     * 2. ThumbsDown: Thumb tip is clearly below the thumb MCP joint and wrist. Other fingertips are below their respective PIP joints.
+     * 3. FlatHand: All five fingertips are clearly above their respective PIP joints (and potentially MCP joints).
+     * - If none match, returns `Gesture.Unknown`.
+     * - "Clearly" implies using simple comparison logic for now. Thresholds might be needed later.
      */
     public recognizeGesture(landmarks: Keypoint[]): Gesture {
-        console.warn("recognizeGesture method not implemented yet.");
         // Basic check for valid input
         if (!landmarks || landmarks.length < 21) {
              console.error("Invalid landmarks provided for gesture recognition.");
              return Gesture.Unknown;
         }
 
-        // --- Placeholder for actual logic ---
-        // This is where the geometric comparisons will go in P2-C3-S4.
-        // We'll need helper functions like isThumbsUp, isThumbsDown, etc.
-        // if (this.isThumbsUp(landmarks)) return Gesture.ThumbsUp;
-        // if (this.isThumbsDown(landmarks)) return Gesture.ThumbsDown;
-        // if (this.isFlatHand(landmarks)) return Gesture.FlatHand;
-        // --- End Placeholder ---
+        // Check for specific gestures
+        if (this.isThumbsUp(landmarks)) {
+            return Gesture.ThumbsUp;
+        }
+        if (this.isThumbsDown(landmarks)) {
+            return Gesture.ThumbsDown;
+        }
+        if (this.isFlatHand(landmarks)) {
+            return Gesture.FlatHand;
+        }
 
-        return Gesture.Unknown; // Default return if no specific gesture is matched
+        // Default if no gesture is recognized
+        return Gesture.Unknown;
     }
+
+    // --- Helper methods for gesture checks ---
+
+    /**
+     * Checks if the landmarks indicate a Thumbs Up gesture.
+     * @param landmarks Array of 21 Keypoints.
+     * @returns True if the gesture is likely Thumbs Up, false otherwise.
+     */
+    private isThumbsUp(landmarks: Keypoint[]): boolean {
+        try {
+            // Condition 1: Thumb tip is above thumb IP joint
+            const thumbTipUp = landmarks[THUMB_TIP].y < landmarks[THUMB_IP].y;
+            // Condition 2: Thumb tip is also clearly above the base knuckle (MCP) of index finger
+            const thumbAboveIndexMCP = landmarks[THUMB_TIP].y < landmarks[INDEX_FINGER_MCP].y;
+
+            // Condition 3: Other fingers are curled (fingertips below PIP joints)
+            const indexCurl = landmarks[INDEX_FINGER_TIP].y > landmarks[INDEX_FINGER_PIP].y;
+            const middleCurl = landmarks[MIDDLE_FINGER_TIP].y > landmarks[MIDDLE_FINGER_PIP].y;
+            const ringCurl = landmarks[RING_FINGER_TIP].y > landmarks[RING_FINGER_PIP].y;
+            const pinkyCurl = landmarks[PINKY_TIP].y > landmarks[PINKY_PIP].y;
+
+            return thumbTipUp && thumbAboveIndexMCP && indexCurl && middleCurl && ringCurl && pinkyCurl;
+        } catch (e) { // Catch potential errors if landmarks are malformed
+            console.error("Error checking ThumbsUp:", e);
+            return false;
+        }
+    }
+
+    /**
+     * Checks if the landmarks indicate a Thumbs Down gesture.
+     * @param landmarks Array of 21 Keypoints.
+     * @returns True if the gesture is likely Thumbs Down, false otherwise.
+     */
+    private isThumbsDown(landmarks: Keypoint[]): boolean {
+         try {
+            // Condition 1: Thumb tip is below thumb MCP joint
+            const thumbTipDown = landmarks[THUMB_TIP].y > landmarks[THUMB_MCP].y;
+             // Condition 2: Thumb tip is also below the wrist
+            const thumbBelowWrist = landmarks[THUMB_TIP].y > landmarks[WRIST].y;
+
+            // Condition 3: Other fingers are curled (fingertips below PIP joints)
+            const indexCurl = landmarks[INDEX_FINGER_TIP].y > landmarks[INDEX_FINGER_PIP].y;
+            const middleCurl = landmarks[MIDDLE_FINGER_TIP].y > landmarks[MIDDLE_FINGER_PIP].y;
+            const ringCurl = landmarks[RING_FINGER_TIP].y > landmarks[RING_FINGER_PIP].y;
+            const pinkyCurl = landmarks[PINKY_TIP].y > landmarks[PINKY_PIP].y;
+
+            return thumbTipDown && thumbBelowWrist && indexCurl && middleCurl && ringCurl && pinkyCurl;
+        } catch (e) {
+            console.error("Error checking ThumbsDown:", e);
+            return false;
+        }
+    }
+
+    /**
+     * Checks if the landmarks indicate a Flat Hand gesture.
+     * @param landmarks Array of 21 Keypoints.
+     * @returns True if the gesture is likely Flat Hand, false otherwise.
+     */
+    private isFlatHand(landmarks: Keypoint[]): boolean {
+         try {
+            // Condition: All fingertips are extended (above their PIP joints)
+            // (We could also check against MCP for stricter extension)
+            const thumbExtended = landmarks[THUMB_TIP].y < landmarks[THUMB_IP].y;
+            const indexExtended = landmarks[INDEX_FINGER_TIP].y < landmarks[INDEX_FINGER_PIP].y;
+            const middleExtended = landmarks[MIDDLE_FINGER_TIP].y < landmarks[MIDDLE_FINGER_PIP].y;
+            const ringExtended = landmarks[RING_FINGER_TIP].y < landmarks[RING_FINGER_PIP].y;
+            const pinkyExtended = landmarks[PINKY_TIP].y < landmarks[PINKY_PIP].y;
+
+            return thumbExtended && indexExtended && middleExtended && ringExtended && pinkyExtended;
+         } catch(e) {
+            console.error("Error checking FlatHand:", e);
+            return false;
+         }
+    }
+}
