@@ -151,7 +151,7 @@
 - *Details:* Run `npm test`. Fix logic/tests until passing.
 - [x] **P2-C3-S8: Implement `checkRep()` (Optional but recommended)**
 - *Details:* Add method for internal consistency checks.
-- [x] **P2-C3-S9: Git: Commit Gesture Recognizer ADT**
+- [x] *P2-C3-S9: Git: Commit Gesture Recognizer ADT**
 - *Details:* `feature/gesture-recognizer-adt` branch. Commit ADT code & tests. PR -> merge.
 
 ### P2-C4: Integrate Gestures & Review Flow
