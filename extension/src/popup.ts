@@ -1,11 +1,14 @@
+// extension/src/popup.ts
 import { Deck } from './Deck';
 import { Card } from './Card';
+// Import the Gesture Recognizer and Enum
 import { GestureRecognizer, Gesture } from './srs/GestureRecognizer';
 
 // Import TensorFlow.js and Hand Pose Detection model
 import * as tf from '@tensorflow/tfjs';
 import '@tensorflow/tfjs-backend-webgl'; // Import backend needed for TFJS
 import * as handPoseDetection from '@tensorflow-models/hand-pose-detection';
+// Import the specific model configuration type and Keypoint type
 import { MediaPipeHandsTfjsModelConfig, Keypoint } from '@tensorflow-models/hand-pose-detection';
 
 
@@ -27,7 +30,7 @@ let handPoseModel: handPoseDetection.HandDetector | null = null;
 let gestureRecognizerInstance: GestureRecognizer | null = null; // Instance of our recognizer
 let isDetecting = false; // Controls the detection loop
 let currentCard: Card | null = null; // Card currently being reviewed
-// Debouncing State Variables (will be used in next step)
+// Debouncing State Variables
 let lastDetectedGesture: Gesture = Gesture.Unknown;
 let currentGestureConfidence: number = 0;
 const REQUIRED_CONFIDENCE = 5; // Frames needed to confirm gesture
@@ -125,9 +128,8 @@ async function detectHandsLoop() {
                  console.warn(`Detected landmarks, but coordinates are NaN.`);
                  currentFrameGesture = Gesture.Unknown;
             } else {
-                // --- Call Gesture Recognizer (P2-C4-S4) ---
+                // Call Gesture Recognizer
                 currentFrameGesture = gestureRecognizerInstance.recognizeGesture(landmarks);
-                // -----------------------------------------
             }
         } else {
             currentFrameGesture = Gesture.Unknown; // No hands detected
@@ -137,42 +139,72 @@ async function detectHandsLoop() {
         currentFrameGesture = Gesture.Unknown; // Treat error as Unknown
     }
 
-    // --- Debouncing Logic (P2-C4-S5 - implemented but action part is next) ---
-    if (currentFrameGesture === lastDetectedGesture && currentFrameGesture !== Gesture.Unknown) { currentGestureConfidence++; }
-    else { currentGestureConfidence = (currentFrameGesture !== Gesture.Unknown) ? 1 : 0; }
+    // --- Debouncing Logic ---
+    if (currentFrameGesture === lastDetectedGesture && currentFrameGesture !== Gesture.Unknown) {
+        currentGestureConfidence++;
+    } else {
+        currentGestureConfidence = (currentFrameGesture !== Gesture.Unknown) ? 1 : 0;
+    }
     lastDetectedGesture = currentFrameGesture;
-    // -----------------------------------------------------------------------
+    // ------------------------
 
-    // --- Check Confidence Threshold & Trigger Action (P2-C4-S6 - partially implemented) ---
+    // --- Check Confidence Threshold & Trigger Action (P2-C4-S6 Implementation) ---
     let confidentGesture = Gesture.Unknown;
     if (currentGestureConfidence >= REQUIRED_CONFIDENCE) {
-        confidentGesture = lastDetectedGesture;
+        confidentGesture = lastDetectedGesture; // Gesture is now confident
         console.log(`CONFIDENT GESTURE DETECTED: ${confidentGesture}`);
+
+        // Only proceed if a card is currently being reviewed
         if (currentCard) {
-            let reviewResult: number = -1;
+            let reviewResult: number = -1; // Default invalid value
+
+            // Map gesture to review difficulty
             switch (confidentGesture) {
-                case Gesture.ThumbsDown: reviewResult = 0; break;
-                case Gesture.FlatHand: reviewResult = 1; break;
-                case Gesture.ThumbsUp: reviewResult = 2; break;
+                case Gesture.ThumbsDown:
+                    reviewResult = 0; // Wrong
+                    break;
+                case Gesture.FlatHand:
+                    reviewResult = 1; // Hard
+                    break;
+                case Gesture.ThumbsUp:
+                    reviewResult = 2; // Easy
+                    break;
+                // No action for Gesture.Unknown
             }
+
+            // If a valid mapping occurred, update the deck and show next card
             if (reviewResult !== -1) {
                 console.log(`Mapping ${confidentGesture} to difficulty ${reviewResult} for card "${currentCard.front}"`);
+                // Call the deck method to record the review outcome
                 deck.updateCardReview(currentCard, reviewResult);
-                currentGestureConfidence = 0; lastDetectedGesture = Gesture.Unknown; // Reset after action
+
+                // Reset confidence and last gesture immediately AFTER processing the action
+                currentGestureConfidence = 0;
+                lastDetectedGesture = Gesture.Unknown;
+
+                // Display the next card
                 displayCardForReview();
-                requestAnimationFrame(detectHandsLoop); return; // Exit early after action
+
+                // Schedule the next frame and RETURN early as we've moved on
+                requestAnimationFrame(detectHandsLoop);
+                return; // Exit this frame's execution early
             } else {
+                // This case should ideally not happen if confidence requires a non-Unknown gesture
                 console.warn(`Confident gesture ${confidentGesture} detected but no valid review mapping.`);
-                currentGestureConfidence = 0; lastDetectedGesture = Gesture.Unknown; // Reset even if no action
+                 // Reset confidence even if no action taken
+                currentGestureConfidence = 0;
+                lastDetectedGesture = Gesture.Unknown;
             }
         } else {
             console.log(`Confident gesture detected, but no card is currently being reviewed.`);
-            currentGestureConfidence = 0; lastDetectedGesture = Gesture.Unknown; // Reset confidence
+             // Reset confidence even if no card is active
+            currentGestureConfidence = 0;
+            lastDetectedGesture = Gesture.Unknown;
         }
     }
     // ---------------------------------------------------------------------------------
 
-    // --- Update Gesture Status UI (P2-C4-S4) ---
+    // --- Update Gesture Status UI ---
     if (gestureStatusElement) { // Check if element exists
         // Display the gesture currently being tracked (even if not confident)
         // and the confidence count for debugging/feedback
@@ -182,7 +214,7 @@ async function detectHandsLoop() {
     }
     // -----------------------------------------
 
-    // Schedule the next frame
+    // Schedule the next frame if no action was taken this frame
     requestAnimationFrame(detectHandsLoop);
 }
 
@@ -205,7 +237,7 @@ function displayCardForReview() {
         reviewBackElement.textContent = '(Answer hidden)';
         reviewBackElement.style.display = 'none';
         showAnswerButton.style.display = 'block';
-        showAnswerButton.disabled = false;
+        showAnswerButton.disabled = false; // Re-enable button for new card
         gestureStatusElement.textContent = 'Gesture: Unknown'; // Reset gesture display
         console.log(`Displaying card for review: "${currentCard.front}"`);
     } else { // If no cards are left
@@ -215,7 +247,7 @@ function displayCardForReview() {
         gestureStatusElement.textContent = 'Add cards to start reviewing!';
         console.log("No cards available to review.");
     }
-    // Reset debouncing state
+    // Reset debouncing state whenever a new card (or no card) is displayed
     lastDetectedGesture = Gesture.Unknown;
     currentGestureConfidence = 0;
 }
@@ -342,9 +374,8 @@ async function initializeApp() {
     }
 
     fetchSelectedText(); // Get selected text early
-    // --- Instantiate Gesture Recognizer (P2-C4-S4) ---
+    // Instantiate Gesture Recognizer
     gestureRecognizerInstance = new GestureRecognizer();
-    // -----------------------------------------------
 
     const webcamReady = await setupWebcam(); // Attempt webcam setup
 
