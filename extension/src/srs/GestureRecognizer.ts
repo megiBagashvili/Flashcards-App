@@ -8,31 +8,30 @@ export enum Gesture {
     ThumbsUp = 'Thumbs Up',       
     ThumbsDown = 'Thumbs Down',   
     FlatHand = 'Flat Hand',       
-    Unknown = 'Unknown'     
+    Unknown = 'Unknown'           
 }
 
 const WRIST = 0;
-const THUMB_CMC = 1; // Carpometacarpal joint (base of thumb)
-const THUMB_MCP = 2; // Metacarpophalangeal joint (thumb knuckle)
-const THUMB_IP = 3;  // Interphalangeal joint (thumb middle joint)
+const THUMB_CMC = 1; 
+const THUMB_MCP = 2; 
+const THUMB_IP = 3; 
 const THUMB_TIP = 4;
-const INDEX_FINGER_MCP = 5;
-const INDEX_FINGER_PIP = 6; // Proximal Interphalangeal joint (first knuckle)
-const INDEX_FINGER_DIP = 7; // Distal Interphalangeal joint (second knuckle)
+const INDEX_FINGER_MCP = 5; 
+const INDEX_FINGER_PIP = 6; 
+const INDEX_FINGER_DIP = 7; 
 const INDEX_FINGER_TIP = 8;
-const MIDDLE_FINGER_MCP = 9;
-const MIDDLE_FINGER_PIP = 10;
-const MIDDLE_FINGER_DIP = 11;
+const MIDDLE_FINGER_MCP = 9; 
+const MIDDLE_FINGER_PIP = 10; 
+const MIDDLE_FINGER_DIP = 11; 
 const MIDDLE_FINGER_TIP = 12;
-const RING_FINGER_MCP = 13;
-const RING_FINGER_PIP = 14;
-const RING_FINGER_DIP = 15;
+const RING_FINGER_MCP = 13; 
+const RING_FINGER_PIP = 14; 
+const RING_FINGER_DIP = 15; 
 const RING_FINGER_TIP = 16;
-const PINKY_MCP = 17;
-const PINKY_PIP = 18;
-const PINKY_DIP = 19;
+const PINKY_MCP = 17; 
+const PINKY_PIP = 18; 
+const PINKY_DIP = 19; 
 const PINKY_TIP = 20;
-
 
 
 /**
@@ -41,14 +40,13 @@ const PINKY_TIP = 20;
  * @specification
  * Recognizes specific, predefined hand gestures (ThumbsUp, ThumbsDown, FlatHand)
  * from a list of 21 2D or 3D hand landmark coordinates provided by a hand
- * pose detection model (like MediaPipe Hands).
- * This is a stateless utility class; its methods operate solely on the input landmarks.
+ * pose detection model.
  *
  * @abstractionFunction AF(instance) = A stateless utility object capable of classifying
  * a given set of 21 hand landmarks into one of the gestures defined in the
  * Gesture enum based on predefined geometric rules.
  *
- * @representationInvariant RI(instance) = true. (The class currently holds no internal state).
+ * @representationInvariant RI(instance) = true.
  *
  */
 export class GestureRecognizer {
@@ -58,6 +56,7 @@ export class GestureRecognizer {
      */
     constructor() {
         console.log("GestureRecognizer initialized.");
+        this.checkRep();
     }
 
     /**
@@ -65,15 +64,14 @@ export class GestureRecognizer {
      * Analyzes an array of 21 hand landmarks to determine the current gesture
      * based on predefined geometric conditions.
      *
-     * @param landmarks An array of 21 hand landmark objects (Keypoints), ordered
-     * according to the MediaPipe Hands model standard.
+     * @param landmarks An array of 21 hand landmark objects.
      * Requires at least `x` and `y` coordinates.
      * @returns The recognized `Gesture` enum value. Returns `Gesture.Unknown` if
      * input is invalid or no specific gesture is confidently matched.
      *
-     * @specConditions (Simplified for initial implementation)
+     * @specConditions
      * - Requires `landmarks` to be a valid array of at least 21 `Keypoint` objects.
-     * - Uses Y-coordinates primarily (lower Y is higher on screen).
+     * - Uses Y-coordinates primarily.
      *
      * 1. ThumbsUp: Thumb tip is clearly above thumb IP joint and also above the index finger MCP joint. Other fingertips are below their respective PIP joints.
      * 2. ThumbsDown: Thumb tip is clearly below the thumb MCP joint and wrist. Other fingertips are below their respective PIP joints.
@@ -82,24 +80,22 @@ export class GestureRecognizer {
      * - "Clearly" implies using simple comparison logic for now. Thresholds might be needed later.
      */
     public recognizeGesture(landmarks: Keypoint[]): Gesture {
+        this.checkRep();
         if (!landmarks || landmarks.length < 21) {
              console.error("Invalid landmarks provided for gesture recognition.");
              return Gesture.Unknown;
         }
 
+        let result: Gesture = Gesture.Unknown;
         if (this.isThumbsUp(landmarks)) {
-            return Gesture.ThumbsUp;
+            result = Gesture.ThumbsUp;
+        } else if (this.isThumbsDown(landmarks)) {
+            result = Gesture.ThumbsDown;
+        } else if (this.isFlatHand(landmarks)) {
+            result = Gesture.FlatHand;
         }
-        if (this.isThumbsDown(landmarks)) {
-            return Gesture.ThumbsDown;
-        }
-        if (this.isFlatHand(landmarks)) {
-            return Gesture.FlatHand;
-        }
-
-        return Gesture.Unknown;
+        return result;
     }
-
 
     /**
      * Checks if the landmarks indicate a Thumbs Up gesture.
@@ -162,4 +158,19 @@ export class GestureRecognizer {
             return false;
          }
     }
+
+
+    /**
+     * @method checkRep
+     * Checks that the representation invariant holds for this instance.
+     * this class is currently stateless so RI always trues.
+     *
+     * @custom JSDoc tag for RI
+     * @representationInvariant Returns true. (Class is stateless).
+     */
+    private checkRep(): void {
+        return;
+    }
 }
+
+

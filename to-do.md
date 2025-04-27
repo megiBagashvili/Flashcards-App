@@ -149,7 +149,7 @@
 - *Details:* **CRITICAL:** Create `GestureRecognizer.test.ts`. Create mock landmark data for each gesture + ambiguous cases. Write tests asserting correct enum results.
 - [x] **P2-C3-S7: Run Tests and Debug**
 - *Details:* Run `npm test`. Fix logic/tests until passing.
-- [ ] **P2-C3-S8: Implement `checkRep()` (Optional but recommended)**
+- [x] **P2-C3-S8: Implement `checkRep()` (Optional but recommended)**
 - *Details:* Add method for internal consistency checks.
 - [ ] **P2-C3-S9: Git: Commit Gesture Recognizer ADT**
 - *Details:* `feature/gesture-recognizer-adt` branch. Commit ADT code & tests. PR -> merge.
