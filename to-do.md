@@ -145,9 +145,9 @@
 - *Details:* Write TS code comparing landmark coordinates based on spec.
 - [x] **P2-C3-S5: Set up Unit Testing (Jest)**
 - *Details:* Install Jest, types, ts-jest. Configure `jest.config.js`. Add test script.
-- [ ] **P2-C3-S6: Write Unit Tests for `GestureRecognizer`**
+- [x] **P2-C3-S6: Write Unit Tests for `GestureRecognizer`**
 - *Details:* **CRITICAL:** Create `GestureRecognizer.test.ts`. Create mock landmark data for each gesture + ambiguous cases. Write tests asserting correct enum results.
-- [ ] **P2-C3-S7: Run Tests and Debug**
+- [x] **P2-C3-S7: Run Tests and Debug**
 - *Details:* Run `npm test`. Fix logic/tests until passing.
 - [ ] **P2-C3-S8: Implement `checkRep()` (Optional but recommended)**
 - *Details:* Add method for internal consistency checks.
