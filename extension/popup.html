@@ -28,50 +28,110 @@
             margin-top: 10px;
             cursor: pointer;
         }
-        #status-message {
+        #status-message { 
             margin-top: 10px;
             font-style: italic;
             color: green;
-            min-height: 1.2em;
+            min-height: 1.2em; 
         }
         #webcam-container {
             border: 1px solid #ccc;
             margin-bottom: 10px;
             position: relative;
             background-color: #eee;
-            min-height: 150px;
+            min-height: 150px; 
             display: flex;
             justify-content: center;
             align-items: center;
+            overflow: hidden;
         }
         #webcam-feed {
             display: block;
             width: 100%;
-            transform: scaleX(-1);
+            transform: scaleX(-1); /* mirror image */
         }
-         #tf-status {
+         #tf-status { 
             font-size: 0.9em;
             color: #555;
             text-align: center;
             margin-top: 5px;
             min-height: 1.2em;
         }
-
         hr {
            width: 100%;
            margin: 15px 0;
            border: 0;
            border-top: 1px solid #eee;
         }
+        h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        #review-area {
+            border: 1px dashed #aaa;
+            padding: 10px;
+            margin-top: 15px;
+            background-color: #f9f9f9;
+        }
+        #review-front, #review-back {
+            min-height: 40px;
+            padding: 5px;
+            border: 1px solid #eee;
+            background-color: #fff;
+            margin-bottom: 5px;
+            word-wrap: break-word;
+        }
+        #review-back {
+            display: none; /* Initially hidden */
+            background-color: #f0f0f0;
+        }
+        #show-answer { 
+             display: block;
+             width: 100%;
+             margin-top: 5px;
+             margin-bottom: 10px;
+             padding: 5px;
+        }
+        #gesture-status {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            min-height: 1.2em;
+            background-color: #e7e7e7;
+            padding: 3px;
+            border-radius: 4px;
+        }
+
     </style>
 </head>
 <body>
+
     <h2>Gesture Input</h2>
     <div id="webcam-container">
         <video id="webcam-feed" autoplay playsinline muted></video>
     </div>
     <p id="tf-status">Initializing...</p>
-    <hr> <h2>Create Flashcard</h2>
+
+    <hr>
+
+    <div id="review-area">
+        <h2>Review Card</h2>
+        <label for="review-front">Front:</label>
+        <div id="review-front">(No card loaded)</div>
+
+        <button id="show-answer">Show Answer</button>
+
+        <label for="review-back">Back:</label>
+        <div id="review-back">(Answer hidden)</div>
+
+        <div id="gesture-status">Gesture: Unknown</div>
+    </div>
+
+    <hr>
+
+    <h2>Create Flashcard</h2>
     <label for="card-front">Front (Selected Text):</label>
     <textarea id="card-front" placeholder="Select text on the page first..."></textarea>
 
