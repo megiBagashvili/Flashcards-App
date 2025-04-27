@@ -1,3 +1,4 @@
+// extension/src/popup.ts
 import { Deck } from './Deck';
 import { Card } from './Card';
 import { GestureRecognizer, Gesture } from './srs/GestureRecognizer';
@@ -9,6 +10,7 @@ import { MediaPipeHandsTfjsModelConfig, Keypoint } from '@tensorflow-models/hand
 
 
 // --- Global Variables ---
+// References will be assigned in initializeApp
 let videoElement: HTMLVideoElement | null = null;
 let tfStatusElement: HTMLElement | null = null;
 let reviewFrontElement: HTMLElement | null = null;
@@ -16,19 +18,20 @@ let reviewBackElement: HTMLElement | null = null;
 let showAnswerButton: HTMLButtonElement | null = null;
 let gestureStatusElement: HTMLElement | null = null;
 let saveButtonElement: HTMLButtonElement | null = null;
-let cardFrontTextArea: HTMLTextAreaElement | null = null; 
+let cardFrontTextArea: HTMLTextAreaElement | null = null;
 let cardBackTextArea: HTMLTextAreaElement | null = null;
 let saveStatusMessageElement: HTMLElement | null = null;
 
 // State Variables
 let handPoseModel: handPoseDetection.HandDetector | null = null;
 let gestureRecognizerInstance: GestureRecognizer | null = null;
-let isDetecting = false;
-let currentCard: Card | null = null;
+let isDetecting = false; // Controls the detection loop
+let currentCard: Card | null = null; // Card currently being reviewed
+// Debouncing State Variables
 let lastDetectedGesture: Gesture = Gesture.Unknown;
 let currentGestureConfidence: number = 0;
-const REQUIRED_CONFIDENCE = 5;
-let frameCount = 0;
+const REQUIRED_CONFIDENCE = 5; // Frames needed to confirm gesture
+// --------------------------
 
 // --- Instantiate the Deck ---
 const deck = new Deck();
@@ -36,8 +39,7 @@ console.log("Deck instance created:", deck);
 // --------------------------
 
 /**
- * Sets up the webcam feed.
- * Assumes videoElement and tfStatusElement are already assigned.
+ * Sets up the webcam feed. Requests permission and streams video if granted.
  * @returns {Promise<boolean>} True if setup was successful, false otherwise.
  */
 async function setupWebcam(): Promise<boolean> {
@@ -50,13 +52,14 @@ async function setupWebcam(): Promise<boolean> {
         tfStatusElement.textContent = "Webcam access granted. Starting stream...";
         console.log("Webcam access granted.");
         videoElement.srcObject = stream;
+        // Wait for video to be ready
         await Promise.all([
              new Promise<void>((resolve) => { videoElement?.addEventListener('loadedmetadata', () => { console.log("Video metadata loaded."); resolve(); }, { once: true }); }),
              new Promise<void>((resolve) => { videoElement?.addEventListener('playing', () => { console.log("Video playing."); resolve(); }, { once: true }); })
         ]);
         const wcCont = document.getElementById("webcam-container");
         if (wcCont) wcCont.style.backgroundColor = 'transparent';
-        videoElement.style.display = 'block'; 
+        videoElement.style.display = 'block';
         tfStatusElement.textContent = "Webcam ready.";
         console.log("Webcam setup successful.");
         return true;
@@ -68,7 +71,7 @@ async function setupWebcam(): Promise<boolean> {
             else if (error.name === "NotFoundError" || error.name === "DevicesNotFoundError") { msg = "No webcam found."; }
             else { msg = `Webcam Error: ${error.message}`; }
         }
-        tfStatusElement.textContent = msg; 
+        tfStatusElement.textContent = msg;
         return false;
     }
 }
@@ -79,22 +82,22 @@ async function setupWebcam(): Promise<boolean> {
  * @returns {Promise<handPoseDetection.HandDetector | null>} The loaded model or null if loading failed.
  */
 async function loadHandPoseModel(): Promise<handPoseDetection.HandDetector | null> {
-     if (!tfStatusElement) return null; 
+     if (!tfStatusElement) return null;
 
     tfStatusElement.textContent = "Loading hand pose model (MediaPipe)...";
     console.log("Loading hand pose model...");
     try {
-        await tf.ready();
+        await tf.ready(); // Ensure backend is ready
         console.log(`TFJS Backend: ${tf.getBackend()}`);
         const model = handPoseDetection.SupportedModels.MediaPipeHands;
         const detectorConfig: MediaPipeHandsTfjsModelConfig = { runtime: 'tfjs', modelType: 'lite', maxHands: 1 };
         const detector = await handPoseDetection.createDetector(model, detectorConfig);
         console.log("Hand pose model loaded successfully.");
-        tfStatusElement.textContent = "Model loaded."; 
+        tfStatusElement.textContent = "Model loaded.";
         return detector;
     } catch (error) {
         console.error("Error loading hand pose model:", error);
-        tfStatusElement.textContent = "Error loading model."; 
+        tfStatusElement.textContent = "Error loading model.";
         return null;
     }
 }
@@ -103,9 +106,9 @@ async function loadHandPoseModel(): Promise<handPoseDetection.HandDetector | nul
  * Continuously detects hands, recognizes gestures, applies debouncing, and triggers review actions.
  */
 async function detectHandsLoop() {
-    frameCount++;
     if (!isDetecting) { return; }
 
+    // Check resources are ready for detection
     if (!handPoseModel || !videoElement || !gestureRecognizerInstance || videoElement.readyState < 3 || videoElement.videoWidth === 0 || videoElement.videoHeight === 0) {
         requestAnimationFrame(detectHandsLoop); return;
     }
@@ -115,10 +118,10 @@ async function detectHandsLoop() {
     try {
         const hands = await handPoseModel.estimateHands(videoElement, { flipHorizontal: false });
 
-        if (hands.length > 0 && hands[0]?.keypoints && gestureRecognizerInstance) { 
+        if (hands.length > 0 && hands[0]?.keypoints && gestureRecognizerInstance) {
             const landmarks = hands[0].keypoints;
             if (isNaN(landmarks[0]?.x) || isNaN(landmarks[0]?.y)) {
-                 console.warn(`[Frame ${frameCount}] Detected landmarks, but coordinates are NaN.`);
+                 console.warn(`Detected landmarks, but coordinates are NaN.`);
                  currentFrameGesture = Gesture.Unknown;
             } else {
                 currentFrameGesture = gestureRecognizerInstance.recognizeGesture(landmarks);
@@ -127,21 +130,20 @@ async function detectHandsLoop() {
             currentFrameGesture = Gesture.Unknown;
         }
     } catch (error) {
-        console.error(`[Frame ${frameCount}] Error during hand detection/recognition:`, error);
+        console.error(`Error during hand detection/recognition:`, error);
         currentFrameGesture = Gesture.Unknown;
     }
 
-    // --- Debouncing Logic ---
+    // Debouncing Logic
     if (currentFrameGesture === lastDetectedGesture && currentFrameGesture !== Gesture.Unknown) { currentGestureConfidence++; }
     else { currentGestureConfidence = (currentFrameGesture !== Gesture.Unknown) ? 1 : 0; }
     lastDetectedGesture = currentFrameGesture;
-    // ------------------------
 
-    // --- Check Confidence Threshold & Trigger Action ---
+    // Check Confidence Threshold & Trigger Action
     let confidentGesture = Gesture.Unknown;
     if (currentGestureConfidence >= REQUIRED_CONFIDENCE) {
         confidentGesture = lastDetectedGesture;
-        console.log(`[Frame ${frameCount}] CONFIDENT GESTURE DETECTED: ${confidentGesture}`);
+        console.log(`CONFIDENT GESTURE DETECTED: ${confidentGesture}`);
         if (currentCard) {
             let reviewResult: number = -1;
             switch (confidentGesture) {
@@ -150,28 +152,30 @@ async function detectHandsLoop() {
                 case Gesture.ThumbsUp: reviewResult = 2; break;
             }
             if (reviewResult !== -1) {
-                console.log(`[Frame ${frameCount}] Mapping ${confidentGesture} to difficulty ${reviewResult} for card "${currentCard.front}"`);
+                console.log(`Mapping ${confidentGesture} to difficulty ${reviewResult} for card "${currentCard.front}"`);
                 deck.updateCardReview(currentCard, reviewResult);
                 currentGestureConfidence = 0; lastDetectedGesture = Gesture.Unknown;
                 displayCardForReview();
-                requestAnimationFrame(detectHandsLoop); return;
-            } else { console.warn(`[Frame ${frameCount}] Confident gesture ${confidentGesture} detected but no valid review mapping.`); currentGestureConfidence = 0; lastDetectedGesture = Gesture.Unknown;}
-        } else { console.log(`[Frame ${frameCount}] Confident gesture detected, but no card is currently being reviewed.`); currentGestureConfidence = 0; lastDetectedGesture = Gesture.Unknown; }
+                requestAnimationFrame(detectHandsLoop); return; // Exit early after action
+            } else {
+                console.warn(`Confident gesture ${confidentGesture} detected but no valid review mapping.`);
+                currentGestureConfidence = 0; lastDetectedGesture = Gesture.Unknown;
+            }
+        } else {
+            console.log(`Confident gesture detected, but no card is currently being reviewed.`);
+            currentGestureConfidence = 0; lastDetectedGesture = Gesture.Unknown;
+        }
     }
-    // ---------------------------------------------------------
 
-    // --- Update Gesture Status UI ---
-    // gestureStatusElement should be valid if loop started
+    // Update Gesture Status UI
     if (gestureStatusElement) {
         const displayGesture = (currentGestureConfidence > 0) ? lastDetectedGesture : Gesture.Unknown;
         const confidenceText = currentGestureConfidence > 0 ? ` (${currentGestureConfidence})` : '';
         gestureStatusElement.textContent = `Gesture: ${displayGesture}${confidenceText}`;
     }
-    // ------------------------------
 
-    // --- Schedule the next frame ---
+    // Schedule the next frame
     requestAnimationFrame(detectHandsLoop);
-    // -------------------------------
 }
 
 
@@ -182,7 +186,7 @@ async function detectHandsLoop() {
 function displayCardForReview() {
     console.log("Attempting to display next card for review...");
     if (!reviewFrontElement || !reviewBackElement || !showAnswerButton || !gestureStatusElement) {
-         console.error("DisplayCard called but review elements are missing!"); 
+         console.error("DisplayCard called but review elements are missing!");
          return;
     }
 
@@ -203,6 +207,7 @@ function displayCardForReview() {
         gestureStatusElement.textContent = 'Add cards to start reviewing!';
         console.log("No cards available to review.");
     }
+    // Reset debouncing state
     lastDetectedGesture = Gesture.Unknown;
     currentGestureConfidence = 0;
 }
@@ -210,22 +215,28 @@ function displayCardForReview() {
 
 /**
  * Fetches the selected text from the active tab.
+ * Assumes cardFrontTextArea exists.
  */
 function fetchSelectedText() {
+    if (!cardFrontTextArea) {
+         console.error("Cannot fetch text, front text area element not found initially.");
+         return;
+    }
+
     if (typeof chrome === 'undefined' || !chrome.tabs) { console.error("Chrome tabs API not available."); return; }
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs: chrome.tabs.Tab[]) => {
         if (tabs.length === 0 || !tabs[0]) { console.error("No active tab found."); return; }
         const activeTab = tabs[0];
         if (!activeTab.id) {
             console.error("Active tab has no ID.");
-            const el = document.getElementById('card-front') as HTMLTextAreaElement | null;
-            if (el) el.placeholder = "Cannot get text.";
+            if (cardFrontTextArea) { cardFrontTextArea.placeholder = "Cannot get text."; }
             return;
         }
         if (!chrome.runtime) { console.error("Chrome runtime API not available."); return; }
         chrome.tabs.sendMessage(activeTab.id, { action: "GET_SELECTED_TEXT" }, (response?: { selectedText?: string }) => {
             if (chrome.runtime.lastError) { console.warn("Error sending message (content script connection):", chrome.runtime.lastError.message); return; }
 
+            // Re-fetch the element reference INSIDE the callback for safety
             const localCardFrontTextArea = document.getElementById("card-front") as HTMLTextAreaElement | null;
             if (!localCardFrontTextArea) {
                 console.error("cardFrontTextArea element not found inside sendMessage callback!");
@@ -233,7 +244,7 @@ function fetchSelectedText() {
             }
 
             if (response && typeof response.selectedText === 'string') {
-                localCardFrontTextArea.value = response.selectedText; 
+                localCardFrontTextArea.value = response.selectedText;
                 console.log("Updated textarea with selected text.");
             } else {
                 if (!localCardFrontTextArea.value) { localCardFrontTextArea.placeholder = "No text selected on page."; }
@@ -248,7 +259,7 @@ function fetchSelectedText() {
  */
 function handleShowAnswerClick() {
     console.log("Show Answer button clicked.");
-    if (currentCard && reviewBackElement && showAnswerButton) { 
+    if (currentCard && reviewBackElement && showAnswerButton) {
         reviewBackElement.textContent = currentCard.back;
         reviewBackElement.style.display = 'block';
         showAnswerButton.disabled = true;
@@ -282,7 +293,8 @@ function handleSaveCardClick() {
         saveStatusMessageElement.textContent = "Card saved successfully!";
         saveStatusMessageElement.style.color = "green";
         console.log(`Card added. Deck size: ${deck.size()}`);
-        cardBackTextArea.value = ""; 
+        cardBackTextArea.value = ""; // Clear back input
+        // If no card was being reviewed, display the newly added one
         if (!currentCard && deck.size() > 0) {
              console.log("Displaying newly added card for review.");
              displayCardForReview();
@@ -302,7 +314,7 @@ function handleSaveCardClick() {
 async function initializeApp() {
     console.log("Initializing app...");
 
-    // --- Get ALL DOM element references ONCE ---
+    // Get ALL DOM element references ONCE
     videoElement = document.getElementById("webcam-feed") as HTMLVideoElement | null;
     tfStatusElement = document.getElementById("tf-status") as HTMLElement | null;
     reviewFrontElement = document.getElementById("review-front") as HTMLElement | null;
@@ -314,42 +326,42 @@ async function initializeApp() {
     cardBackTextArea = document.getElementById("card-back") as HTMLTextAreaElement | null;
     saveStatusMessageElement = document.getElementById("status-message") as HTMLElement | null;
 
-    // --- Critical Element Check ---
+    // Critical Element Check
     if (!tfStatusElement || !cardFrontTextArea || !cardBackTextArea || !saveButtonElement || !saveStatusMessageElement || !reviewFrontElement || !reviewBackElement || !showAnswerButton || !gestureStatusElement) {
         console.error("FATAL: Critical UI elements missing. Cannot initialize further.");
         document.body.innerHTML = "<h1>Critical Error: UI elements missing. Please check popup.html.</h1>";
-        return;
+        return; // Stop initialization
     }
-    // --- End Critical Element Check ---
 
+    fetchSelectedText(); // Get selected text early
+    gestureRecognizerInstance = new GestureRecognizer(); // Create recognizer instance
 
-    fetchSelectedText(); 
-    gestureRecognizerInstance = new GestureRecognizer(); 
-
-    const webcamReady = await setupWebcam(); 
+    const webcamReady = await setupWebcam(); // Attempt webcam setup
 
     if (webcamReady) {
         console.log("Webcam ready, proceeding to load model...");
-        handPoseModel = await loadHandPoseModel(); 
+        handPoseModel = await loadHandPoseModel(); // Attempt model load
 
         if (handPoseModel && gestureRecognizerInstance) {
-            tfStatusElement.textContent = "Ready for hand detection."; 
-            displayCardForReview(); 
+            tfStatusElement.textContent = "Ready for hand detection.";
+            displayCardForReview(); // Show the first card
             console.log(">>> Starting detection loop NOW!");
             isDetecting = true;
-            detectHandsLoop(); 
+            detectHandsLoop(); // Start the main detection loop
         } else {
             console.error("Model or Gesture Recognizer loading failed. Hand pose detection cannot proceed.");
-            tfStatusElement.textContent = "Error: Model load failed."; 
-            displayCardForReview(); 
+            tfStatusElement.textContent = "Error: Model load failed.";
+            displayCardForReview(); // Still update review UI state
         }
     } else {
         console.error("Webcam setup failed. Hand pose detection cannot proceed.");
-        displayCardForReview(); 
+        displayCardForReview(); // Still update review UI state
     }
 
+    // Setup Save Button Listener
     saveButtonElement.addEventListener('click', handleSaveCardClick);
 
+    // Setup Show Answer Button Listener
     showAnswerButton.addEventListener('click', handleShowAnswerClick);
     console.log("Show Answer button listener attached.");
 }
@@ -365,5 +377,5 @@ window.addEventListener('unload', () => {
 });
 
 
-console.log("Popup script loaded (ts)."); 
+console.log("Popup script loaded (ts).");
 
