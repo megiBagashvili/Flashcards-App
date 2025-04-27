@@ -11,7 +11,6 @@ export enum Gesture {
     Unknown = 'Unknown'     
 }
 
-// Constants for landmark indices (based on MediaPipe Hands model)
 const WRIST = 0;
 const THUMB_CMC = 1; // Carpometacarpal joint (base of thumb)
 const THUMB_MCP = 2; // Metacarpophalangeal joint (thumb knuckle)
@@ -58,9 +57,7 @@ export class GestureRecognizer {
      * Creates an instance of GestureRecognizer.
      */
     constructor() {
-        // No specific state to initialize currently.
         console.log("GestureRecognizer initialized.");
-        // this.checkRep(); // Check RI on creation if needed
     }
 
     /**
@@ -85,13 +82,11 @@ export class GestureRecognizer {
      * - "Clearly" implies using simple comparison logic for now. Thresholds might be needed later.
      */
     public recognizeGesture(landmarks: Keypoint[]): Gesture {
-        // Basic check for valid input
         if (!landmarks || landmarks.length < 21) {
              console.error("Invalid landmarks provided for gesture recognition.");
              return Gesture.Unknown;
         }
 
-        // Check for specific gestures
         if (this.isThumbsUp(landmarks)) {
             return Gesture.ThumbsUp;
         }
@@ -102,11 +97,9 @@ export class GestureRecognizer {
             return Gesture.FlatHand;
         }
 
-        // Default if no gesture is recognized
         return Gesture.Unknown;
     }
 
-    // --- Helper methods for gesture checks ---
 
     /**
      * Checks if the landmarks indicate a Thumbs Up gesture.
@@ -115,19 +108,15 @@ export class GestureRecognizer {
      */
     private isThumbsUp(landmarks: Keypoint[]): boolean {
         try {
-            // Condition 1: Thumb tip is above thumb IP joint
             const thumbTipUp = landmarks[THUMB_TIP].y < landmarks[THUMB_IP].y;
-            // Condition 2: Thumb tip is also clearly above the base knuckle (MCP) of index finger
             const thumbAboveIndexMCP = landmarks[THUMB_TIP].y < landmarks[INDEX_FINGER_MCP].y;
-
-            // Condition 3: Other fingers are curled (fingertips below PIP joints)
             const indexCurl = landmarks[INDEX_FINGER_TIP].y > landmarks[INDEX_FINGER_PIP].y;
             const middleCurl = landmarks[MIDDLE_FINGER_TIP].y > landmarks[MIDDLE_FINGER_PIP].y;
             const ringCurl = landmarks[RING_FINGER_TIP].y > landmarks[RING_FINGER_PIP].y;
             const pinkyCurl = landmarks[PINKY_TIP].y > landmarks[PINKY_PIP].y;
 
             return thumbTipUp && thumbAboveIndexMCP && indexCurl && middleCurl && ringCurl && pinkyCurl;
-        } catch (e) { // Catch potential errors if landmarks are malformed
+        } catch (e) {
             console.error("Error checking ThumbsUp:", e);
             return false;
         }
@@ -140,12 +129,8 @@ export class GestureRecognizer {
      */
     private isThumbsDown(landmarks: Keypoint[]): boolean {
          try {
-            // Condition 1: Thumb tip is below thumb MCP joint
             const thumbTipDown = landmarks[THUMB_TIP].y > landmarks[THUMB_MCP].y;
-             // Condition 2: Thumb tip is also below the wrist
             const thumbBelowWrist = landmarks[THUMB_TIP].y > landmarks[WRIST].y;
-
-            // Condition 3: Other fingers are curled (fingertips below PIP joints)
             const indexCurl = landmarks[INDEX_FINGER_TIP].y > landmarks[INDEX_FINGER_PIP].y;
             const middleCurl = landmarks[MIDDLE_FINGER_TIP].y > landmarks[MIDDLE_FINGER_PIP].y;
             const ringCurl = landmarks[RING_FINGER_TIP].y > landmarks[RING_FINGER_PIP].y;
@@ -165,8 +150,6 @@ export class GestureRecognizer {
      */
     private isFlatHand(landmarks: Keypoint[]): boolean {
          try {
-            // Condition: All fingertips are extended (above their PIP joints)
-            // (We could also check against MCP for stricter extension)
             const thumbExtended = landmarks[THUMB_TIP].y < landmarks[THUMB_IP].y;
             const indexExtended = landmarks[INDEX_FINGER_TIP].y < landmarks[INDEX_FINGER_PIP].y;
             const middleExtended = landmarks[MIDDLE_FINGER_TIP].y < landmarks[MIDDLE_FINGER_PIP].y;

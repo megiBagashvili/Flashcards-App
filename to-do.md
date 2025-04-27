@@ -135,15 +135,15 @@
 
 *Chunk Goal: Create and *test* the logic to translate landmarks into specific gestures (Thumbs Up/Down/Flat Hand).*
 
-- [ ] **P2-C3-S1: Create `GestureRecognizer.ts`**
+- [x] **P2-C3-S1: Create `GestureRecognizer.ts`**
 - *Details:* Create file (e.g., `src/srs/GestureRecognizer.ts`).
-- [ ] **P2-C3-S2: Define Types and Enum**
+- [x] **P2-C3-S2: Define Types and Enum**
 - *Details:* Define `enum Gesture { ThumbsUp, ThumbsDown, FlatHand, Unknown }`. Define `Keypoint` type.
-- [ ] **P2-C3-S3: Write Spec, AF, RI for `GestureRecognizer` Class**
+- [x] **P2-C3-S3: Write Spec, AF, RI for `GestureRecognizer` Class**
 - *Details:* Add comments specifying `recognizeGesture` method. Detail geometric conditions for Thumbs Up/Down/Flat Hand based on landmarks. Define AF/RI.
-- [ ] **P2-C3-S4: Implement `recognizeGesture` Logic**
+- [x] **P2-C3-S4: Implement `recognizeGesture` Logic**
 - *Details:* Write TS code comparing landmark coordinates based on spec.
-- [ ] **P2-C3-S5: Set up Unit Testing (Jest)**
+- [x] **P2-C3-S5: Set up Unit Testing (Jest)**
 - *Details:* Install Jest, types, ts-jest. Configure `jest.config.js`. Add test script.
 - [ ] **P2-C3-S6: Write Unit Tests for `GestureRecognizer`**
 - *Details:* **CRITICAL:** Create `GestureRecognizer.test.ts`. Create mock landmark data for each gesture + ambiguous cases. Write tests asserting correct enum results.
