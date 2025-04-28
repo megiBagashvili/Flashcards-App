@@ -1,137 +1,51 @@
-import express, { Request, Response } from "express";
-import cors from "cors";
-import * as logic from "./logic/algorithm";
-import { Flashcard, AnswerDifficulty } from "../src/logic/flashcards";
-import * as state from "./state";
-import { UpdateRequest, ProgressStats, PracticeRecord } from "./types";
+import express, { Express, Request, Response, NextFunction } from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+dotenv.config();
 
-const app = express();
+const app: Express = express();
+
 const PORT = process.env.PORT || 3001;
- 
+
+// --- Middleware Setup ---
+
+// Enable Cross-Origin Resource Sharing (CORS) for all origins.
+// This allows requests from your extension and potentially your frontend.
+// For production, you might want to configure specific allowed origins.
 app.use(cors());
+
 app.use(express.json());
 
-app.get("/api/practice", (req: Request, res: Response) => {
-  try {
-    const day = state.getCurrentDay();
-    const bucketsMap = state.getBuckets();
-    const bucketSets = logic.toBucketSets(bucketsMap);
-    const cardsToPracticeSet = logic.practice(bucketSets, day);
-    const cardsToPracticeArray = Array.from(cardsToPracticeSet);
-
-    console.log(`Day ${day}: Practice ${cardsToPracticeArray.length} cards`);
-    res.json({ cards: cardsToPracticeArray, day });
-  } catch (error) {
-    console.error("Error getting practice cards:", error);
-    res.status(500).json({ message: "Error fetching practice cards" });
-  }
+app.use((req: Request, res: Response, next: NextFunction) => {
+    console.log(`[${new Date().toISOString()}] Received ${req.method} request for ${req.url}`);
+    next(); // Pass control to the next middleware or route handler
 });
 
-app.post("/api/update", (req: Request, res: Response) => {
-  try {
-    const { cardFront, cardBack, difficulty } = req.body as UpdateRequest;
+// --- Basic Routes ---
 
-    if (!(difficulty in AnswerDifficulty)) {
-      res.status(400).json({ message: "Invalid difficulty level" });
-      return;
-    }
-
-    const card = state.findCard(cardFront, cardBack);
-    if (!card) {
-      res.status(404).json({ message: "Card not found" });
-      return;
-    }
-
-    const currentBuckets = state.getBuckets();
-    const previousBucket = state.findCardBucket(card);
-
-    const updatedBuckets = logic.update(currentBuckets, card, difficulty);
-    state.setBuckets(updatedBuckets);
-
-    const newBucket = state.findCardBucket(card);
-    const historyRecord: PracticeRecord = {
-      cardFront: card.front,
-      cardBack: card.back,
-      timestamp: Date.now(),
-      difficulty,
-      previousBucket: previousBucket ?? -1,
-      newBucket: newBucket ?? -1,
-    };
-    state.addHistoryRecord(historyRecord);
-
-    console.log(
-      `Updated card "${card.front}": Difficulty ${AnswerDifficulty[difficulty]}, New Bucket ${newBucket}`
-    );
-    res.status(200).json({ message: "Card updated successfully" });
-  } catch (error) {
-    console.error("Error updating card:", error);
-    res.status(500).json({ message: "Error updating card" });
-  }
-});
-
-app.get("/api/hint", (req: Request, res: Response) => {
-  try {
-    const { cardFront, cardBack } = req.query;
-
-    if (typeof cardFront !== "string" || typeof cardBack !== "string") {
-      res
-        .status(400)
-        .json({ message: "Missing cardFront or cardBack query parameter" });
-      return;
-    }
-
-    const card = state.findCard(cardFront, cardBack);
-    if (!card) {
-      res.status(404).json({ message: "Card not found" });
-      return;
-    }
-
-    const hint = logic.getHint(card);
-    console.log(`Hint requested for "${card.front}": ${hint}`);
-    res.json({ hint });
-  } catch (error) {
-    console.error("Error getting hint:", error);
-    res.status(500).json({ message: "Error getting hint" });
-  }
-});
-
-app.get("/api/progress", (req, res) => {
-  try {
-    const buckets = state.getBuckets();
-    const rawHistory = state.getHistory();
-
-    const formattedHistory = rawHistory.map(r => {
-      const card = state.findCard(r.cardFront, r.cardBack);
-      if (!card) {
-        throw new Error(`Unknown card in history: ${r.cardFront}`);
-      }
-      return {
-        card,
-        difficulty: r.difficulty,
-        timestamp: r.timestamp,
-      };
-    });
-
-    const progress = logic.computeProgress(buckets, formattedHistory);
-    res.json(progress);
-
-  } catch (error) {
-    console.error("Error computing progress:", error);
-    res.status(500).json({ message: "Error computing progress" });
-  }
+// Define a simple GET route for the root path ('/')
+// This helps verify that the server is running and responding.
+app.get('/', (req: Request, res: Response) => {
+  res.status(200).json({ message: 'Flashcards API server is running!' });
 });
 
 
-app.post("/api/day/next", (req: Request, res: Response) => {
-  state.incrementDay();
-  const newDay = state.getCurrentDay();
-  console.log(`Advanced to Day ${newDay}`);
-  res
-    .status(200)
-    .json({ message: `Advanced to day ${newDay}`, currentDay: newDay });
+
+
+// --- Basic Error Handling Middleware ---
+// This should be placed *after* all your routes.
+// It catches any errors that occur during request handling.
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    console.error("Error occurred:", err.stack || err);
+    res.status(500).json({ error: 'Internal Server Error', message: err.message });
 });
+
+
+// --- Start the Server ---
 
 app.listen(PORT, () => {
-  console.log(`Backend server running at http://localhost:${PORT}`);
-  console.log(`Current Day: ${state.getCurrentDay()}`);
+  console.log(`⚡️[server]: Server is running and listening on http://localhost:${PORT}`);
 });
+
+// Optional: Export the app for potential use in integration tests later
+// export default app;
