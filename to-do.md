@@ -269,6 +269,7 @@
 -[x] **P3-C1-S1: Verify Backend Dependencies & Install Missing**
     * *Details:* Confirm `express`, `cors`, `typescript`, `@types/node`, `@types/express`, `@types/cors`, `ts-node-dev` are installed in `backend/package.json`. **Install `dotenv`**: `cd backend && npm install dotenv`.
 -[x] **P3-C1-S2: Enhance Basic Express Server (`backend/src/server.ts`)**
+
     * *Details:* Ensure `backend/src/server.ts` imports `express`, `cors`, `dotenv`. Configure `dotenv`. Create Express app instance (`const app = express();`). Apply `cors()` middleware. Add `express.json()` middleware to parse request bodies. Ensure a basic GET `/` route exists. Make sure the server listens on `process.env.PORT || 3001`. Verify the `dev` script in `package.json` (`"dev": "ts-node-dev --respawn --transpile-only src/server.ts"`) works.
 -[x] **P3-C1-S3: Define Placeholder API Routes (Matching Frontend)**
     * *Details:* Create a router file (e.g., `backend/src/routes/apiRoutes.ts`). Define placeholder handler functions for routes expected by `frontend/src/services/api.ts`:
