@@ -266,11 +266,12 @@
 
 **Chunk Goal:** Enhance the existing basic Node.js/Express server in `/backend` with placeholder API routes matching frontend expectations.
 
--[ ] **P3-C1-S1: Verify Backend Dependencies & Install Missing**
--*Details:* Confirm `express`, `cors`, `typescript`, `@types/node`, `@types/express`, `@types/cors`, `ts-node-dev` are installed in `backend/package.json`. **Install `dotenv`**: `cd backend && npm install dotenv`.
--[ ] **P3-C1-S2: Enhance Basic Express Server (`backend/src/server.ts`)**
+-[x] **P3-C1-S1: Verify Backend Dependencies & Install Missing**
+    * *Details:* Confirm `express`, `cors`, `typescript`, `@types/node`, `@types/express`, `@types/cors`, `ts-node-dev` are installed in `backend/package.json`. **Install `dotenv`**: `cd backend && npm install dotenv`.
+-[x] **P3-C1-S2: Enhance Basic Express Server (`backend/src/server.ts`)**
+
     * *Details:* Ensure `backend/src/server.ts` imports `express`, `cors`, `dotenv`. Configure `dotenv`. Create Express app instance (`const app = express();`). Apply `cors()` middleware. Add `express.json()` middleware to parse request bodies. Ensure a basic GET `/` route exists. Make sure the server listens on `process.env.PORT || 3001`. Verify the `dev` script in `package.json` (`"dev": "ts-node-dev --respawn --transpile-only src/server.ts"`) works.
--[ ] **P3-C1-S3: Define Placeholder API Routes (Matching Frontend)**
+-[x] **P3-C1-S3: Define Placeholder API Routes (Matching Frontend)**
     * *Details:* Create a router file (e.g., `backend/src/routes/apiRoutes.ts`). Define placeholder handler functions for routes expected by `frontend/src/services/api.ts`:
         * `GET /api/practice`
         * `POST /api/update`
@@ -278,9 +279,9 @@
         * `GET /api/progress`
         * `POST /api/day/next`
         *(Note: We'll need to decide if we adapt the frontend later or stick to these routes. For now, let's match the frontend's expectations).* Mount this router in `server.ts` (e.g., `app.use('/api', apiRouter);`). Handlers should initially just log the request and send back a simple success/placeholder response (e.g., `res.status(200).json({ message: 'Route hit' });`).
--[ ] **P3-C1-S4: Test: Run Server & Hit Endpoints**
+-[x] **P3-C1-S4: Test: Run Server & Hit Endpoints**
     * *Details:* Run `npm run dev` from the `backend` directory. Use Postman or `curl` to send requests to `http://localhost:3001/api/practice`, `http://localhost:3001/api/update` (with dummy data), etc. Verify the placeholder responses and console logs.
--[ ] **P3-C1-S5: Git: Commit Backend Skeleton**
+-[x] **P3-C1-S5: Git: Commit Backend Skeleton**
     * *Details:* Create `feature/backend-skeleton` branch (or similar). Commit the updated `server.ts`, new router file, and `package.json` changes. PR -> merge.
 
 ---
