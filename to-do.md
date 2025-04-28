@@ -26,13 +26,13 @@
 *Chunk Goal: Understand the existing PS1 code and sketch the high-level architecture.*
 - [x] **P0-C3-S1: Obtain and Analyze PS1 Code**
 - *Details:* Integrate relevant PS1 source code (`Card`, `Deck`).
-- [ ] **P0-C3-S2: Review PS1 ADTs (Card, Deck)**
+- [x] **P0-C3-S2: Review PS1 ADTs (Card, Deck)**
 - *Details:* Understand Spec, AF, RI, `checkRep`, methods, SRS logic.
-- [ ] **P0-C3-S3: Identify Integration Points
+- [x] **P0-C3-S3: Identify Integration Points
 - *Details:* Document card add/review flow. Decide initial `Deck` instance location (Popup scope or Background Worker).
-- [ ] **P0-C3-S4: Sketch High-Level Architecture**
+- [x] **P0-C3-S4: Sketch High-Level Architecture**
 - *Details:* Use tool (Excalidraw) for components (Extension, Hand Pose, PS1 Core, Backend, DB) & data flow.
-- [ ] **P0-C3-S5: Document Initial Decisions**
+- [x] **P0-C3-S5: Document Initial Decisions**
 - *Details:* Update `README.md`/design doc with architecture, PS1 notes, tech choices.
 
 ---
@@ -158,23 +158,23 @@
 
 *Chunk Goal: Use recognized gestures (Easy/Wrong/Hard) to update the review status of cards in the in-memory Deck.*
 
-- [ ] **P2-C4-S1: Add Review UI Elements**
+- [x] **P2-C4-S1: Add Review UI Elements**
 - *Details:* `popup.html`: Add `#review-front`, `#review-back`, 'Show Answer', `#gesture-status`.
-- [ ] **P2-C4-S2: Implement Card Display Logic**
+- [x] **P2-C4-S2: Implement Card Display Logic**
 - *Details:* `popup.js`: Create `displayCardForReview()`. Get card via `deck.getNextCardToReview()`. Store `currentCard`. Display front, hide back. Handle no cards due.
-- [ ] **P2-C4-S3: Implement 'Show Answer' Logic**
+- [x] **P2-C4-S3: Implement 'Show Answer' Logic**
 - *Details:* Add listener to show `currentCard.back`.
-- [ ] **P2-C4-S4: Instantiate and Use `GestureRecognizer` in Loop**
+- [x] **P2-C4-S4: Instantiate and Use `GestureRecognizer` in Loop**
 - *Details:* `popup.js`: Create instance. In `detectHandsLoop`, call `recognizeGesture()`. Display result in `#gesture-status`.
-- [ ] **P2-C4-S5: Implement Debouncing Logic**
+- [x] **P2-C4-S5: Implement Debouncing Logic**
 - *Details:* Track `lastDetectedGesture`, `gestureConfidence`. Trigger action only if `gestureConfidence >= REQUIRED_CONFIDENCE` (e.g., 3-5 frames).
-- [ ] **P2-C4-S6: Implement Gesture-to-Review Mapping (Easy/Wrong/Hard)**
+- [x] **P2-C4-S6: Implement Gesture-to-Review Mapping (Easy/Wrong/Hard)**
 - *Details:* After debounce: Map `ThumbsDown->0 (Wrong)`, `FlatHand->1 (Hard)`, `ThumbsUp->2 (Easy)`. Call `deck.updateCardReview(currentCard, reviewResult)` (or message background). Log update. Reset confidence. Call `displayCardForReview()`.
-- [ ] **P2-C4-S7: Test: Full Gesture Review Flow**
+- [x] **P2-C4-S7: Test: Full Gesture Review Flow**
 - *Details:* Reload ext. Add cards. Review with gestures. Verify recognition, debounce, correct card update (logs), next card display.
-- [ ] **P2-C4-S8: Refine Gesture Recognition**
+- [x] **P2-C4-S8: Refine Gesture Recognition**
 - *Details:* Adjust thresholds/logic in `GestureRecognizer` based on testing. Update unit tests.
-- [ ] **P2-C4-S9: Git: Commit Gesture Review Feature**
+- [x] **P2-C4-S9: Git: Commit Gesture Review Feature**
 - *Details:* `feature/gesture-review` branch. Commit changes. PR -> merge.
 
 ---
