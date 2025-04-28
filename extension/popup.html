@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flashcard Capture</title>
     <style>
+        /* --- General & Previous Styles --- */
         body {
             width: 350px;
             font-family: sans-serif;
@@ -28,7 +29,7 @@
             margin-top: 10px;
             cursor: pointer;
         }
-        #status-message {
+        #status-message { /* Status for saving */
             margin-top: 10px;
             font-style: italic;
             color: green;
@@ -43,43 +44,113 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            overflow: hidden;
         }
         #webcam-feed {
             display: block;
             width: 100%;
-            transform: scaleX(-1);
+            transform: scaleX(-1); /* Mirror image */
         }
-         #tf-status {
+         #tf-status { /* Status for TF/Webcam */
             font-size: 0.9em;
             color: #555;
             text-align: center;
             margin-top: 5px;
             min-height: 1.2em;
         }
-
         hr {
            width: 100%;
            margin: 15px 0;
            border: 0;
            border-top: 1px solid #eee;
         }
+        h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        /* --- Styles for Review Elements --- */
+        #review-area {
+            border: 1px dashed #aaa;
+            padding: 10px;
+            margin-top: 15px;
+            background-color: #f9f9f9;
+        }
+        #review-front, #review-back {
+            min-height: 40px;
+            padding: 5px;
+            border: 1px solid #eee;
+            background-color: #fff;
+            margin-bottom: 5px;
+            word-wrap: break-word;
+        }
+        #review-back {
+            display: none; /* Initially hidden */
+            background-color: #f0f0f0;
+        }
+        #show-answer {
+             display: block;
+             width: 100%;
+             margin-top: 5px;
+             margin-bottom: 10px;
+             padding: 5px;
+        }
+        #gesture-status {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            min-height: 1.2em;
+            background-color: #e7e7e7;
+            padding: 3px;
+            border-radius: 4px;
+        }
+        /* --- End Review Styles --- */
+
+        /* --- Style for Hidden Canvas --- */
+        #hidden-canvas {
+            display: none; /* Keep it hidden */
+            /* position: absolute;
+            top: -9999px;
+            left: -9999px; */
+        }
+        /* --- End Hidden Canvas Style --- */
+
     </style>
 </head>
 <body>
+
     <h2>Gesture Input</h2>
     <div id="webcam-container">
         <video id="webcam-feed" autoplay playsinline muted></video>
     </div>
     <p id="tf-status">Initializing...</p>
-    <hr> <h2>Create Flashcard</h2>
+    <canvas id="hidden-canvas"></canvas>
+
+    <hr>
+
+    <div id="review-area">
+        <h2>Review Card</h2>
+        <label for="review-front">Front:</label>
+        <div id="review-front">(No card loaded)</div>
+        <button id="show-answer">Show Answer</button>
+        <label for="review-back">Back:</label>
+        <div id="review-back">(Answer hidden)</div>
+        <div id="gesture-status">Gesture: Unknown</div>
+    </div>
+
+    <hr>
+
+    <h2>Create Flashcard</h2>
     <label for="card-front">Front (Selected Text):</label>
     <textarea id="card-front" placeholder="Select text on the page first..."></textarea>
-
     <label for="card-back">Back:</label>
     <textarea id="card-back" placeholder="Enter the back of the card..."></textarea>
-
     <button id="save-card">Save Card</button>
-    <div id="status-message"></div> <script src="dist/popup.bundle.js" defer></script>
+    <div id="status-message"></div>
+
+    <script src="dist/popup.bundle.js" defer></script>
 
 </body>
 </html>
