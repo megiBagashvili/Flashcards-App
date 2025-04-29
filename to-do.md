@@ -279,19 +279,19 @@
 
 ### P3-C2: Database Setup & Connection (PostgreSQL)
 *Chunk Goal: Set up PostgreSQL database and connect the backend server.*
-- [ ] **P3-C2-S1: Install & Set Up PostgreSQL**
+- [x] **P3-C2-S1: Install & Set Up PostgreSQL**
   - *Details:* Install Postgres locally/Docker/cloud. Create DB (e.g., `flashcards_db`), user/role. Note down connection details (host, port, user, password, database name).
-- [ ] **P3-C2-S2: Define Database Schema (SQL)**
+- [x] **P3-C2-S2: Define Database Schema (SQL)**
   - *Details:* Create `backend/schema.sql`: `CREATE TABLE cards` (e.g., `id SERIAL PRIMARY KEY`, `front TEXT NOT NULL`, `back TEXT NOT NULL`, `hint TEXT`, `tags TEXT[]`, `interval INTEGER DEFAULT 0`, `ease_factor REAL DEFAULT 2.5`, `due_date TIMESTAMPTZ DEFAULT NOW()`, `created_at TIMESTAMPTZ DEFAULT NOW()`, `updated_at TIMESTAMPTZ DEFAULT NOW()`). Define necessary columns for SRS if using `algorithm.ts` logic.
-- [ ] **P3-C2-S3: Apply Schema to Database**
+- [x] **P3-C2-S3: Apply Schema to Database**
   - *Details:* Connect to your created DB (`psql` or a GUI tool). Execute the commands in `schema.sql`.
-- [ ] **P3-C2-S4: Install DB Driver (`pg`)**
+- [x] **P3-C2-S4: Install DB Driver (`pg`)**
   - *Details:* Navigate to the `backend` directory: `npm install pg @types/pg`.
-- [ ] **P3-C2-S5: Configure Database Connection**
+- [x] **P3-C2-S5: Configure Database Connection**
   - *Details:* Use `dotenv`. Create `.env` file in the `backend` directory (ensure it's in `backend/.gitignore`). Store connection details, potentially as a `DATABASE_URL` string or individual variables (`PGHOST`, `PGUSER`, etc.). Create `backend/src/db.ts` to initialize and export a `pg.Pool` instance using the environment variables.
-- [ ] **P3-C2-S6: Test: Database Connection**
+- [x] **P3-C2-S6: Test: Database Connection**
   - *Details:* In `server.ts` or a temporary test script, import the pool from `db.ts`. Try `pool.query('SELECT NOW()')` on server start or in a test route. Verify it connects without errors.
-- [ ] **P3-C2-S7: Git: Commit DB Setup**
+- [x] **P3-C2-S7: Git: Commit DB Setup**
   - *Details:* Create `feature/db-setup` branch. Commit `schema.sql`, `db.ts`, `.env.example` (a template for `.env` without real credentials), relevant `package.json` changes. PR -> merge.
 
 ---
