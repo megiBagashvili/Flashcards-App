@@ -306,7 +306,7 @@
   - *Details:* In `apiRoutes.ts`, replace placeholder. Get `cardFront`, `cardBack` from query params. Fetch card from DB. Use `algorithm.ts`'s `getHint` function. Return `200` with `{ hint: ... }`. Handle errors/404.
 - [x] **P3-C3-S4: Implement `GET /api/progress` Logic**
   - *Details:* In `apiRoutes.ts`, replace placeholder. Fetch necessary data from DB (e.g., card counts per bucket, potentially review history if stored). Use `algorithm.ts`'s `computeProgress` (or equivalent DB queries). Return `200` with stats object. Handle errors.
-- [ ] **P3-C3-S5: Implement `POST /api/day/next` Logic**
+- [x] **P3-C3-S5: Implement `POST /api/day/next` Logic**
   - *Details:* In `apiRoutes.ts`, replace placeholder. Update the concept of the current day (maybe stored in DB or simple counter). Return `200` with `{ currentDay: ... }`.
 - [ ] **P3-C3-S6: Implement Card Creation Endpoint (For Extension)**
   - *Details:* Add a `POST /api/cards` route to `apiRoutes.ts` to handle new card creation from the extension. Validate body (`front`, `back`, `hint`, `tags`). `INSERT INTO cards ... RETURNING *`. Handle errors. Return `201`.
