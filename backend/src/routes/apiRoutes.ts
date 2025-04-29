@@ -3,6 +3,7 @@ import pool from '../db';
 import * as state from '../state'; 
 import { Flashcard, AnswerDifficulty } from '../logic/flashcards';
 import { getHint as calculateHint } from '../logic/algorithm'; 
+import { ProgressStats } from '../types';
 
 const router: Router = express.Router();
 
@@ -39,10 +40,10 @@ router.get('/practice', async (req: Request, res: Response) => {
     }
 });
 
-// POST /api/update - Update card review status
 router.post('/update', async (req: Request, res: Response) => {
     console.log(`[API] POST /api/update received with body:`, req.body);
     const { cardFront, cardBack, difficulty } = req.body;
+
     if (cardFront === undefined || cardBack === undefined || difficulty === undefined) {
         return res.status(400).json({ error: 'Missing required fields: cardFront, cardBack, difficulty' });
     }
@@ -75,7 +76,6 @@ router.post('/update', async (req: Request, res: Response) => {
                 break;
         }
 
-        // Execute UPDATE query
         const updateResult = await pool.query(
             `UPDATE cards SET due_date = ${newDueDateExpression}, updated_at = NOW() WHERE id = $1`,
             [cardId]
@@ -95,12 +95,11 @@ router.post('/update', async (req: Request, res: Response) => {
     }
 });
 
-router.get('/hint', async (req: Request, res: Response) => { 
+router.get('/hint', async (req: Request, res: Response) => {
     console.log(`[API] GET /api/hint received with query:`, req.query);
     const { cardFront, cardBack } = req.query;
 
     if (typeof cardFront !== 'string' || typeof cardBack !== 'string' || !cardFront || !cardBack) {
-        console.warn('[API] GET /api/hint - Missing or invalid query params');
         return res.status(400).json({ error: 'Missing required query parameters: cardFront, cardBack' });
     }
 
@@ -111,7 +110,6 @@ router.get('/hint', async (req: Request, res: Response) => {
         );
 
         if (result.rows.length === 0) {
-            console.warn(`[API] GET /api/hint - Card not found: Front="${cardFront}"`);
             return res.status(404).json({ error: 'Card not found' });
         }
 
@@ -119,11 +117,11 @@ router.get('/hint', async (req: Request, res: Response) => {
         const card = new Flashcard(
             dbRow.front,
             dbRow.back,
-            dbRow.hint ?? '', 
-            dbRow.tags ?? []  
+            dbRow.hint ?? '',
+            dbRow.tags ?? []
         );
 
-        const hintText = calculateHint(card); 
+        const hintText = calculateHint(card);
         console.log(`[API] GET /api/hint - Hint generated for "${card.front}": ${hintText}`);
 
         res.status(200).json({ hint: hintText });
@@ -134,10 +132,38 @@ router.get('/hint', async (req: Request, res: Response) => {
     }
 });
 
-// GET /api/progress - Get user progress stats 
-router.get('/progress', (req: Request, res: Response) => {
-    console.log(`[API Placeholder] GET /api/progress hit`);
-    res.status(200).json({ message: 'Placeholder for GET /api/progress', accuracyRate: 0, bucketDistribution: {}, averageDifficulty: undefined });
+router.get('/progress', async (req: Request, res: Response) => { 
+    console.log(`[API] GET /api/progress received`);
+    try {
+        const bucketResult = await pool.query<{ interval: number; count: string }>( 
+            `SELECT "interval", COUNT(*) as count FROM cards GROUP BY "interval" ORDER BY "interval"`
+        );
+
+        const bucketDistribution: Record<number, number> = {};
+        bucketResult.rows.forEach(row => {
+            const intervalNum = Number(row.interval);
+            const countNum = Number(row.count);
+            if (!isNaN(intervalNum) && !isNaN(countNum)) {
+                bucketDistribution[intervalNum] = countNum;
+            }
+        });
+
+        const accuracyRate = 0; 
+        const averageDifficulty = undefined;
+
+        const progressStats: ProgressStats = {
+            accuracyRate,
+            bucketDistribution,
+            averageDifficulty
+        };
+
+        console.log("[API] GET /api/progress - Calculated progress:", progressStats);
+        res.status(200).json(progressStats);
+
+    } catch (error) {
+        console.error("[API] Error fetching progress:", error);
+        res.status(500).json({ error: "Failed to fetch progress data" });
+    }
 });
 
 // POST /api/day/next - Advance to the next practice day 
