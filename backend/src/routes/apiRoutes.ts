@@ -1,6 +1,6 @@
 import express, { Request, Response, Router } from 'express';
 import pool from '../db';
-import * as state from '../state'; // Using temporary state for day
+import * as state from '../state'; 
 import { Flashcard, AnswerDifficulty } from '../logic/flashcards';
 import { getHint as calculateHint } from '../logic/algorithm';
 import { ProgressStats } from '../types';
