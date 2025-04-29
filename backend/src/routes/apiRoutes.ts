@@ -40,6 +40,7 @@ router.get('/practice', async (req: Request, res: Response) => {
     }
 });
 
+// POST /api/update - Update card review status
 router.post('/update', async (req: Request, res: Response) => {
     console.log(`[API] POST /api/update received with body:`, req.body);
     const { cardFront, cardBack, difficulty } = req.body;
@@ -53,7 +54,6 @@ router.post('/update', async (req: Request, res: Response) => {
     const numericDifficulty = Number(difficulty) as AnswerDifficulty;
 
     try {
-        // Find Card ID
         const findResult = await pool.query<{ id: number }>(
             'SELECT id FROM cards WHERE front = $1 AND back = $2',
             [cardFront, cardBack]
@@ -95,6 +95,7 @@ router.post('/update', async (req: Request, res: Response) => {
     }
 });
 
+// GET /api/hint - Get a hint for a card
 router.get('/hint', async (req: Request, res: Response) => {
     console.log(`[API] GET /api/hint received with query:`, req.query);
     const { cardFront, cardBack } = req.query;
@@ -132,10 +133,11 @@ router.get('/hint', async (req: Request, res: Response) => {
     }
 });
 
-router.get('/progress', async (req: Request, res: Response) => { 
+// GET /api/progress - Get user progress stats
+router.get('/progress', async (req: Request, res: Response) => {
     console.log(`[API] GET /api/progress received`);
     try {
-        const bucketResult = await pool.query<{ interval: number; count: string }>( 
+        const bucketResult = await pool.query<{ interval: number; count: string }>(
             `SELECT "interval", COUNT(*) as count FROM cards GROUP BY "interval" ORDER BY "interval"`
         );
 
@@ -148,7 +150,7 @@ router.get('/progress', async (req: Request, res: Response) => {
             }
         });
 
-        const accuracyRate = 0; 
+        const accuracyRate = 0;
         const averageDifficulty = undefined;
 
         const progressStats: ProgressStats = {
@@ -166,12 +168,21 @@ router.get('/progress', async (req: Request, res: Response) => {
     }
 });
 
-// POST /api/day/next - Advance to the next practice day 
-router.post('/day/next', (req: Request, res: Response) => {
-    console.log(`[API Placeholder] POST /api/day/next hit`);
-    const newDay = state.getCurrentDay() + 1; 
-    state.incrementDay();
-    res.status(200).json({ message: 'Placeholder for POST /api/day/next', currentDay: newDay });
+router.post('/day/next', (req: Request, res: Response) => { 
+    console.log(`[API] POST /api/day/next received`);
+    try {
+        state.incrementDay();
+        const newDay = state.getCurrentDay();
+
+        console.log(`[API] POST /api/day/next - Advanced to Day ${newDay}`);
+        res.status(200).json({
+            message: `Advanced to day ${newDay}`,
+            currentDay: newDay
+        });
+    } catch (error) {
+        console.error("[API] Error advancing day:", error);
+        res.status(500).json({ error: "Failed to advance day" });
+    }
 });
 
 // POST /api/cards - Create a new card 
