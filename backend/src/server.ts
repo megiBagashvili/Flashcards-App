@@ -4,21 +4,17 @@ import dotenv from 'dotenv';
 import apiRouter from './routes/apiRoutes';
 import pool from './db';
 
-console.log(
-  "--- server.ts: Attempting to log imported pool object:",
-  pool ? "Pool object exists" : "Pool object is NULL/UNDEFINED!"
-);
 
-// loading environment variables from .env file
+console.log("--- server.ts: Imported pool object status:", pool ? 'Exists' : 'Missing!');
+
 dotenv.config();
 
 const app: Express = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors()); // Enable CORS
-app.use(express.json()); // Enable JSON body parsing
+app.use(cors()); 
+app.use(express.json()); 
 
-//Simple request logging middleware
 app.use((req: Request, res: Response, next: NextFunction) => {
     console.log(`[${new Date().toISOString()}] Received ${req.method} request for ${req.url}`);
     next();
@@ -33,11 +29,25 @@ app.get('/', (req: Request, res: Response) => {
 app.use('/api', apiRouter);
 
 
-// Catches errors passed via next(err) or thrown in route handlers
+// Error Handling Middleware (P3-C3-S7) 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    console.error("Unhandled Error:", err.stack || err);
-    // Send a generic error response
-    res.status(500).json({ error: 'Internal Server Error', message: err.message });
+    console.error("--- UNHANDLED ERROR ---");
+    console.error("Timestamp:", new Date().toISOString());
+    console.error("Route:", `${req.method} ${req.originalUrl}`);
+    console.error("Error Name:", err.name);
+    console.error("Error Message:", err.message);
+    console.error("Error Stack:", err.stack || "No stack available");
+    console.error("--- END UNHANDLED ERROR ---");
+
+
+    if (res.headersSent) {
+      return next(err); 
+    }
+
+    res.status(500).json({
+        error: 'Internal Server Error',
+        message: 'An unexpected error occurred on the server.'
+     });
 });
 
 
@@ -45,4 +55,3 @@ app.listen(PORT, () => {
   console.log(`⚡️[server]: Server is running and listening on http://localhost:${PORT}`);
 });
 
-// export default app;
