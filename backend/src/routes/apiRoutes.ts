@@ -2,6 +2,7 @@ import express, { Request, Response, Router } from 'express';
 import pool from '../db';
 import * as state from '../state'; 
 import { Flashcard, AnswerDifficulty } from '../logic/flashcards';
+import { getHint as calculateHint } from '../logic/algorithm'; 
 
 const router: Router = express.Router();
 
@@ -45,9 +46,10 @@ router.post('/update', async (req: Request, res: Response) => {
     if (cardFront === undefined || cardBack === undefined || difficulty === undefined) {
         return res.status(400).json({ error: 'Missing required fields: cardFront, cardBack, difficulty' });
     }
-    if (!(difficulty in AnswerDifficulty)) {
+    if (!Object.values(AnswerDifficulty).includes(Number(difficulty))) {
         return res.status(400).json({ error: `Invalid difficulty level: ${difficulty}` });
     }
+    const numericDifficulty = Number(difficulty) as AnswerDifficulty;
 
     try {
         // Find Card ID
@@ -62,7 +64,7 @@ router.post('/update', async (req: Request, res: Response) => {
         const cardId = findResult.rows[0].id;
 
         let newDueDateExpression: string;
-        switch (difficulty as AnswerDifficulty) {
+        switch (numericDifficulty) {
             case AnswerDifficulty.Easy:
                 newDueDateExpression = "NOW() + interval '1 day'";
                 break;
@@ -93,14 +95,43 @@ router.post('/update', async (req: Request, res: Response) => {
     }
 });
 
-// GET /api/hint - Get a hint for a card 
-router.get('/hint', (req: Request, res: Response) => {
-    console.log(`[API Placeholder] GET /api/hint hit with query:`, req.query);
+router.get('/hint', async (req: Request, res: Response) => { 
+    console.log(`[API] GET /api/hint received with query:`, req.query);
     const { cardFront, cardBack } = req.query;
-    if (!cardFront || !cardBack) {
-        return res.status(400).json({ error: 'Missing required query parameters' });
+
+    if (typeof cardFront !== 'string' || typeof cardBack !== 'string' || !cardFront || !cardBack) {
+        console.warn('[API] GET /api/hint - Missing or invalid query params');
+        return res.status(400).json({ error: 'Missing required query parameters: cardFront, cardBack' });
     }
-    res.status(200).json({ message: 'Placeholder for GET /api/hint', hint: `Hint for ${cardFront}` });
+
+    try {
+        const result = await pool.query<{ front: string; back: string; hint: string | null; tags: string[] | null }>(
+            'SELECT front, back, hint, tags FROM cards WHERE front = $1 AND back = $2',
+            [cardFront, cardBack]
+        );
+
+        if (result.rows.length === 0) {
+            console.warn(`[API] GET /api/hint - Card not found: Front="${cardFront}"`);
+            return res.status(404).json({ error: 'Card not found' });
+        }
+
+        const dbRow = result.rows[0];
+        const card = new Flashcard(
+            dbRow.front,
+            dbRow.back,
+            dbRow.hint ?? '', 
+            dbRow.tags ?? []  
+        );
+
+        const hintText = calculateHint(card); 
+        console.log(`[API] GET /api/hint - Hint generated for "${card.front}": ${hintText}`);
+
+        res.status(200).json({ hint: hintText });
+
+    } catch (error) {
+        console.error("[API] Error getting hint:", error);
+        res.status(500).json({ error: "Failed to get hint" });
+    }
 });
 
 // GET /api/progress - Get user progress stats 
