@@ -15,7 +15,7 @@ lerna-debug.log*
 Thumbs.db
 .vscode/
 *.suo
-*.ntvs*
+.ntvs
 *.njsproj
 *.sln
 *.sw?
