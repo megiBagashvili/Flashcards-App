@@ -312,11 +312,11 @@
   - *Details:* Add a `POST /api/cards` route to `apiRoutes.ts` to handle new card creation from the extension. Validate body (`front`, `back`, `hint`, `tags`). `INSERT INTO cards ... RETURNING *`. Handle errors. Return `201`.
 - [x] **P3-C3-S7: Implement Centralized Error Handling**
   - *Details:* Add Express error-handling middleware in `server.ts` for consistent JSON error responses.
-- [ ] **P3-C3-S8: Write API Integration Tests (Jest + Supertest)**
+- [x] **P3-C3-S8: Write API Integration Tests (Jest + Supertest)**
   - *Details:* **IMPORTANT:** Install `supertest`, `@types/supertest`. Create test files (e.g., `backend/src/routes/api.test.ts`). Set up a separate test database or use transactions. Test each endpoint: send requests, verify status codes, check response bodies, verify database state changes.
-- [ ] **P3-C3-S9: Test: Full API Functionality**
+- [x] **P3-C3-S9: Test: Full API Functionality**
   - *Details:* Run server (`npm run dev`). Use Postman/curl/tests to verify all implemented endpoints work correctly against the development database.
-- [ ] **P3-C3-S10: Git: Commit Backend Implementation**
+- [x] **P3-C3-S10: Git: Commit Backend Implementation**
   - *Details:* Create `feature/backend-impl` branch. Commit API logic & tests. PR -> merge.
 
 ---
