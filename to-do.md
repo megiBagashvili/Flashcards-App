@@ -291,7 +291,7 @@
   - *Details:* Use `dotenv`. Create `.env` file in the `backend` directory (ensure it's in `backend/.gitignore`). Store connection details, potentially as a `DATABASE_URL` string or individual variables (`PGHOST`, `PGUSER`, etc.). Create `backend/src/db.ts` to initialize and export a `pg.Pool` instance using the environment variables.
 - [x] **P3-C2-S6: Test: Database Connection**
   - *Details:* In `server.ts` or a temporary test script, import the pool from `db.ts`. Try `pool.query('SELECT NOW()')` on server start or in a test route. Verify it connects without errors.
-- [ ] **P3-C2-S7: Git: Commit DB Setup**
+- [x] **P3-C2-S7: Git: Commit DB Setup**
   - *Details:* Create `feature/db-setup` branch. Commit `schema.sql`, `db.ts`, `.env.example` (a template for `.env` without real credentials), relevant `package.json` changes. PR -> merge.
 
 ---
