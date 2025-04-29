@@ -263,98 +263,82 @@
 ---
 
 ### P3-C1: Backend Server & API Skeleton (Node/Express)
-
-**Chunk Goal:** Enhance the existing basic Node.js/Express server in `/backend` with placeholder API routes matching frontend expectations.
-
--[x] **P3-C1-S1: Verify Backend Dependencies & Install Missing**
-    * *Details:* Confirm `express`, `cors`, `typescript`, `@types/node`, `@types/express`, `@types/cors`, `ts-node-dev` are installed in `backend/package.json`. **Install `dotenv`**: `cd backend && npm install dotenv`.
--[x] **P3-C1-S2: Enhance Basic Express Server (`backend/src/server.ts`)**
-
-    * *Details:* Ensure `backend/src/server.ts` imports `express`, `cors`, `dotenv`. Configure `dotenv`. Create Express app instance (`const app = express();`). Apply `cors()` middleware. Add `express.json()` middleware to parse request bodies. Ensure a basic GET `/` route exists. Make sure the server listens on `process.env.PORT || 3001`. Verify the `dev` script in `package.json` (`"dev": "ts-node-dev --respawn --transpile-only src/server.ts"`) works.
--[x] **P3-C1-S3: Define Placeholder API Routes (Matching Frontend)**
-    * *Details:* Create a router file (e.g., `backend/src/routes/apiRoutes.ts`). Define placeholder handler functions for routes expected by `frontend/src/services/api.ts`:
-        * `GET /api/practice`
-        * `POST /api/update`
-        * `GET /api/hint`
-        * `GET /api/progress`
-        * `POST /api/day/next`
-        *(Note: We'll need to decide if we adapt the frontend later or stick to these routes. For now, let's match the frontend's expectations).* Mount this router in `server.ts` (e.g., `app.use('/api', apiRouter);`). Handlers should initially just log the request and send back a simple success/placeholder response (e.g., `res.status(200).json({ message: 'Route hit' });`).
--[x] **P3-C1-S4: Test: Run Server & Hit Endpoints**
-    * *Details:* Run `npm run dev` from the `backend` directory. Use Postman or `curl` to send requests to `http://localhost:3001/api/practice`, `http://localhost:3001/api/update` (with dummy data), etc. Verify the placeholder responses and console logs.
--[x] **P3-C1-S5: Git: Commit Backend Skeleton**
-    * *Details:* Create `feature/backend-skeleton` branch (or similar). Commit the updated `server.ts`, new router file, and `package.json` changes. PR -> merge.
+*Chunk Goal: Enhance the existing basic Node.js/Express server in `/backend` with placeholder API routes matching frontend expectations.*
+- [x] **P3-C1-S1: Verify Backend Dependencies & Install Missing**
+  - *Details:* Confirm `express`, `cors`, `typescript`, `@types/node`, `@types/express`, `@types/cors`, `ts-node-dev` are installed in `backend/package.json`. **Install `dotenv`**: `cd backend && npm install dotenv`.
+- [x] **P3-C1-S2: Enhance Basic Express Server (`backend/src/server.ts`)**
+  - *Details:* Ensure `backend/src/server.ts` imports `express`, `cors`, `dotenv`. Configure `dotenv`. Create Express app instance (`const app = express();`). Apply `cors()` middleware. Add `express.json()` middleware to parse request bodies. Ensure a basic GET `/` route exists. Make sure the server listens on `process.env.PORT || 3001`. Verify the `dev` script in `package.json` (`"dev": "ts-node-dev --respawn --transpile-only src/server.ts"`) works.
+- [x] **P3-C1-S3: Define Placeholder API Routes (Matching Frontend)**
+  - *Details:* Create a router file (e.g., `backend/src/routes/apiRoutes.ts`). Define placeholder handler functions for routes expected by `frontend/src/services/api.ts`: `GET /api/practice`, `POST /api/update`, `GET /api/hint`, `GET /api/progress`, `POST /api/day/next`. Mount this router in `server.ts` (e.g., `app.use('/api', apiRouter);`). Handlers should initially just log the request and send back a simple success/placeholder response. Add placeholder `POST /api/cards` for extension.
+- [x] **P3-C1-S4: Test: Run Server & Hit Endpoints**
+  - *Details:* Run `npm run dev` from the `backend` directory. Use Postman or `curl` to send requests to `http://localhost:3001/api/practice`, `http://localhost:3001/api/update` (with dummy data), etc. Verify the placeholder responses and console logs.
+- [x] **P3-C1-S5: Git: Commit Backend Skeleton**
+  - *Details:* Create `feature/backend-skeleton` branch (or similar). Commit the updated `server.ts`, new router file, and `package.json` changes. PR -> merge.
 
 ---
 
 ### P3-C2: Database Setup & Connection (PostgreSQL)
-
-**Chunk Goal:** Set up PostgreSQL database and connect the backend server.
-
--[ ] **P3-C2-S1: Install & Set Up PostgreSQL**
-    * *Details:* Install Postgres locally/Docker/cloud. Create DB (e.g., `flashcards_db`), user/role. Note down connection details (host, port, user, password, database name).
--[ ] **P3-C2-S2: Define Database Schema (SQL)**
-    * *Details:* Create `backend/schema.sql`: `CREATE TABLE cards` (e.g., `id SERIAL PRIMARY KEY`, `front TEXT NOT NULL`, `back TEXT NOT NULL`, `hint TEXT`, `tags TEXT[]`, `interval INTEGER DEFAULT 0`, `ease_factor REAL DEFAULT 2.5`, `due_date TIMESTAMPTZ DEFAULT NOW()`, `created_at TIMESTAMPTZ DEFAULT NOW()`, `updated_at TIMESTAMPTZ DEFAULT NOW()`). Define necessary columns for SRS if using `algorithm.ts` logic.
--[ ] **P3-C2-S3: Apply Schema to Database**
-    * *Details:* Connect to your created DB (`psql` or a GUI tool). Execute the commands in `schema.sql`.
--[ ] **P3-C2-S4: Install DB Driver (`pg`)**
-    * *Details:* Navigate to the `backend` directory: `npm install pg @types/pg`.
--[ ] **P3-C2-S5: Configure Database Connection**
-    * *Details:* Use `dotenv`. Create `.env` file in the `backend` directory (ensure it's in `backend/.gitignore`). Store connection details, potentially as a `DATABASE_URL` string or individual variables (`PGHOST`, `PGUSER`, etc.). Create `backend/src/db.ts` to initialize and export a `pg.Pool` instance using the environment variables.
--[ ] **P3-C2-S6: Test: Database Connection**
-    * *Details:* In `server.ts` or a temporary test script, import the pool from `db.ts`. Try `pool.query('SELECT NOW()')` on server start or in a test route. Verify it connects without errors.
--[ ] **P3-C2-S7: Git: Commit DB Setup**
-    * *Details:* Create `feature/db-setup` branch. Commit `schema.sql`, `db.ts`, `.env.example` (a template for `.env` without real credentials), relevant `package.json` changes. PR -> merge.
+*Chunk Goal: Set up PostgreSQL database and connect the backend server.*
+- [ ] **P3-C2-S1: Install & Set Up PostgreSQL**
+  - *Details:* Install Postgres locally/Docker/cloud. Create DB (e.g., `flashcards_db`), user/role. Note down connection details (host, port, user, password, database name).
+- [ ] **P3-C2-S2: Define Database Schema (SQL)**
+  - *Details:* Create `backend/schema.sql`: `CREATE TABLE cards` (e.g., `id SERIAL PRIMARY KEY`, `front TEXT NOT NULL`, `back TEXT NOT NULL`, `hint TEXT`, `tags TEXT[]`, `interval INTEGER DEFAULT 0`, `ease_factor REAL DEFAULT 2.5`, `due_date TIMESTAMPTZ DEFAULT NOW()`, `created_at TIMESTAMPTZ DEFAULT NOW()`, `updated_at TIMESTAMPTZ DEFAULT NOW()`). Define necessary columns for SRS if using `algorithm.ts` logic.
+- [ ] **P3-C2-S3: Apply Schema to Database**
+  - *Details:* Connect to your created DB (`psql` or a GUI tool). Execute the commands in `schema.sql`.
+- [ ] **P3-C2-S4: Install DB Driver (`pg`)**
+  - *Details:* Navigate to the `backend` directory: `npm install pg @types/pg`.
+- [ ] **P3-C2-S5: Configure Database Connection**
+  - *Details:* Use `dotenv`. Create `.env` file in the `backend` directory (ensure it's in `backend/.gitignore`). Store connection details, potentially as a `DATABASE_URL` string or individual variables (`PGHOST`, `PGUSER`, etc.). Create `backend/src/db.ts` to initialize and export a `pg.Pool` instance using the environment variables.
+- [ ] **P3-C2-S6: Test: Database Connection**
+  - *Details:* In `server.ts` or a temporary test script, import the pool from `db.ts`. Try `pool.query('SELECT NOW()')` on server start or in a test route. Verify it connects without errors.
+- [ ] **P3-C2-S7: Git: Commit DB Setup**
+  - *Details:* Create `feature/db-setup` branch. Commit `schema.sql`, `db.ts`, `.env.example` (a template for `.env` without real credentials), relevant `package.json` changes. PR -> merge.
 
 ---
 
 ### P3-C3: Backend API Implementation
-
-**Chunk Goal:** Implement the logic for API endpoints to interact with the PostgreSQL database, using the routes expected by the frontend.
-
--[ ] **P3-C3-S1: Implement `GET /api/practice` Logic**
-    * *Details:* In `apiRoutes.ts`, replace placeholder. Use `db.ts` pool. Query `SELECT * FROM cards WHERE due_date <= NOW() ORDER BY random() LIMIT X` (or similar logic based on `algorithm.ts`). Format response like `{ cards: [...], day: ... }`. Handle DB errors. Return `200` with data or appropriate error status. *(May need to manage/fetch `currentDay` from `state.ts` or DB)*.
--[ ] **P3-C3-S2: Implement `POST /api/update` Logic**
-    * *Details:* In `apiRoutes.ts`, replace placeholder. Validate request body (`cardFront`, `cardBack`, `difficulty`). Fetch the corresponding card `id` from the DB based on front/back (or assume frontend sends ID later). Use `algorithm.ts`'s `update` logic (or similar SRS calculation) to determine new `interval`, `ease_factor`, `due_date`. Execute `UPDATE cards SET ... WHERE id = $1`. Handle errors/404. Return `200` or `204`.
--[ ] **P3-C3-S3: Implement `GET /api/hint` Logic**
-    * *Details:* In `apiRoutes.ts`, replace placeholder. Get `cardFront`, `cardBack` from query params. Fetch card from DB. Use `algorithm.ts`'s `getHint` function. Return `200` with `{ hint: ... }`. Handle errors/404.
--[ ] **P3-C3-S4: Implement `GET /api/progress` Logic**
-    * *Details:* In `apiRoutes.ts`, replace placeholder. Fetch necessary data from DB (e.g., card counts per bucket, potentially review history if stored). Use `algorithm.ts`'s `computeProgress` (or equivalent DB queries). Return `200` with stats object. Handle errors.
--[ ] **P3-C3-S5: Implement `POST /api/day/next` Logic**
-    * *Details:* In `apiRoutes.ts`, replace placeholder. Update the concept of the current day (maybe stored in DB or simple counter). Return `200` with `{ currentDay: ... }`.
--[ ] **P3-C3-S6: Implement Card Creation Endpoint (Missing from Frontend API)**
-    * *Details:* Add a `POST /api/cards` route (or similar) to handle new card creation from the extension. Validate body (`front`, `back`, `hint`, `tags`). `INSERT INTO cards ... RETURNING *`. Handle errors. Return `201`. *(This route is needed by the extension but wasn't in `frontend/src/services/api.ts`)*.
--[ ] **P3-C3-S7: Implement Centralized Error Handling**
-    * *Details:* Add Express error-handling middleware in `server.ts` for consistent JSON error responses.
--[ ] **P3-C3-S8: Write API Integration Tests (Jest + Supertest)**
-    * *Details:* **IMPORTANT:** Install `supertest`, `@types/supertest`. Create test files (e.g., `backend/src/routes/api.test.ts`). Set up a separate test database or use transactions. Test each endpoint: send requests, verify status codes, check response bodies, verify database state changes.
--[ ] **P3-C3-S9: Test: Full API Functionality**
-    * *Details:* Run server (`npm run dev`). Use Postman/curl/tests to verify all implemented endpoints work correctly against the development database.
--[ ] **P3-C3-S10: Git: Commit Backend Implementation**
-    * *Details:* Create `feature/backend-impl` branch. Commit API logic & tests. PR -> merge.
+*Chunk Goal: Implement the logic for API endpoints to interact with the PostgreSQL database, using the routes expected by the frontend.*
+- [ ] **P3-C3-S1: Implement `GET /api/practice` Logic**
+  - *Details:* In `apiRoutes.ts`, replace placeholder. Use `db.ts` pool. Query `SELECT * FROM cards WHERE due_date <= NOW() ORDER BY random() LIMIT X` (or similar logic based on `algorithm.ts`). Format response like `{ cards: [...], day: ... }`. Handle DB errors. Return `200` with data or appropriate error status. *(May need to manage/fetch `currentDay` from `state.ts` or DB)*.
+- [ ] **P3-C3-S2: Implement `POST /api/update` Logic**
+  - *Details:* In `apiRoutes.ts`, replace placeholder. Validate request body (`cardFront`, `cardBack`, `difficulty`). Fetch the corresponding card `id` from the DB based on front/back (or assume frontend sends ID later). Use `algorithm.ts`'s `update` logic (or similar SRS calculation) to determine new `interval`, `ease_factor`, `due_date`. Execute `UPDATE cards SET ... WHERE id = $1`. Handle errors/404. Return `200` or `204`.
+- [ ] **P3-C3-S3: Implement `GET /api/hint` Logic**
+  - *Details:* In `apiRoutes.ts`, replace placeholder. Get `cardFront`, `cardBack` from query params. Fetch card from DB. Use `algorithm.ts`'s `getHint` function. Return `200` with `{ hint: ... }`. Handle errors/404.
+- [ ] **P3-C3-S4: Implement `GET /api/progress` Logic**
+  - *Details:* In `apiRoutes.ts`, replace placeholder. Fetch necessary data from DB (e.g., card counts per bucket, potentially review history if stored). Use `algorithm.ts`'s `computeProgress` (or equivalent DB queries). Return `200` with stats object. Handle errors.
+- [ ] **P3-C3-S5: Implement `POST /api/day/next` Logic**
+  - *Details:* In `apiRoutes.ts`, replace placeholder. Update the concept of the current day (maybe stored in DB or simple counter). Return `200` with `{ currentDay: ... }`.
+- [ ] **P3-C3-S6: Implement Card Creation Endpoint (For Extension)**
+  - *Details:* Add a `POST /api/cards` route to `apiRoutes.ts` to handle new card creation from the extension. Validate body (`front`, `back`, `hint`, `tags`). `INSERT INTO cards ... RETURNING *`. Handle errors. Return `201`.
+- [ ] **P3-C3-S7: Implement Centralized Error Handling**
+  - *Details:* Add Express error-handling middleware in `server.ts` for consistent JSON error responses.
+- [ ] **P3-C3-S8: Write API Integration Tests (Jest + Supertest)**
+  - *Details:* **IMPORTANT:** Install `supertest`, `@types/supertest`. Create test files (e.g., `backend/src/routes/api.test.ts`). Set up a separate test database or use transactions. Test each endpoint: send requests, verify status codes, check response bodies, verify database state changes.
+- [ ] **P3-C3-S9: Test: Full API Functionality**
+  - *Details:* Run server (`npm run dev`). Use Postman/curl/tests to verify all implemented endpoints work correctly against the development database.
+- [ ] **P3-C3-S10: Git: Commit Backend Implementation**
+  - *Details:* Create `feature/backend-impl` branch. Commit API logic & tests. PR -> merge.
 
 ---
 
 ### P3-C4: Extension API Integration
-
-**Chunk Goal:** Refactor the **browser extension (`extension/src/popup.ts`)** to use the backend API for persistence, replacing the in-memory `Deck`.
-
--[ ] **P3-C4-S1: Refactor Card Creation (Save Button)**
-    * *Details:* Modify `handleSaveCardClick` in `extension/src/popup.ts`. Remove `deck.addCard()`. Add `fetch('http://localhost:3001/api/cards', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ front, back, hint, tags }) })`. Handle the promise response (success/error) and update the `#status-message` UI.
--[ ] **P3-C4-S2: Refactor Card Loading for Review**
-    * *Details:* Modify `displayCardForReview` in `extension/src/popup.ts`. Remove `deck.getNextCardToReview()`. Add `fetch('http://localhost:3001/api/practice')`. Process the response (`{ cards: [...], day: ... }`). Store the fetched `cards` array locally within `popup.ts` for the current session. Display the first card from the fetched array. Handle empty array response. Handle fetch errors.
--[ ] **P3-C4-S3: Refactor Card Review Update (Gesture)**
-    * *Details:* Modify `detectHandsLoop` in `extension/src/popup.ts`. Remove `deck.updateCardReview()` and `deck.removeCard()`. When a confident gesture is detected and mapped to `reviewResult`, get the `id` of the `currentCard` (assuming the API returns IDs). Add `fetch(\`http://localhost:3001/api/update\`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ cardId: currentCard.id, difficulty: reviewResult }) })`(or match the exact expected body for `/api/update`). Handle promise/response/errors. Call `displayCardForReview` (which should now display the *next* card from the *locally stored fetched array*) on success.
--[ ] **P3-C4-S4: Add Loading and Error States to UI**
-    * *Details:* In `popup.ts`, update `#tf-status` or other elements to show "Loading card...", "Saving card...", "Error connecting to server..." during `fetch` operations. Display user-friendly errors based on API responses.
--[ ] **P3-C4-S5: Test: End-to-End Persistent Flow**
-    * *Details:* Run the backend server (`cd backend && npm run dev`). Reload the extension.
-        1.  Add cards using the popup -> Verify they appear in the PostgreSQL database.
-        2.  Close and reopen the popup -> Verify the review section fetches and displays a card from the database (via the `/api/practice` call).
-        3.  Review cards using gestures -> Verify the `POST /api/update` calls are logged by the backend and the database `due_date` (or other SRS fields) are updated correctly.
-        4.  Test error handling (e.g., stop the backend server and see if the extension shows connection errors).
--[ ] **P3-C4-S6: Git: Commit Extension API Integration**
-    * *Details:* Create `feature/extension-api-integration` branch. Commit refactored `extension/src/popup.ts`. PR -> merge.
----
+*Chunk Goal: Refactor the **browser extension (`extension/src/popup.ts`)** to use the backend API for persistence, replacing the in-memory `Deck`.*
+- [ ] **P3-C4-S1: Refactor Card Creation (Save Button)**
+  - *Details:* Modify `handleSaveCardClick` in `extension/src/popup.ts`. Remove `deck.addCard()`. Add `fetch('http://localhost:3001/api/cards', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ front, back, hint, tags }) })`. Handle the promise response (success/error) and update the `#status-message` UI.
+- [ ] **P3-C4-S2: Refactor Card Loading for Review**
+  - *Details:* Modify `displayCardForReview` in `extension/src/popup.ts`. Remove `deck.getNextCardToReview()`. Add `fetch('http://localhost:3001/api/practice')`. Process the response (`{ cards: [...], day: ... }`). Store the fetched `cards` array locally within `popup.ts` for the current session. Display the first card from the fetched array. Handle empty array response. Handle fetch errors.
+- [ ] **P3-C4-S3: Refactor Card Review Update (Gesture)**
+  - *Details:* Modify `detectHandsLoop` in `extension/src/popup.ts`. Remove `deck.updateCardReview()` and `deck.removeCard()`. When a confident gesture is detected and mapped to `reviewResult`, get the `id` of the `currentCard` (assuming the API returns IDs). Add `fetch(\`http://localhost:3001/api/update\`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ cardId: currentCard.id, difficulty: reviewResult }) })` (or match the exact expected body for `/api/update`). Handle promise/response/errors. Call `displayCardForReview` (which should now display the *next* card from the *locally stored fetched array*) on success.
+- [ ] **P3-C4-S4: Add Loading and Error States to UI**
+  - *Details:* In `popup.ts`, update `#tf-status` or other elements to show "Loading card...", "Saving card...", "Error connecting to server..." during `fetch` operations. Display user-friendly errors based on API responses.
+- [ ] **P3-C4-S5: Test: End-to-End Persistent Flow**
+  - *Details:* Run the backend server (`cd backend && npm run dev`). Reload the extension.
+    1.  Add cards using the popup -> Verify they appear in the PostgreSQL database.
+    2.  Close and reopen the popup -> Verify the review section fetches and displays a card from the database (via the `/api/practice` call).
+    3.  Review cards using gestures -> Verify the `POST /api/update` calls are logged by the backend and the database `due_date` (or other SRS fields) are updated correctly.
+    4.  Test error handling (e.g., stop the backend server and see if the extension shows connection errors).
+- [ ] **P3-C4-S6: Git: Commit Extension API Integration**
+  - *Details:* Create `feature/extension-api-integration` branch. Commit refactored `extension/src/popup.ts`. PR -> merge.
 
 ## Phase 4: Deployment (Optional Bonus)
 
