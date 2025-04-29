@@ -25,16 +25,13 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-// --- Basic Routes ---
 app.get("/", (req: Request, res: Response) => {
   res.status(200).json({ message: "Flashcards API server is running!" });
 });
 
-// --- Mount API Routes ---
 app.use("/api", apiRouter);
 
 
-// Error Handling Middleware (P3-C3-S7) 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error("--- UNHANDLED ERROR ---");
   console.error("Timestamp:", new Date().toISOString());
