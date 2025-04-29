@@ -283,7 +283,7 @@
   - *Details:* Install Postgres locally/Docker/cloud. Create DB (e.g., `flashcards_db`), user/role. Note down connection details (host, port, user, password, database name).
 - [x] **P3-C2-S2: Define Database Schema (SQL)**
   - *Details:* Create `backend/schema.sql`: `CREATE TABLE cards` (e.g., `id SERIAL PRIMARY KEY`, `front TEXT NOT NULL`, `back TEXT NOT NULL`, `hint TEXT`, `tags TEXT[]`, `interval INTEGER DEFAULT 0`, `ease_factor REAL DEFAULT 2.5`, `due_date TIMESTAMPTZ DEFAULT NOW()`, `created_at TIMESTAMPTZ DEFAULT NOW()`, `updated_at TIMESTAMPTZ DEFAULT NOW()`). Define necessary columns for SRS if using `algorithm.ts` logic.
-- [ ] **P3-C2-S3: Apply Schema to Database**
+- [x] **P3-C2-S3: Apply Schema to Database**
   - *Details:* Connect to your created DB (`psql` or a GUI tool). Execute the commands in `schema.sql`.
 - [ ] **P3-C2-S4: Install DB Driver (`pg`)**
   - *Details:* Navigate to the `backend` directory: `npm install pg @types/pg`.
