@@ -129,49 +129,35 @@ router.post("/update", async (req: Request, res: Response) => {
 });
 
 //Get hint
-router.get("/hint", async (req: Request, res: Response) => {
+router.get('/hint', async (req: Request, res: Response) => {
     console.log(`[API] GET /api/hint received with query:`, req.query);
     const { cardFront, cardBack } = req.query;
-    if (
-        typeof cardFront !== "string" ||
-        typeof cardBack !== "string" ||
-        !cardFront ||
-        !cardBack
-    ) {
-        return res.status(400).json({
-            error: "Missing required query parameters: cardFront, cardBack",
-        });
+
+    if (typeof cardFront !== 'string' || typeof cardBack !== 'string' || !cardFront || !cardBack) {
+        console.warn('[API] GET /api/hint - Missing or invalid query params');
+        return res.status(400).json({ error: 'Missing or invalid required query parameters: cardFront, cardBack' });
     }
 
     try {
-        const result = await pool.query<{
-            front: string;
-            back: string;
-            hint: string | null;
-            tags: string[] | null;
-        }>(
-            "SELECT front, back, hint, tags FROM cards WHERE front = $1 AND back = $2",
+        console.log(`[API /hint] Searching for card: Front="${cardFront}", Back="${cardBack}"`);
+        const result = await pool.query<{ front: string; back: string; hint: string | null; tags: string[] | null }>(
+            'SELECT front, back, hint, tags FROM cards WHERE front = $1 AND back = $2',
             [cardFront, cardBack]
         );
-
         if (result.rows.length === 0) {
-            return res.status(404).json({ error: "Card not found" });
+            console.warn(`[API /hint] Card not found in DB`);
+            return res.status(404).json({ error: 'Card not found' });
         }
-
-        // Creating flashcard object to pass to hint logic
         const dbRow = result.rows[0];
         const card = new Flashcard(
             dbRow.front,
             dbRow.back,
-            dbRow.hint ?? "",
+            dbRow.hint ?? '',
             dbRow.tags ?? []
         );
-        const hintText = calculateHint(card);
-        console.log(
-            `[API] GET /api/hint - Hint generated for "${card.front}": ${hintText}`
-        );
 
-        // Sending response
+        const hintText = calculateHint(card);
+        console.log(`[API] GET /api/hint - Hint generated/retrieved for "${card.front}": ${hintText}`);
         res.status(200).json({ hint: hintText });
 
     } catch (error) {
@@ -180,7 +166,6 @@ router.get("/hint", async (req: Request, res: Response) => {
     }
 });
 
-//Geting user progress status
 router.get("/progress", async (req: Request, res: Response) => {
     console.log(`[API] GET /api/progress received`);
     try {
