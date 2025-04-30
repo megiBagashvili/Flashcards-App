@@ -300,9 +300,9 @@
 *Chunk Goal: Implement the logic for API endpoints to interact with the PostgreSQL database, using the routes expected by the frontend.*
 - [x] **P3-C3-S1: Implement `GET /api/practice` Logic**
   - *Details:* In `apiRoutes.ts`, replace placeholder. Use `db.ts` pool. Query `SELECT * FROM cards WHERE due_date <= NOW() ORDER BY random() LIMIT X` (or similar logic based on `algorithm.ts`). Format response like `{ cards: [...], day: ... }`. Handle DB errors. Return `200` with data or appropriate error status. *(May need to manage/fetch `currentDay` from `state.ts` or DB)*.
-- [ ] **P3-C3-S2: Implement `POST /api/update` Logic**
+- [x] **P3-C3-S2: Implement `POST /api/update` Logic**
   - *Details:* In `apiRoutes.ts`, replace placeholder. Validate request body (`cardFront`, `cardBack`, `difficulty`). Fetch the corresponding card `id` from the DB based on front/back (or assume frontend sends ID later). Use `algorithm.ts`'s `update` logic (or similar SRS calculation) to determine new `interval`, `ease_factor`, `due_date`. Execute `UPDATE cards SET ... WHERE id = $1`. Handle errors/404. Return `200` or `204`.
-- [ ] **P3-C3-S3: Implement `GET /api/hint` Logic**
+- [] **P3-C3-S3: Implement `GET /api/hint` Logic**
   - *Details:* In `apiRoutes.ts`, replace placeholder. Get `cardFront`, `cardBack` from query params. Fetch card from DB. Use `algorithm.ts`'s `getHint` function. Return `200` with `{ hint: ... }`. Handle errors/404.
 - [ ] **P3-C3-S4: Implement `GET /api/progress` Logic**
   - *Details:* In `apiRoutes.ts`, replace placeholder. Fetch necessary data from DB (e.g., card counts per bucket, potentially review history if stored). Use `algorithm.ts`'s `computeProgress` (or equivalent DB queries). Return `200` with stats object. Handle errors.
