@@ -1,8 +1,15 @@
+/**
+ * @file extension/src/srs/GestureRecognizer.ts
+ * @description Defines a utility class for recognizing specific hand gestures
+ * (Thumbs Up, Thumbs Down, Flat Hand) from hand landmark data provided by
+ * TensorFlow.js hand pose detection models.
+ */
 import { Keypoint } from '@tensorflow-models/hand-pose-detection';
 
 /**
- * Represents the possible recognized hand gestures.
- * Using string values makes debugging easier.
+ * @enum {string} Gesture
+ * @description Represents the possible recognized hand gestures.
+ * Using string values for easier debugging and logging.
  */
 export enum Gesture {
     ThumbsUp = 'Thumbs Up',       
@@ -11,6 +18,9 @@ export enum Gesture {
     Unknown = 'Unknown'           
 }
 
+
+// Constants mapping landmark indices to their semantic names for clarity.
+// Based on MediaPipe Hands landmark model.
 const WRIST = 0;
 const THUMB_CMC = 1; 
 const THUMB_MCP = 2; 
@@ -38,7 +48,7 @@ const PINKY_TIP = 20;
  * @class GestureRecognizer
  *
  * @specification
- * Recognizes specific, predefined hand gestures (ThumbsUp, ThumbsDown, FlatHand)
+ * Recognizes specific, predefined hand gestures
  * from a list of 21 2D or 3D hand landmark coordinates provided by a hand
  * pose detection model.
  *
@@ -65,18 +75,18 @@ export class GestureRecognizer {
      * based on predefined geometric conditions.
      *
      * @param landmarks An array of 21 hand landmark objects.
-     * Requires at least `x` and `y` coordinates.
-     * @returns The recognized `Gesture` enum value. Returns `Gesture.Unknown` if
+     * Requires at least x and y coordinates.
+     * @returns The recognized Gesture enum value. Returns Gesture.Unknown if
      * input is invalid or no specific gesture is confidently matched.
      *
      * @specConditions
-     * - Requires `landmarks` to be a valid array of at least 21 `Keypoint` objects.
+     * - Requires landmarks to be a valid array of at least 21 Keypoint objects.
      * - Uses Y-coordinates primarily.
      *
      * 1. ThumbsUp: Thumb tip is clearly above thumb IP joint and also above the index finger MCP joint. Other fingertips are below their respective PIP joints.
      * 2. ThumbsDown: Thumb tip is clearly below the thumb MCP joint and wrist. Other fingertips are below their respective PIP joints.
-     * 3. FlatHand: All five fingertips are clearly above their respective PIP joints (and potentially MCP joints).
-     * - If none match, returns `Gesture.Unknown`.
+     * 3. FlatHand: All five fingertips are clearly above their respective PIP joints.
+     * - If none match, returns Gesture.Unknown.
      * - "Clearly" implies using simple comparison logic for now. Thresholds might be needed later.
      */
     public recognizeGesture(landmarks: Keypoint[]): Gesture {
