@@ -166,18 +166,24 @@ router.get('/hint', async (req: Request, res: Response) => {
     }
 });
 
-router.get("/progress", async (req: Request, res: Response) => {
+router.get('/progress', async (req: Request, res: Response) => {
     console.log(`[API] GET /api/progress received`);
     try {
+        //count cards grouped by their interval
+        // Need to cast count(*) to integer as pg returns it as string
         const bucketResult = await pool.query<{ interval: number; count: string }>(
-            `SELECT "interval", COUNT(*) as count FROM cards GROUP BY "interval" ORDER BY "interval"`
+            `SELECT "interval", COUNT(*)::integer as count
+             FROM cards
+             GROUP BY "interval"
+             ORDER BY "interval"`
         );
         const bucketDistribution: Record<number, number> = {};
-        bucketResult.rows.forEach((row) => {
-            const intervalNum = Number(row.interval);
-            const countNum = Number(row.count);
-            if (!isNaN(intervalNum) && !isNaN(countNum)) {
-                bucketDistribution[intervalNum] = countNum;
+        bucketResult.rows.forEach(row => {
+            // row.interval and row.count should be numbers now due to ::integer cast
+            if (typeof row.interval === 'number' && typeof row.count === 'number') {
+                bucketDistribution[row.interval] = row.count;
+            } else {
+                 console.warn(`[API /progress] Invalid row data received:`, row);
             }
         });
         const accuracyRate = 0;
@@ -185,7 +191,7 @@ router.get("/progress", async (req: Request, res: Response) => {
         const progressStats: ProgressStats = {
             accuracyRate,
             bucketDistribution,
-            averageDifficulty,
+            averageDifficulty
         };
 
         console.log("[API] GET /api/progress - Calculated progress:", progressStats);
