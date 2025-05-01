@@ -16,12 +16,12 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     next();
 });
 
-// Root path for health check
+//Root path for health check
 app.get('/', (req: Request, res: Response) => {
   res.status(200).json({ message: 'Flashcards API server is running!' });
 });
 
-// Direct all requests starting with /api to the apiRouter
+//Direct all requests starting with /api to the apiRouter
 app.use('/api', apiRouter);
 
 
@@ -34,21 +34,19 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error("Error Stack:", err.stack || "No stack available");
     console.error("--- END UNHANDLED ERROR ---");
 
-    // Check if headers have already been sent to the client
+    //check if headers have already been sent to the client
     if (res.headersSent) {
-      // If ki, delegate to the default Express error handler
+      //If ki, delegate to the default Express error handler
       return next(err);
     }
 
-    // Send a good error response to client
+    //ensd a good error response to client
     res.status(500).json({
         error: 'Internal Server Error',
         message: 'An unexpected error occurred on the server. Please try again later.'
      });
 });
 
-
-//Start the Server
 if (require.main === module) {
     app.listen(PORT, () => {
       console.log(`⚡️[server]: Server is running and listening on http://localhost:${PORT}`);
