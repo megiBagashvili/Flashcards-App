@@ -78,7 +78,7 @@ app.use('/api', apiRouter);
  * @param {Response} res - The Express response object.
  * @param {NextFunction} next - The callback function to pass control to further error handlers
  * @effects Logs detailed error information. Sends a 500 status response with a generic JSON error message if headers haven't already been sent. Otherwise, delegates to the default Express error handler.
- * @modifies res object (potentially).
+ * @modifies res object
  */
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error("--- UNHANDLED ERROR ---");
@@ -104,7 +104,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
 /**
  * @description Conditional Server Start.
- * Checks if this script is the main module being run directly (e.g., via node dist/server.js).
+ * Checks if this script is the main module being run directly.
  * If it is, it starts the Express server and makes it listen for incoming connections on the specified PORT.
  * This prevents the server from automatically starting when the app instance is imported
  * by other modules
