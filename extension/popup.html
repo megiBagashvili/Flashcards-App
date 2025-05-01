@@ -5,117 +5,156 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flashcard Capture</title>
     <style>
-        /* --- General & Previous Styles --- */
         body {
-            width: 350px;
-            font-family: sans-serif;
-            padding: 10px;
+            width: 350px; 
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            padding: 15px;
             display: flex;
             flex-direction: column;
+            background-color: #f4f7f9;
+            color: #333;
         }
         textarea {
-            width: 95%;
+            width: calc(100% - 16px);
             min-height: 50px;
             margin-bottom: 10px;
             display: block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 6px 8px;
+            font-size: 0.95em;
         }
         label {
             display: block;
-            margin-bottom: 3px;
-            font-weight: bold;
+            margin-bottom: 4px;
+            font-weight: 600;
+            font-size: 0.9em;
+            color: #555;
         }
         button {
             padding: 8px 15px;
             margin-top: 10px;
             cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
         }
-        #status-message { /* Status for saving */
+        button:hover {
+            background-color: #0056b3;
+        }
+         button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        #status-message {
             margin-top: 10px;
             font-style: italic;
-            color: green;
+            font-size: 0.9em;
             min-height: 1.2em;
         }
         #webcam-container {
             border: 1px solid #ccc;
             margin-bottom: 10px;
             position: relative;
-            background-color: #eee;
+            background-color: #e9ecef;
             min-height: 150px;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            border-radius: 4px;
         }
         #webcam-feed {
             display: block;
-            width: 100%;
-            transform: scaleX(-1); /* Mirror image */
+            max-width: 100%;
+            height: auto;
+            transform: scaleX(-1);
         }
-         #tf-status { /* Status for TF/Webcam */
+         #tf-status {
             font-size: 0.9em;
             color: #555;
             text-align: center;
             margin-top: 5px;
+            margin-bottom: 10px;
             min-height: 1.2em;
         }
         hr {
            width: 100%;
-           margin: 15px 0;
+           margin: 20px 0;
            border: 0;
-           border-top: 1px solid #eee;
+           border-top: 1px solid #ddd;
         }
         h2 {
             margin-top: 0;
-            margin-bottom: 10px;
-            font-size: 1.2em;
+            margin-bottom: 15px;
+            font-size: 1.25em;
+            color: #0056b3;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
         }
 
-        /* --- Styles for Review Elements --- */
-        #review-area {
-            border: 1px dashed #aaa;
-            padding: 10px;
+        #review-container {
+            border: 1px solid #e0e0e0;
+            padding: 15px;
             margin-top: 15px;
-            background-color: #f9f9f9;
+            background-color: #ffffff;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         #review-front, #review-back {
             min-height: 40px;
-            padding: 5px;
+            padding: 8px 10px;
             border: 1px solid #eee;
             background-color: #fff;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             word-wrap: break-word;
+            font-size: 1em;
+            border-radius: 3px;
         }
         #review-back {
-            display: none; /* Initially hidden */
-            background-color: #f0f0f0;
+            background-color: #f8f9fa;
         }
         #show-answer {
              display: block;
              width: 100%;
              margin-top: 5px;
              margin-bottom: 10px;
-             padding: 5px;
+             padding: 6px;
+             font-size: 0.9em;
+             background-color: #6c757d;
+        }
+        #show-answer:hover {
+             background-color: #5a6268;
         }
         #gesture-status {
-            margin-top: 10px;
+            margin-top: 15px;
             font-weight: bold;
             color: #333;
             text-align: center;
             min-height: 1.2em;
-            background-color: #e7e7e7;
-            padding: 3px;
+            background-color: #e9ecef;
+            padding: 5px 8px;
             border-radius: 4px;
+            font-size: 0.95em;
         }
-        /* --- End Review Styles --- */
 
-        /* --- Style for Hidden Canvas --- */
-        #hidden-canvas {
-            display: none; /* Keep it hidden */
-            /* position: absolute;
-            top: -9999px;
-            left: -9999px; */
+        #no-cards-message {
+             display: none;
+             padding: 15px;
+             text-align: center;
+             color: #6c757d;
+             background-color: #f8f9fa;
+             border: 1px dashed #ccc;
+             border-radius: 4px;
+             margin-top: 15px;
         }
-        /* --- End Hidden Canvas Style --- */
+
+        #hidden-canvas {
+            display: none;
+        }
 
     </style>
 </head>
@@ -123,20 +162,22 @@
 
     <h2>Gesture Input</h2>
     <div id="webcam-container">
-        <video id="webcam-feed" autoplay playsinline muted></video>
+        <video id="webcam-feed" autoplay playsinline muted width="320" height="240"></video>
     </div>
     <p id="tf-status">Initializing...</p>
     <canvas id="hidden-canvas"></canvas>
 
     <hr>
 
-    <div id="review-area">
+    <div id="no-cards-message" style="display: none;"></div>
+
+    <div id="review-container" style="display: none;">
         <h2>Review Card</h2>
         <label for="review-front">Front:</label>
-        <div id="review-front">(No card loaded)</div>
+        <div id="review-front">(Loading...)</div>
         <button id="show-answer">Show Answer</button>
         <label for="review-back">Back:</label>
-        <div id="review-back">(Answer hidden)</div>
+        <div id="review-back" style="display: none;">(Answer hidden)</div>
         <div id="gesture-status">Gesture: Unknown</div>
     </div>
 

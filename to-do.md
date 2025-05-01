@@ -312,7 +312,7 @@
   - *Details:* Add a `POST /api/cards` route to `apiRoutes.ts` to handle new card creation from the extension. Validate body (`front`, `back`, `hint`, `tags`). `INSERT INTO cards ... RETURNING *`. Handle errors. Return `201`.
 - [x] **P3-C3-S7: Implement Centralized Error Handling**
   - *Details:* Add Express error-handling middleware in `server.ts` for consistent JSON error responses.
-- [ ] **P3-C3-S8: Write API Integration Tests (Jest + Supertest)**
+- [x] **P3-C3-S8: Write API Integration Tests (Jest + Supertest)**
   - *Details:* **IMPORTANT:** Install `supertest`, `@types/supertest`. Create test files (e.g., `backend/src/routes/api.test.ts`). Set up a separate test database or use transactions. Test each endpoint: send requests, verify status codes, check response bodies, verify database state changes.
 - [x] **P3-C3-S9: Test: Full API Functionality**
   - *Details:* Run server (`npm run dev`). Use Postman/curl/tests to verify all implemented endpoints work correctly against the development database.
@@ -323,9 +323,9 @@
 
 ### P3-C4: Extension API Integration
 *Chunk Goal: Refactor the **browser extension (`extension/src/popup.ts`)** to use the backend API for persistence, replacing the in-memory `Deck`.*
-- [ ] **P3-C4-S1: Refactor Card Creation (Save Button)**
+- [x] **P3-C4-S1: Refactor Card Creation (Save Button)**
   - *Details:* Modify `handleSaveCardClick` in `extension/src/popup.ts`. Remove `deck.addCard()`. Add `fetch('http://localhost:3001/api/cards', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ front, back, hint, tags }) })`. Handle the promise response (success/error) and update the `#status-message` UI.
-- [ ] **P3-C4-S2: Refactor Card Loading for Review**
+- [x] **P3-C4-S2: Refactor Card Loading for Review**
   - *Details:* Modify `displayCardForReview` in `extension/src/popup.ts`. Remove `deck.getNextCardToReview()`. Add `fetch('http://localhost:3001/api/practice')`. Process the response (`{ cards: [...], day: ... }`). Store the fetched `cards` array locally within `popup.ts` for the current session. Display the first card from the fetched array. Handle empty array response. Handle fetch errors.
 - [ ] **P3-C4-S3: Refactor Card Review Update (Gesture)**
   - *Details:* Modify `detectHandsLoop` in `extension/src/popup.ts`. Remove `deck.updateCardReview()` and `deck.removeCard()`. When a confident gesture is detected and mapped to `reviewResult`, get the `id` of the `currentCard` (assuming the API returns IDs). Add `fetch(\`http://localhost:3001/api/update\`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ cardId: currentCard.id, difficulty: reviewResult }) })` (or match the exact expected body for `/api/update`). Handle promise/response/errors. Call `displayCardForReview` (which should now display the *next* card from the *locally stored fetched array*) on success.
