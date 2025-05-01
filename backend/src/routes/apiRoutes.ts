@@ -7,7 +7,25 @@ import { ProgressStats } from '../types';
 
 const router: Router = express.Router();
 
-// GET /api/practice - Fetch cards for practice session
+// API Route Handlers
+
+/**
+ * @name GET /api/practice
+ * @description Fetches a list of flashcards due for practice for the current day.
+ * @route GET /api/practice
+ * @param {Request} req The Express request object. No parameters or body expected.
+ * @param {Response} res The Express response object used to send back the practice session data or an error.
+ * @returns {Promise<void>}
+ *
+ * @spec.requires Database pool (`pool`) is connected and the `cards` table exists. `state.getCurrentDay()` returns the current day number.
+ * @spec.effects
+ *   - Reads the current day from `state`.
+ *   - Queries the database for up to 10 cards where `due_date` is less than or equal to the current time (`NOW()`), ordered randomly.
+ *   - Constructs an array of plain card data objects, including `id`, `front`, `back`, `hint`, `tags`, `due_date` (as ISO string).
+ *   - On success: Sends a 200 OK response with a JSON body `{ cards: BackendCardType[], day: number }`.
+ *   - On database error: Logs the error and sends a 500 Internal Server Error response with JSON body `{ error: string }`.
+ * @spec.modifies `res` object (sends response).
+ */
 router.get('/practice', async (req: Request, res: Response) => {
     console.log(`[API] GET /api/practice received`);
     try {
@@ -17,7 +35,7 @@ router.get('/practice', async (req: Request, res: Response) => {
             `SELECT id, front, back, hint, tags, due_date
              FROM cards
              WHERE due_date <= NOW()
-             ORDER BY RANDOM() -- Or consider ORDER BY due_date ASC for priority
+             ORDER BY RANDOM() -- Randomize order for variety; consider 'ORDER BY due_date ASC' for priority
              LIMIT 10`
         );
 
@@ -40,17 +58,32 @@ router.get('/practice', async (req: Request, res: Response) => {
     }
 });
 
-// POST /api/update - Update card review status based on ID
+/**
+ * @name POST /api/update
+ * @description Updates the review status (specifically `due_date` and `updated_at`) of a flashcard based on its ID and the provided difficulty.
+ * @route POST /api/update
+ * @param {Request} req The Express request object. Expects a JSON body `{ cardId: number, difficulty: AnswerDifficulty }`.
+ * @param {Response} res The Express response object used to send back a success message or an error.
+ * @returns {Promise<void>}
+ *
+ * @spec.requires Database pool (`pool`) is connected and the `cards` table exists. `req.body` contains `cardId` (number) and `difficulty` (valid `AnswerDifficulty` enum value: 0, 1, or 2).
+ * @spec.effects
+ *   - Validates the request body for presence and type of `cardId` and `difficulty`.
+ *   - Calculates a new `due_date` based on the `difficulty` using predefined intervals (1 day for Easy, 10 mins for Hard, 1 min for Wrong).
+ *   - Executes an `UPDATE` query on the `cards` table for the given `cardId`, setting the new `due_date` and updating `updated_at` to `NOW()`.
+ *   - On successful update (rowCount > 0): Sends a 200 OK response with JSON body `{ message: "Card review updated successfully" }`.
+ *   - If `cardId` is not found (rowCount === 0): Sends a 404 Not Found response with JSON body `{ error: "Card not found for the provided ID" }`.
+ *   - If validation fails: Sends a 400 Bad Request response with JSON body `{ error: string }`.
+ *   - On database error: Logs the error and sends a 500 Internal Server Error response with JSON body `{ error: string }`.
+ * @spec.modifies `cards` table in the database (updates `due_date`, `updated_at` for one row), `res` object (sends response).
+ */
 router.post('/update', async (req: Request, res: Response) => {
     console.log(`[API] POST /api/update received with body:`, req.body);
     const { cardId, difficulty } = req.body;
 
-    if (cardId === undefined || typeof cardId !== 'number' ||
-        difficulty === undefined) {
+    if (cardId === undefined || typeof cardId !== 'number' || difficulty === undefined) {
         console.warn("[API] POST /api/update - Missing required fields");
-        return res.status(400).json({
-            error: "Missing required fields: cardId (number), difficulty",
-        });
+        return res.status(400).json({ error: "Missing required fields: cardId (number), difficulty" });
     }
     const numericDifficulty = Number(difficulty);
     if (isNaN(numericDifficulty) || !Object.values(AnswerDifficulty).includes(numericDifficulty)) {
@@ -96,7 +129,24 @@ router.post('/update', async (req: Request, res: Response) => {
     }
 });
 
-// GET /api/hint - Get a hint for a card (Still uses front/back lookup)
+/**
+ * @name GET /api/hint
+ * @description Retrieves a hint for a specific flashcard, identified by its front and back text.
+ * @route GET /api/hint
+ * @param {Request} req The Express request object. Expects query parameters `cardFront` (string) and `cardBack` (string).
+ * @param {Response} res The Express response object used to send back the hint or an error.
+ * @returns {Promise<void>}
+ *
+ * @spec.requires Database pool (`pool`) is connected and the `cards` table exists. `req.query` contains non-empty `cardFront` and `cardBack` strings. `logic/algorithm.ts` contains a `getHint` function.
+ * @spec.effects
+ *   - Validates the presence and type of query parameters.
+ *   - Queries the database for a card matching the trimmed `cardFront` and `cardBack`.
+ *   - If card found: Creates a `Flashcard` object (from `logic/flashcards`) and calls `calculateHint` to get the hint text. Sends a 200 OK response with JSON body `{ hint: string }`.
+ *   - If card not found: Sends a 404 Not Found response with JSON body `{ error: "Card not found" }`.
+ *   - If validation fails: Sends a 400 Bad Request response with JSON body `{ error: string }`.
+ *   - On database error: Logs the error and sends a 500 Internal Server Error response with JSON body `{ error: string }`.
+ * @spec.modifies `res` object (sends response).
+ */
 router.get('/hint', async (req: Request, res: Response) => {
     console.log(`[API] GET /api/hint received with query:`, req.query);
     const { cardFront, cardBack } = req.query;
@@ -132,14 +182,30 @@ router.get('/hint', async (req: Request, res: Response) => {
     }
 });
 
-// GET /api/progress - Get user progress stats
+/**
+ * @name GET /api/progress
+ * @description Retrieves statistics about learning progress, primarily the distribution of cards across learning intervals (buckets).
+ * @route GET /api/progress
+ * @param {Request} req The Express request object. No parameters or body expected.
+ * @param {Response} res The Express response object used to send back progress statistics or an error.
+ * @returns {Promise<void>}
+ *
+ * @spec.requires Database pool (`pool`) is connected and the `cards` table exists with an `interval` column. `types/index.ts` defines `ProgressStats` interface.
+ * @spec.effects
+ *   - Queries the database to count cards grouped by their `interval` value (treating NULL intervals as 0).
+ *   - Constructs a `bucketDistribution` object mapping interval number to card count.
+ *   - Sets placeholder values for `accuracyRate` (0) and `averageDifficulty` (undefined).
+ *   - On success: Sends a 200 OK response with a JSON body conforming to `ProgressStats` (omitting `averageDifficulty` if undefined).
+ *   - On database error: Logs the error and sends a 500 Internal Server Error response with JSON body `{ error: string }`.
+ * @spec.modifies `res` object (sends response).
+ */
 router.get('/progress', async (req: Request, res: Response) => {
     console.log(`[API] GET /api/progress received`);
     try {
         const bucketResult = await pool.query<{ bucket: number; count: string }>(
             `SELECT COALESCE("interval", 0) as bucket, COUNT(*) as count
              FROM cards
-             GROUP BY bucket -- Use the alias here too
+             GROUP BY bucket -- Group by the calculated bucket alias
              ORDER BY bucket`
         );
         const bucketDistribution: Record<number, number> = {};
@@ -164,7 +230,18 @@ router.get('/progress', async (req: Request, res: Response) => {
     }
 });
 
-// POST /api/day/next - Advance to the next practice day
+/**
+ * @name POST /api/day/next
+ * @description Increments the application's internal day counter.
+ * @route POST /api/day/next
+ * @param {Request} req The Express request object. No body or parameters expected.
+ * @param {Response} res The Express response object used to send back the new day number or an error.
+ * @returns {void} (Synchronous handler)
+ *
+ * @spec.requires `state.incrementDay` and `state.getCurrentDay` functions exist and operate on an in-memory day counter.
+ * @spec.effects Calls `state.incrementDay()` to modify the in-memory day counter. Calls `state.getCurrentDay()` to get the new value. Sends a 200 OK response with JSON body `{ message: string, currentDay: number }`.
+ * @spec.modifies In-memory day counter via `state.ts`, `res` object (sends response).
+ */
 router.post('/day/next', (req: Request, res: Response) => {
     console.log(`[API] POST /api/day/next received`);
     try {
@@ -178,7 +255,25 @@ router.post('/day/next', (req: Request, res: Response) => {
     }
 });
 
-// POST /api/cards - Create a new flashcard
+/**
+ * @name POST /api/cards
+ * @description Creates a new flashcard in the database.
+ * @route POST /api/cards
+ * @param {Request} req The Express request object. Expects a JSON body containing `front` (string, required), `back` (string, required), `hint` (string, optional), `tags` (string[], optional).
+ * @param {Response} res The Express response object used to send back the newly created card data or an error.
+ * @returns {Promise<void>}
+ *
+ * @spec.requires Database pool (`pool`) is connected and the `cards` table exists with columns `front`, `back`, `hint`, `tags`, `due_date`, `created_at`, `updated_at`. `req.body` contains valid `front` and `back` strings.
+ * @spec.effects
+ *   - Validates `front` and `back` fields in the request body.
+ *   - Sanitizes optional `hint` and `tags` fields.
+ *   - Executes an `INSERT` query into the `cards` table with the provided data, setting `due_date`, `created_at`, `updated_at` to `NOW()`.
+ *   - Uses `RETURNING *` to get the newly created row data.
+ *   - On successful insert: Sends a 201 Created response with the full new card object (including database-generated `id`) as JSON.
+ *   - If validation fails: Sends a 400 Bad Request response with JSON body `{ error: string }`.
+ *   - On database error (e.g., unique constraint violation, connection issue): Logs the error and sends a 500 Internal Server Error response with JSON body `{ error: string }`.
+ * @spec.modifies `cards` table in the database (inserts one row), `res` object (sends response).
+ */
 router.post("/cards", async (req: Request, res: Response) => {
     console.log(`[API] POST /api/cards received with body:`, req.body);
     const { front, back, hint, tags } = req.body;
@@ -190,8 +285,8 @@ router.post("/cards", async (req: Request, res: Response) => {
     try {
         const insertQuery = `
             INSERT INTO cards (front, back, hint, tags, due_date, created_at, updated_at)
-            VALUES ($1, $2, $3, $4, NOW(), NOW(), NOW())
-            RETURNING *;
+            VALUES ($1, $2, $3, $4, NOW(), NOW(), NOW()) -- Set defaults on insert
+            RETURNING *; -- Return the complete inserted row
         `;
         const values = [front.trim(), back.trim(), hintValue, finalTagsValue];
         const result = await pool.query<{
