@@ -28,11 +28,9 @@ export class Deck {
 
     /**
      * Adds a card to the deck.
-     * If an equivalent card (based on Card.equals) is already present,
+     * If an equivalent card is already present,
      * the Set might not add a duplicate depending on Card's implementation
      * and how Set handles object equality vs reference equality.
-     * For simplicity now, we assume reference equality or that Card.equals
-     * is handled correctly if duplicates based on content are disallowed.
      * @param card The Card object to add.
      */
     public addCard(card: Card): void {
@@ -48,7 +46,7 @@ export class Deck {
     public removeCard(card: Card): boolean {
         let found = false;
         for (const existingCard of this.cards) {
-            if (existingCard.equals(card)) { // Relies on Card having an equals method
+            if (existingCard.equals(card)) {
                 this.cards.delete(existingCard);
                 found = true;
                 break;
@@ -74,10 +72,10 @@ export class Deck {
     }
 
     /**
-     * Gets the next card due for review.
-     * NOTE: Placeholder implementation for P2. Returns the first card found.
-     * Order is not guaranteed due to using a Set.
-     * @returns The next Card to review, or null if the deck is empty.
+     * Gets the next card due for review
+     * Returns the first card found
+     * Order is not guaranteed due to using a Set
+     * @returns The next Card to review, or null if the deck is empty
      */
     public getNextCardToReview(): Card | null {
         if (this.cards.size === 0) {
@@ -88,11 +86,9 @@ export class Deck {
     }
 
     /**
-     * Updates the review status/history of a card (placeholder).
-     * NOTE: In this in-memory phase, this just logs the action.
-     * A real implementation would update card metadata or move it between buckets.
-     * @param card The card that was reviewed.
-     * @param difficulty The result of the review (e.g., 0=Wrong, 1=Hard, 2=Easy).
+     * Updates the review status/history of a card
+     * @param card The card that was reviewed
+     * @param difficulty The result of the review
      */
     public updateCardReview(card: Card, difficulty: number): void {
          let cardExists = false;
@@ -106,7 +102,6 @@ export class Deck {
              console.warn(`Attempted to update review for non-existent card: "${card.front}"`);
              return;
          }
-         // Actual update logic would go here in a full SRS implementation.
          console.log(`Updating review for card "${card.front}" with difficulty ${difficulty}`);
          this.checkRep();
     }
