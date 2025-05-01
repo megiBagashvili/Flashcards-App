@@ -308,7 +308,7 @@
   - *Details:* In `apiRoutes.ts`, replace placeholder. Fetch necessary data from DB (e.g., card counts per bucket, potentially review history if stored). Use `algorithm.ts`'s `computeProgress` (or equivalent DB queries). Return `200` with stats object. Handle errors.
 - [x] **P3-C3-S5: Implement `POST /api/day/next` Logic**
   - *Details:* In `apiRoutes.ts`, replace placeholder. Update the concept of the current day (maybe stored in DB or simple counter). Return `200` with `{ currentDay: ... }`.
-- [ ] **P3-C3-S6: Implement Card Creation Endpoint (For Extension)**
+- [x] **P3-C3-S6: Implement Card Creation Endpoint (For Extension)**
   - *Details:* Add a `POST /api/cards` route to `apiRoutes.ts` to handle new card creation from the extension. Validate body (`front`, `back`, `hint`, `tags`). `INSERT INTO cards ... RETURNING *`. Handle errors. Return `201`.
 - [ ] **P3-C3-S7: Implement Centralized Error Handling**
   - *Details:* Add Express error-handling middleware in `server.ts` for consistent JSON error responses.
