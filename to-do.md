@@ -293,16 +293,16 @@
 
 ### P5-C1: Project Documentation
 *Chunk Goal: Ensure the codebase is well-documented and understandable.*
-- [ ] **P5-C1-S1: Update README.md**
+- [x] **P5-C1-S1: Update README.md**
 - *Details:* Final usage guide, architecture, features, setup, demo link.
-- [ ] **P5-C1-S2: Add Final Code Comments**
+- [x] **P5-C1-S2: Add Final Code Comments**
 - *Details:* Ensure clarity in complex sections.
-- [ ] **P5-C1-S3: License and Credits**
+- [x] **P5-C1-S3: License and Credits**
 - *Details:* Add MIT license. List contributors.
-- [ ] **P5-C1-S4: Git: Final Commit & Tag**
+- [x] **P5-C1-S4: Git: Final Commit & Tag**
 - *Details:* Tag final release (e.g., `v1.0.0`). Ensure `main` branch is clean.
 ### P5-C2: Submission\n*Chunk Goal: Deliver project according to requirements.*
-- [ ] **P5-C2-S1: Confirm Submission Requirements**
+- [x] **P5-C2-S1: Confirm Submission Requirements**
 - *Details:* Check checklist/instructions for repo link, video, report, etc.
-- [ ] **P-C2-S3: Celebrate!**
+- [x] **P-C2-S3: Celebrate!**
 - *Details:* Project complete!

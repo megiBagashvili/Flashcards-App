@@ -51,7 +51,6 @@ let lastDetectedGesture: Gesture = Gesture.Unknown;
 let currentGestureConfidence: number = 0;
 
 
-// --- Webcam and Model Setup ---
 /**
  * Attempts to access the user's webcam and stream it to the video element.
  * Sets up the hidden canvas dimensions based on the video stream.
@@ -119,7 +118,6 @@ async function loadHandPoseModel(): Promise<handPoseDetection.HandDetector | nul
     } catch (error) { console.error("Error loading hand pose model:", error); if (tfStatusElement) tfStatusElement.textContent = "Error loading model."; return null; }
 }
 
-// --- Detection Loop Control ---
 /**
  * Starts the hand detection loop if prerequisites are met.
  * Sets the isDetecting flag to true and calls detectHandsLoop.
@@ -146,7 +144,6 @@ function stopDetectionLoop() {
     if (isDetecting) { console.log("Stopping detection loop."); isDetecting = false; if (gestureStatusElement) { gestureStatusElement.textContent = "Detection Paused / Idle"; } }
 }
 
-// --- Core Detection and Review Logic ---
 /**
  * The main loop function, called via requestAnimationFrame.
  * Performs hand detection, gesture recognition, debouncing, and triggers API updates for reviews.

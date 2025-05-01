@@ -93,9 +93,9 @@ describe('Flashcard API Endpoints', () => {
     describe('GET /api/practice', () => {
         /**
          * @it should return status 200 and only due cards
-         * @description Verifies that the endpoint correctly returns only cards whose `due_date` is in the past or present, ignoring future cards. 
+         * @description Verifies that the endpoint correctly returns only cards whose due_date is in the past or present, ignoring future cards. 
          * Checks status code, response array length, and basic content of the returned card.
-         * @effects Inserts one due card and one future card into the DB. Sends a GET request to `/api/practice`. 
+         * @effects Inserts one due card and one future card into the DB. Sends a GET request to /api/practice. 
          * Asserts response status and content.
          */
         it('should return status 200 and only due cards', async () => {
