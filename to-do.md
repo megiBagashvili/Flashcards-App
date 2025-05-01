@@ -331,7 +331,7 @@
   - *Details:* Modify `detectHandsLoop` in `extension/src/popup.ts`. Remove `deck.updateCardReview()` and `deck.removeCard()`. When a confident gesture is detected and mapped to `reviewResult`, get the `id` of the `currentCard` (assuming the API returns IDs). Add `fetch(\`http://localhost:3001/api/update\`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ cardId: currentCard.id, difficulty: reviewResult }) })` (or match the exact expected body for `/api/update`). Handle promise/response/errors. Call `displayCardForReview` (which should now display the *next* card from the *locally stored fetched array*) on success.
 - [x] **P3-C4-S4: Add Loading and Error States to UI**
   - *Details:* In `popup.ts`, update `#tf-status` or other elements to show "Loading card...", "Saving card...", "Error connecting to server..." during `fetch` operations. Display user-friendly errors based on API responses.
-- [ ] **P3-C4-S5: Test: End-to-End Persistent Flow**
+- [x] **P3-C4-S5: Test: End-to-End Persistent Flow**
   - *Details:* Run the backend server (`cd backend && npm run dev`). Reload the extension.
     1.  Add cards using the popup -> Verify they appear in the PostgreSQL database.
     2.  Close and reopen the popup -> Verify the review section fetches and displays a card from the database (via the `/api/practice` call).
