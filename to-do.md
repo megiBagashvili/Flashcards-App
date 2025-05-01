@@ -179,83 +179,6 @@
 
 ---
 
-<!-- ## Phase 3: Backend & Database Integration
-
-**Phase Goal:** Persist card data using a Node.js/Express backend and **PostgreSQL** database.
-
-### P3-C1: Backend Server & API Skeleton (Node/Express)
-*Chunk Goal: Set up a basic Node.js/Express server with placeholder API routes.*
-- [ ] **P3-C1-S1: Set up Backend Directory Structure**
-- *Details:* Create `/server`. `npm init`. Install `express`, `cors`, `dotenv`. Dev install `typescript`, types, `ts-node-dev`. Create `tsconfig.json`.
-- [ ] **P3-C1-S2: Create Basic Express Server (`server/src/server.ts`)**
-- *Details:* Import libs. Create app. Use `cors()`. Basic GET `/`. Listen on `process.env.PORT || 3001`. Add `start:dev` script.
-- [ ] **P3-C1-S3: Define Placeholder API Routes**
-- *Details:* `routes/cardRoutes.ts`: Define `POST /api/cards`, `GET /api/cards`, `PUT /api/cards/:id/review`, `DELETE /api/cards/:id` placeholders. Mount router.
-- [ ] **P3-C1-S4: Test: Run Server & Hit Endpoints**
-- *Details:* `npm run start:dev`. Use Postman/curl. Verify placeholders.
-- [ ] **P3-C1-S5: Git: Commit Backend Skeleton**
-
-- *Details:* `feature/backend-skeleton` branch. Commit server code. PR -> merge.
-
-
-### P3-C2: Database Setup & Connection (PostgreSQL)
-
-*Chunk Goal: Set up PostgreSQL database and connect the backend server.*
-
-- [ ] **P3-C2-S1: Install & Set Up PostgreSQL**
-
-- *Details:* Install Postgres locally/Docker/cloud. Create DB (e.g., `srs_dev_db`), user/role.
-- [ ] **P3-C2-S2: Define Database Schema (SQL)**
-- *Details:* Create `schema.sql`: `CREATE TABLE cards` (id, front, back, interval, ease_factor, due_date, created_at, updated_at).
-- [ ] **P3-C2-S3: Apply Schema to Database**
-- *Details:* Connect to DB (`psql`/GUI). Execute `schema.sql`.
-- [ ] **P3-C2-S4: Install DB Driver (`pg`)**\n    - *Details:* `/server`: `npm install pg @types/pg`.
-- [ ] **P3-C2-S5: Configure Database Connection**
-- *Details:* Use `dotenv`. Create `.env` (add to `.gitignore`). Store `DATABASE_URL`. Create `db.ts` using `pg.Pool`. Export pool.
-- [ ] **P3-C2-S6: Test: Database Connection**
-- *Details:* Import pool. Try `pool.query('SELECT NOW()')`. Verify connection.
-- [ ] **P3-C2-S7: Git: Commit DB Setup**
-- *Details:* `feature/db-setup` branch. Commit schema, connection logic, `.env.example`. PR -> merge.
-
-
-### P3-C3: Backend API Implementation
-
-*Chunk Goal: Implement the logic for API endpoints to interact with the PostgreSQL database.*
-
-- [ ] **P3-C3-S1: Implement `POST /api/cards` Logic**
-- *Details:* Validate body. `INSERT INTO cards ... RETURNING *`. Handle errors. Return `201`.
-- [ ] **P3-C3-S2: Implement `GET /api/cards` Logic**
-- *Details:* Check query params (e.g., `?due=today`). `SELECT * FROM cards` (add `WHERE due_date <= NOW()` if needed). Handle errors. Return `200`.
-- [ ] **P3-C3-S3: Implement `PUT /api/cards/:id/review` Logic**
-- *Details:* Validate params/body (`reviewResult: 0|1|2`). Fetch card. Implement/call SRS update logic. `UPDATE cards ... RETURNING *`. Handle errors/404. Return `200`.
-- [ ] **P3-C3-S4: Implement `DELETE /api/cards/:id` Logic**
-- *Details:* Validate ID. `DELETE FROM cards WHERE id = $1`. Check result. Handle errors/404. Return `204`.
-- [ ] **P3-C3-S5: Implement Centralized Error Handling**
-- *Details:* Add Express error middleware for consistent JSON errors.
-- [ ] **P3-C3-S6: Write API Integration Tests (Jest + Supertest)**
-- *Details:* **IMPORTANT:** Test each endpoint against test DB (setup/teardown). Verify status codes, responses.
-- [ ] **P3-C3-S7: Test: Full API Functionality**
-- *Details:* Run server. Use Postman/tests to verify CRUD ops against DB.
-- [ ] **P3-C3-S8: Git: Commit Backend Implementation**
-- *Details:* `feature/backend-impl` branch. Commit API logic & tests. PR -> merge.
-
-
-### P3-C4: Frontend API Integration
-
-*Chunk Goal: Refactor the browser extension to use the backend API for persistence.*
-
-- [ ] **P3-C4-S1: Refactor Card Creation (Save Button)**
-- *Details:* Modify save listener: `fetch('/api/cards', { method: 'POST', ... })`. Handle promise/response/errors. Update UI.
-- [ ] **P3-C4-S2: Refactor Card Loading**
-- *Details:* Modify review logic: `fetch('/api/cards?due=today')`. Store results locally for session. Handle promise/errors.
-- [ ] **P3-C4-S3: Refactor Card Review Update (Gesture)**
-- *Details:* Modify gesture logic: `fetch(\`/api/cards/\${id}/review\`, { method: 'PUT', ... })`. Handle promise/response/errors.
-- [ ] **P3-C4-S4: Add Loading and Error States to UI**
-- *Details:* Show loading indicators during `fetch`. Display user-friendly API errors.
-- [ ] **P3-C4-S5: Test: End-to-End Persistent Flow**
-- *Details:* Run backend. Reload ext. Test create -> persist -> review -> DB updates. Test errors.
-- [ ] **P3-C4-S6: Git: Commit Frontend API Integration**
-- *Details:* `feature/frontend-api-integration` branch. Commit refactored frontend. PR -> merge. -->
 ## Phase 3: Backend & Database Integration (Revised Plan)
 
 **Phase Goal:** Persist card data using the existing Node.js/Express backend (`/backend` directory) and a **PostgreSQL** database.
@@ -340,102 +263,46 @@
 - [x] **P3-C4-S6: Git: Commit Extension API Integration**
   - *Details:* Create `feature/extension-api-integration` branch. Commit refactored `extension/src/popup.ts`. PR -> merge.
 
-## Phase 4: Deployment (Optional Bonus)
-
-**Phase Goal:** Deploy the backend and database to the cloud (AWS).
-
-### P4-C1: Deploy Database (AWS RDS - PostgreSQL)
-
-*Chunk Goal: Create a managed Postgres instance on AWS RDS.*
-
-- [ ] **P4-C1-S1: Create RDS Instance**
-- *Details:* Use AWS console. Launch Postgres instance (Free Tier?). Configure.
-- [ ] **P4-C1-S2: Configure Security Group**
-- *Details:* Allow inbound port 5432 from backend IP/SG.
-- [ ] **P4-C1-S3: Apply Schema to RDS**
-- *Details:* Connect to RDS. Run `schema.sql`.
-- [ ] **P4-C1-S4: Update Backend Env Vars for Deployment**
-- *Details:* Set `DATABASE_URL` to RDS endpoint in deployment environment.
-
-
-### P4-C2: Deploy Backend (AWS Elastic Beanstalk or EC2)
-
-*Chunk Goal: Deploy the Node.js/Express application.*
-
-- [ ] **P4-C2-S1: Prepare Backend for Deployment**
-- *Details:* Add `build` script (`tsc`). Check `start` script/Procfile.
-- [ ] **P4-C2-S2: Create EB Application / Set up EC2**
-- *Details:* Use AWS EB console/CLI or configure EC2 instance with Node.js.
-- [ ] **P4-C2-S3: Configure Environment Variables**
-- *Details:* Set `DATABASE_URL`, `PORT`, `NODE_ENV=production` in deployment config.
-- [ ] **P4-C2-S4: Deploy Code**
-- *Details:* Use `eb deploy` or manual deployment process. Monitor.
-- [ ] **P4-C2-S5: Configure Security Groups (EB/EC2 <> RDS)**
-- *Details:* Ensure backend instance SG can reach RDS SG on port 5432.
-- [ ] **P4-C2-S6: Test Deployed API**
-- *Details:* Use Postman/curl to hit public deployed URL endpoints.
-
-
-### P4-C3: Configure Frontend for Deployed Backend
-
-*Chunk Goal: Make the browser extension communicate with the deployed API.*
-
-- [ ] **P4-C3-S1: Update API Base URL in Extension**
-- *Details:* Change `fetch` base URL in `popup.js` (or config) to deployed backend URL.
-- [ ] **P4-C3-S2: Rebuild/Reload Extension**
-- *Details:* Reload unpacked extension.
-- [ ] **P4-C3-S3: Test End-to-End with Deployed Backend**
-- *Details:* Repeat create/review tests using deployed resources.
-
 ---
 
 
-## Phase 5: Continuous Practices & Polish
-
+## Phase 4: Continuous Practices & Polish
 **Phase Goal:** Maintain code quality, documentation, and improve UX throughout the project.
-
-### P5-C1: Ongoing Activities
-
+### P4-C1: Ongoing Activities
 *Chunk Goal: Integrate best practices into daily workflow.*
-
-
-- [ ] **P5-C1-S1: Write Tests Concurrently**
+- [x] **P4-C1-S1: Write Tests Concurrently**
 - *Details:* Add Unit/Integration tests alongside features.
-- [ ] **P5-C1-S2: Maintain Documentation**
+- [x] **P4-C1-S2: Maintain Documentation**
 - *Details:* Update README, Spec/AF/RI comments as code changes.
-- [ ] **P5-C1-S3: Adhere to Git Workflow**
+- [x] **P4-C1-S3: Adhere to Git Workflow**
 - *Details:* Consistent use of branches, commits, PRs, reviews.
-- [ ] **P5-C1-S4: Refactor Regularly**
+- [x] **P4-C1-S4: Refactor Regularly**
 - *Details:* Identify & improve code quality (ETU, RFC).
-- [ ] **P5-C1-S5: Enhance Error Handling**
+- [x] **P4-C1-S5: Enhance Error Handling**
 - *Details:* Improve robustness and user feedback for errors (SFB).
-- [ ] **P5-C1-S6: Improve UX/UI**
+- [x] **P4-C1-S6: Improve UX/UI**
 - *Details:* Refine layout, feedback, transitions based on usage.
-- [ ] **P5-C1-S7: Final Testing & Bug Fixing**
+- [x] **P4-C1-S7: Final Testing & Bug Fixing**
 - *Details:* Comprehensive testing across features and browsers before submission.
 
 ---
 
-## Phase 6: Documentation & Submission
+## Phase 5: Documentation & Submission
 
 **Phase Goal:** Prepare final deliverables, documentation, and submit project.
 
-### P6-C1: Project Documentation
+### P5-C1: Project Documentation
 *Chunk Goal: Ensure the codebase is well-documented and understandable.*
-- [ ] **P6-C1-S1: Update README.md**
+- [ ] **P5-C1-S1: Update README.md**
 - *Details:* Final usage guide, architecture, features, setup, demo link.
-- [ ] **P6-C1-S2: Add Final Code Comments**
+- [ ] **P5-C1-S2: Add Final Code Comments**
 - *Details:* Ensure clarity in complex sections.
-- [ ] **P6-C1-S3: Create Demo Walkthrough (Video/GIFs)**
-- *Details:* Showcase key features and usage.
-- [ ] **P6-C1-S4: License and Credits**
+- [ ] **P5-C1-S3: License and Credits**
 - *Details:* Add MIT license. List contributors.
-- [ ] **P6-C1-S5: Git: Final Commit & Tag**
+- [ ] **P5-C1-S4: Git: Final Commit & Tag**
 - *Details:* Tag final release (e.g., `v1.0.0`). Ensure `main` branch is clean.
-### P6-C2: Submission\n*Chunk Goal: Deliver project according to requirements.*
-- [ ] **P6-C2-S1: Confirm Submission Requirements**
+### P5-C2: Submission\n*Chunk Goal: Deliver project according to requirements.*
+- [ ] **P5-C2-S1: Confirm Submission Requirements**
 - *Details:* Check checklist/instructions for repo link, video, report, etc.
-- [ ] **P6-C2-S2: Submit Project**
-- *Details:* Upload/submit via required platform.
-- [ ] **P6-C2-S3: Celebrate!**
+- [ ] **P-C2-S3: Celebrate!**
 - *Details:* Project complete!
