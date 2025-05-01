@@ -1,13 +1,14 @@
 import { Card } from './Card';
 import { GestureRecognizer, Gesture } from './srs/GestureRecognizer';
 import * as tf from '@tensorflow/tfjs';
-import '@tensorflow/tfjs-backend-webgl';
+import '@tensorflow/tfjs-backend-webgl'; 
 import * as handPoseDetection from '@tensorflow-models/hand-pose-detection';
 import { MediaPipeHandsTfjsModelConfig, Keypoint } from '@tensorflow-models/hand-pose-detection';
 
 const REQUIRED_CONFIDENCE = 5;
 const REVIEW_ACTION_DELAY_MS = 1500; 
 const API_BASE_URL = 'http://localhost:3001/api'; 
+const POST_REVIEW_SUCCESS_DELAY_MS = 1000;
 
 type BackendCardType = {
     id: number;
@@ -19,6 +20,8 @@ type BackendCardType = {
 };
 
 enum AnswerDifficulty { Wrong = 0, Hard = 1, Easy = 2 }
+
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 let videoElement: HTMLVideoElement | null = null;
 let tfStatusElement: HTMLElement | null = null;
@@ -115,13 +118,11 @@ async function detectHandsLoop() {
 
     let currentFrameGesture: Gesture = Gesture.Unknown;
     try {
-        if (canvasElement.width !== videoElement.videoWidth || canvasElement.height !== videoElement.videoHeight) { console.log("Resizing canvas to match video dimensions."); canvasElement.width = videoElement.videoWidth; canvasElement.height = videoElement.videoHeight; }
-        canvasCtx.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
-        const hands = await handPoseModel.estimateHands(canvasElement, { flipHorizontal: false });
+        if (canvasElement!.width !== videoElement!.videoWidth || canvasElement!.height !== videoElement!.videoHeight) { canvasElement!.width = videoElement!.videoWidth; canvasElement!.height = videoElement!.videoHeight; }
+        canvasCtx!.drawImage(videoElement!, 0, 0, canvasElement!.width, canvasElement!.height);
+        const hands = await handPoseModel.estimateHands(canvasElement!, { flipHorizontal: false });
         if (hands.length > 0 && hands[0]?.keypoints) {
-            const landmarks = hands[0].keypoints;
-            if (isNaN(landmarks[0]?.x) || isNaN(landmarks[0]?.y)) { currentFrameGesture = Gesture.Unknown; }
-            else { currentFrameGesture = gestureRecognizerInstance.recognizeGesture(landmarks); }
+            currentFrameGesture = gestureRecognizerInstance!.recognizeGesture(hands[0].keypoints);
         } else { currentFrameGesture = Gesture.Unknown; }
     } catch (error) { console.error(`Error during hand detection/recognition:`, error); currentFrameGesture = Gesture.Unknown; }
 
@@ -146,20 +147,65 @@ async function detectHandsLoop() {
 
             if (reviewResult !== null) {
                 actionTaken = true;
-                console.log(`Mapping ${confidentGesture} to difficulty ${AnswerDifficulty[reviewResult]} for card "${currentDisplayedCard.front}"`);
-
-                console.warn(`P3-C4-S3: Backend update via fetch not implemented yet for card ID: ${currentDisplayedCard.id}`);
-
-                currentPracticeIndex++;
-                displayCardForReview();
-
-                currentGestureConfidence = 0; lastDetectedGesture = Gesture.Unknown;
                 isDetecting = false;
-                console.log(`Pausing detection for ${REVIEW_ACTION_DELAY_MS}ms...`);
-                if (gestureStatusElement) gestureStatusElement.textContent = `Action: ${confidentGesture}! Paused...`;
-                setTimeout(() => { if (document.visibilityState === 'visible' && !isDetecting) { console.log("Resuming detection loop after delay."); startDetectionLoop(); } else { console.log("Skipping detection resumption."); } }, REVIEW_ACTION_DELAY_MS);
+
+                const updateData = {
+                    cardId: currentDisplayedCard.id,
+                    difficulty: reviewResult
+                };
+
+                console.log(`Sending update to API for card ID ${currentDisplayedCard.id}:`, updateData);
+                if (gestureStatusElement) gestureStatusElement.textContent = `Updating (${confidentGesture})...`;
+
+                try {
+                    const updateResponse = await fetch(`${API_BASE_URL}/update`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(updateData)
+                    });
+
+                    if (!updateResponse.ok) {
+                        let errorMsg = `API Error: ${updateResponse.status} ${updateResponse.statusText}`;
+                        try { const errData = await updateResponse.json(); errorMsg = errData?.error || errData?.message || errorMsg; } catch (e) {}
+                        throw new Error(errorMsg);
+                    }
+
+                    const responseData = await updateResponse.json();
+                    console.log("Update successful via API:", responseData.message);
+                    if (gestureStatusElement) gestureStatusElement.textContent = `Action: ${confidentGesture}! Updated.`;
+
+                    console.log(`Pausing ${POST_REVIEW_SUCCESS_DELAY_MS}ms before showing next card...`);
+                    await delay(POST_REVIEW_SUCCESS_DELAY_MS);
+
+                    currentPracticeIndex++;
+                    displayCardForReview();
+
+                } catch (error: any) {
+                    console.error("Failed to update card via API:", error);
+                    if (gestureStatusElement) gestureStatusElement.textContent = `Error updating: ${error.message}`;
+                    actionTaken = false;
+                }
+
+                currentGestureConfidence = 0;
+                lastDetectedGesture = Gesture.Unknown;
+
+                console.log(`Will resume detection after ${REVIEW_ACTION_DELAY_MS}ms pause...`);
+                setTimeout(() => {
+                     if (gestureStatusElement && (gestureStatusElement.textContent?.startsWith('Action:') || gestureStatusElement.textContent?.startsWith('Error updating:'))) {
+                         gestureStatusElement.textContent = "Gesture: Unknown";
+                     }
+                    if (document.visibilityState === 'visible') {
+                        console.log("Resuming detection loop.");
+                        startDetectionLoop();
+                    } else {
+                         console.log("Popup closed during pause, skipping detection resumption.");
+                         isDetecting = false;
+                    }
+                }, REVIEW_ACTION_DELAY_MS);
+
                 return;
-            } else { currentGestureConfidence = 0; lastDetectedGesture = Gesture.Unknown; }
+
+            } else {currentGestureConfidence = 0; lastDetectedGesture = Gesture.Unknown; }
         } else { console.log(`Confident gesture detected, but no card currently being reviewed.`); currentGestureConfidence = 0; lastDetectedGesture = Gesture.Unknown; }
     }
 
@@ -169,7 +215,9 @@ async function detectHandsLoop() {
          gestureStatusElement.textContent = `Gesture: ${displayGesture}${confidenceText}`;
     }
 
-    if (!actionTaken) { requestAnimationFrame(detectHandsLoop); }
+    if (isDetecting) {
+        requestAnimationFrame(detectHandsLoop);
+    }
 }
 
 /**
@@ -186,20 +234,8 @@ async function displayCardForReview() {
     gestureStatusElement.textContent = 'Initializing...'; currentDisplayedCard = null;
 
     if (currentPracticeIndex >= currentPracticeCards.length) {
-        console.log("Fetching new practice session from API..."); if (gestureStatusElement) gestureStatusElement.textContent = 'Loading cards...';
-        try {
-            const response = await fetch(`${API_BASE_URL}/practice`);
-            if (!response.ok) { let errorMsg = `API Error: ${response.status} ${response.statusText}`; try { const errData = await response.json(); errorMsg = errData?.error || errData?.message || errorMsg; } catch(e){} throw new Error(errorMsg); }
-            const sessionData = await response.json();
-            if (!sessionData || !Array.isArray(sessionData.cards) || typeof sessionData.day !== 'number') { throw new Error("Invalid data format received from API."); }
-            currentPracticeCards = sessionData.cards; currentPracticeDay = sessionData.day; currentPracticeIndex = 0;
-            console.log(`Fetched ${currentPracticeCards.length} cards for day ${currentPracticeDay}`);
-        } catch (error: any) {
-            console.error("Failed to fetch practice cards:", error);
-            if (gestureStatusElement) gestureStatusElement.textContent = `Error loading cards: ${error.message}`;
-            currentPracticeCards = []; currentPracticeIndex = 0;
-             if (noCardsMessageElement) { noCardsMessageElement.textContent = `Error loading cards. Is the backend running at ${API_BASE_URL}?`; noCardsMessageElement.style.display = 'block'; }
-            stopDetectionLoop(); return;
+        if (!await fetchPracticeData()) {
+            return;
         }
     }
 
@@ -223,6 +259,40 @@ async function displayCardForReview() {
     lastDetectedGesture = Gesture.Unknown; currentGestureConfidence = 0;
 }
 
+async function fetchPracticeData(): Promise<boolean> {
+    console.log("Fetching new practice session from API...");
+    if (gestureStatusElement) gestureStatusElement.textContent = 'Loading cards...';
+    let attempt = 1;
+    while(attempt <= 2) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/practice`);
+            if (!response.ok) { let errorMsg = `API Error: ${response.status} ${response.statusText}`; try { const errData = await response.json(); errorMsg = errData?.error || errData?.message || errorMsg; } catch(e){} throw new Error(errorMsg); }
+            const sessionData = await response.json();
+            if (!sessionData || !Array.isArray(sessionData.cards) || typeof sessionData.day !== 'number') { throw new Error("Invalid data format received from API."); }
+
+            currentPracticeCards = sessionData.cards;
+            currentPracticeDay = sessionData.day;
+            currentPracticeIndex = 0;
+            console.log(`Fetched ${currentPracticeCards.length} cards for day ${currentPracticeDay} (Attempt ${attempt})`);
+
+            if (currentPracticeCards.length > 0 || attempt === 2) {
+                return true;
+            }
+            console.log("Initial fetch returned 0 cards. Retrying after delay...");
+            await delay(500);
+
+        } catch (error: any) {
+            console.error(`Failed to fetch practice cards (Attempt ${attempt}):`, error);
+            if (gestureStatusElement) gestureStatusElement.textContent = `Error loading cards: ${error.message}`;
+            if (noCardsMessageElement) { noCardsMessageElement.textContent = `Error loading cards. Is the backend running at ${API_BASE_URL}?`; noCardsMessageElement.style.display = 'block'; }
+            stopDetectionLoop();
+            currentPracticeCards = []; currentPracticeIndex = 0;
+            return false;
+        }
+        attempt++;
+    }
+    return currentPracticeCards.length > 0;
+}
 
 function fetchSelectedText() {
     if (!cardFrontTextArea) { console.error("Cannot fetch text, front text area element not found initially."); return; }
@@ -267,15 +337,18 @@ async function handleSaveCardClick() {
     saveStatusMessageElement.textContent = "Saving to server..."; saveStatusMessageElement.style.color = "orange";
 
     try {
-        const cardData = { front: frontText, back: backText, }; // Add hint/tags if UI exists
+        const cardData = { front: frontText, back: backText, };
         console.log(`Sending card data to API:`, cardData);
         const response = await fetch(`${API_BASE_URL}/cards`, { method: 'POST', headers: { 'Content-Type': 'application/json', }, body: JSON.stringify(cardData), });
 
         if (response.ok && response.status === 201) {
-            const createdCard: BackendCardType = await response.json(); // Use Type Alias
+            const createdCard: BackendCardType = await response.json();
             saveStatusMessageElement.textContent = "Card saved successfully!"; saveStatusMessageElement.style.color = "green";
             console.log(`Card saved via API. ID: ${createdCard.id}`);
             cardBackTextArea.value = "";
+            console.log("Invalidating practice list due to new card save.");
+            currentPracticeCards = [];
+            currentPracticeIndex = 0;
             setTimeout(() => { if (saveStatusMessageElement) saveStatusMessageElement.textContent = ""; }, 3000);
         } else {
             let errorMsg = `Error: ${response.status} ${response.statusText}`; try { const errorData = await response.json(); errorMsg = errorData?.error || errorData?.message || errorMsg; } catch (e) { }
@@ -294,7 +367,7 @@ async function initializeApp() {
     tfStatusElement = document.getElementById("tf-status") as HTMLElement | null;
     reviewFrontElement = document.getElementById("review-front") as HTMLElement | null;
     reviewBackElement = document.getElementById("review-back") as HTMLElement | null;
-    showAnswerButton = document.getElementById("show-answer") as HTMLButtonElement | null; // Check ID in HTML!
+    showAnswerButton = document.getElementById("show-answer") as HTMLButtonElement | null; 
     gestureStatusElement = document.getElementById("gesture-status") as HTMLElement | null;
     saveButtonElement = document.getElementById("save-card") as HTMLButtonElement | null;
     cardFrontTextArea = document.getElementById("card-front") as HTMLTextAreaElement | null;
@@ -316,7 +389,7 @@ async function initializeApp() {
     if (webcamReady) {
         console.log("Webcam ready, loading model...");
         handPoseModel = await loadHandPoseModel();
-        if (handPoseModel && gestureRecognizerInstance) { tfStatusElement!.textContent = "Model ready."; displayCardForReview(); }
+        if (handPoseModel && gestureRecognizerInstance) { tfStatusElement!.textContent = "Model ready."; displayCardForReview(); } // displayCardForReview handles fetch/start loop
         else { console.error("Model/Recognizer load failed."); tfStatusElement!.textContent = "Error: Model load failed."; displayCardForReview(); }
     } else { console.error("Webcam setup failed."); tfStatusElement!.textContent = "Webcam setup failed."; displayCardForReview(); }
 
