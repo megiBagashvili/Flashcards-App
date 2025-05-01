@@ -203,16 +203,17 @@ router.get('/progress', async (req: Request, res: Response) => {
     }
 });
 
-//logic of advancing to the next day
-router.post("/day/next", (req: Request, res: Response) => {
+router.post('/day/next', (req: Request, res: Response) => {
     console.log(`[API] POST /api/day/next received`);
     try {
         state.incrementDay();
         const newDay = state.getCurrentDay();
+
         console.log(`[API] POST /api/day/next - Advanced to Day ${newDay}`);
-        res
-            .status(200)
-            .json({ message: `Advanced to day ${newDay}`, currentDay: newDay });
+        res.status(200).json({
+            message: `Advanced to day ${newDay}`,
+            currentDay: newDay
+        });
     } catch (error) {
         console.error("[API] Error advancing day:", error);
         res.status(500).json({ error: "Failed to advance day" });
