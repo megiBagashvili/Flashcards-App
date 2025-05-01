@@ -337,7 +337,7 @@
     2.  Close and reopen the popup -> Verify the review section fetches and displays a card from the database (via the `/api/practice` call).
     3.  Review cards using gestures -> Verify the `POST /api/update` calls are logged by the backend and the database `due_date` (or other SRS fields) are updated correctly.
     4.  Test error handling (e.g., stop the backend server and see if the extension shows connection errors).
-- [ ] **P3-C4-S6: Git: Commit Extension API Integration**
+- [x] **P3-C4-S6: Git: Commit Extension API Integration**
   - *Details:* Create `feature/extension-api-integration` branch. Commit refactored `extension/src/popup.ts`. PR -> merge.
 
 ## Phase 4: Deployment (Optional Bonus)
