@@ -1,10 +1,10 @@
-# ✅ Deployment Assignment To-Do Plan
+# Deployment Assignment To-Do Plan
 
 ## Phase A: Backend Preparation (Local Development)
 **Goal:** Modify the existing backend to meet the new assignment's API endpoint requirements.
 
 - [ ] **P-A1: Update State Management (`backend/src/state.ts`)**
-  - [ ] P-A1-S1: Add a new state variable to store the latest "answer" string.
+  - [x] P-A1-S1: Add a new state variable to store the latest "answer" string.
   - [ ] P-A1-S2: Implement `setLatestAnswer(answer: string)` function.
   - [ ] P-A1-S3: Implement `getLatestAnswer(): string | null` function.
 

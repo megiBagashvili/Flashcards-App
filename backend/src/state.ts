@@ -1,4 +1,5 @@
 let currentDay: number = 0;
+let latestAnswer: string | null = null;
 
 /**
  * Gets the current value of the in-memory day counter.
@@ -17,3 +18,4 @@ export function incrementDay(): void {
 
 console.log("Simplified state loaded:");
 console.log("Current Day:", currentDay);
+console.log("Initial Latest Answer:", latestAnswer);
