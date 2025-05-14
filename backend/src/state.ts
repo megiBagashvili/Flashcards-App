@@ -25,6 +25,14 @@ export function setLatestAnswer(answer: string): void {
     console.log(`[State] Latest answer set to: "${answer}"`);
 }
 
+/**
+ * Gets the latest answer string.
+ * @returns The stored answer string, or null if not set.
+ */
+export function getLatestAnswer(): string | null {
+    console.log(`[State] Getting latest answer: "${latestAnswer}"`);
+    return latestAnswer;
+}
 
 console.log("Simplified state loaded:");
 console.log("Current Day:", currentDay);
