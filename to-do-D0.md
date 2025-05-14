@@ -5,7 +5,7 @@
 
 - [ ] **P-A1: Update State Management (`backend/src/state.ts`)**
   - [x] P-A1-S1: Add a new state variable to store the latest "answer" string.
-  - [ ] P-A1-S2: Implement `setLatestAnswer(answer: string)` function.
+  - [x] P-A1-S2: Implement `setLatestAnswer(answer: string)` function.
   - [ ] P-A1-S3: Implement `getLatestAnswer(): string | null` function.
 
 - [ ] **P-A2: Implement New API Endpoints (`backend/src/routes/apiRoutes.ts`)**
