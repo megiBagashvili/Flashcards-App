@@ -4,6 +4,7 @@ import * as state from '../state';
 import { Flashcard, AnswerDifficulty } from '../logic/flashcards';
 import { getHint as calculateHint } from '../logic/algorithm';
 import { ProgressStats } from '../types';
+import { setLatestSubmittedData } from '../assignmentStore';
 
 const router: Router = express.Router();
 
@@ -309,24 +310,37 @@ router.post("/cards", async (req: Request, res: Response) => {
 
 /**
  * @name POST /api/create-answer
- * @description Endpoint for the deployment assignment. Accepts text data and stores it.
- * (Placeholder implementation - logic to be added in D1-C1-S3)
+ * @description Endpoint for the deployment assignment. Accepts a JSON body containing
+ * a "data" field with text, stores this text in-memory as the latest answer.
  * @route POST /api/create-answer
- * @param {Request} req The Express request object. Expects JSON body: { "data": "some text here" }.
+ * @param {Request} req The Express request object. Expects JSON body: { "data": "some-text-here" }.
  * @param {Response} res The Express response object.
- * @returns {Promise<void>}
+ * @returns {void}
+ *
+ * @spec.requires `req.body` contains a `data` property which is a non-empty string. `assignmentStore.setLatestSubmittedData` function is available.
+ * @spec.effects
+ * - Validates that `req.body.data` exists and is a non-empty string.
+ * - If valid, calls `setLatestSubmittedData` with the trimmed data string.
+ * - Sends a 201 Created response with a success message and the received data.
+ * - If invalid, sends a 400 Bad Request response with an error message.
+ * - On other errors, sends a 500 Internal Server Error response.
+ * @spec.modifies In-memory store via `setLatestSubmittedData`, `res` object (sends response).
  */
-router.post('/create-answer', async (req: Request, res: Response) => {
+router.post('/create-answer', (req: Request, res: Response) => { // Changed to synchronous for simplicity with in-memory store
     console.log(`[API] POST /api/create-answer received with body:`, req.body);
-    // Logic to validate req.body.data and store it will be added in D1-C1-S2/S3
     try {
-        // Placeholder logic for now
         const data = req.body.data;
-        if (typeof data !== 'string') {
-            return res.status(400).json({ error: 'Invalid request body: "data" field must be a string.' });
+        if (typeof data !== 'string' || data.trim() === '') {
+            console.warn('[API /create-answer] Invalid request: "data" field is missing, not a string, or empty.');
+            return res.status(400).json({ error: 'Invalid request: "data" field must be a non-empty string.' });
         }
-        console.log(`[API /create-answer] Received data: "${data}" - (Logic to store it TBD)`);
-        res.status(201).json({ message: 'Answer received successfully (placeholder).', receivedData: data });
+
+        const trimmedData = data.trim();
+        setLatestSubmittedData(trimmedData);
+
+        console.log(`[API /create-answer] Stored data: "${trimmedData}"`);
+        res.status(201).json({ message: 'Data created successfully.', receivedData: trimmedData });
+
     } catch (error) {
         console.error("[API] Error in /api/create-answer:", error);
         res.status(500).json({ error: "Failed to process create-answer request." });
