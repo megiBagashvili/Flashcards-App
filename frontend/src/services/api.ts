@@ -15,11 +15,10 @@ export async function fetchPracticeCards(): Promise<PracticeSession> {
 }
 
 export async function submitAnswer(
-  cardFront: string,
-  cardBack: string,
+  cardId: number,
   difficulty: AnswerDifficulty
 ): Promise<void> {
-  await apiClient.post('/update', { cardFront, cardBack, difficulty });
+  await apiClient.post('/update', { cardId, difficulty });
 }
 
 export async function fetchHint(card: Flashcard): Promise<string> {
