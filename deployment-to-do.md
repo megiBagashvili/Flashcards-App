@@ -29,16 +29,16 @@
   - [x] D1-C1-S5: Update Backend Types (Optional)
     *Details:* If desired, add new interfaces in backend/src/types/index.ts for the request/response bodies of these new endpoints.
 
-- [ ] **D1-C2: Local Backend Testing**
+- [x] **D1-C2: Local Backend Testing**
   *Goal: Ensure the new backend endpoints function correctly locally.*
   - [x] D1-C2-S1: Write Basic Tests for New Endpoints (Optional but Recommended)
     *Details:* Add new test cases in backend/src/routes/api.test.ts for /api/create-answer and /api/get-latest-answer.
   - [x] D1-C2-S2: Test POST /api/create-answer Locally
     *Details:* Run the backend (npm run dev). Use Postman or curl to send a POST request with the specified JSON body to http://localhost:3001/api/create-answer. Verify the success response.
-  - [ ] D1-C2-S3: Test GET /api/get-latest-answer Locally
+  - [x] D1-C2-S3: Test GET /api/get-latest-answer Locally
     *Details:* After posting data, use Postman, curl, or a browser to send a GET request to http://localhost:3001/api/get-latest-answer. Verify it returns the data you posted.
 
-- [ ] **D1-C3: Git Commit Backend Changes**
+- [x] **D1-C3: Git Commit Backend Changes**
   *Goal: Save the backend modifications to version control.*
   - [ ] D1-C3-S1: Commit New Endpoint and Storage Logic
     *Details:* Stage and commit the changes to apiRoutes.ts, the new storage mechanism file (if any), and test files. Use a descriptive commit message (e.g., feat(backend): add /create-answer and /get-latest-answer for deployment assignment).
