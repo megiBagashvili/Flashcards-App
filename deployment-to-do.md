@@ -108,18 +108,18 @@
   - [x] D2-C2-S3: Style the Page (Optional)
     *Details:* Add any desired CSS to style.css.
 
-- [ ] **D2-C3: Local Frontend Testing**
+- [x] **D2-C3: Local Frontend Testing**
   *Goal: Ensure the frontend page correctly interacts with the local backend.*
-  - [ ] D2-C3-S1: Serve index.html Locally
+  - [x] D2-C3-S1: Serve index.html Locally
     *Details:* Open frontend/answer-display/index.html directly in your browser, or use a simple HTTP server (e.g., VS Code Live Server extension, or run npx serve ./frontend/answer-display from the project root).
-  - [ ] D2-C3-S2: Test Interaction with Local Backend
+  - [x] D2-C3-S2: Test Interaction with Local Backend
     *Details:*
     Ensure your local backend is running.
     Use Postman/curl to POST some data to http://localhost:3001/api/create-answer.
     Refresh the index.html page in your browser and verify the submitted data appears.
     Post different data and refresh again to see it update.
 
-- [ ] **D2-C4: Git Commit Frontend Page**
+- [x] **D2-C4: Git Commit Frontend Page**
   *Goal: Save the new frontend page to version control.*
   - [ ] D2-C4-S1: Commit New Frontend Page Files
     *Details:* Stage and commit the new frontend/answer-display directory. Use a descriptive commit message (e.g., feat(frontend): add answer display page for deployment assignment).
