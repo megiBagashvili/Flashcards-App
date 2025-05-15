@@ -55,9 +55,9 @@
   - [x] D2-C1-S3: Create frontend/answer-display/style.css (Optional)
     *Details:* Create if you want to add any custom styling.
 
-- [ ] **D2-C2: Implement Frontend Logic**
+- [x] **D2-C2: Implement Frontend Logic**
   *Goal: Add HTML structure and JavaScript to fetch and display data.*
-  - [ ] D2-C2-S1: Structure index.html
+  - [x] D2-C2-S1: Structure index.html
     *Details:* Include a <span> element with id="answer" as required by the assignment. Link script.js and style.css (if created).
     ```html
     <!DOCTYPE html>
@@ -74,7 +74,7 @@
     </body>
     </html>
     ```
-  - [ ] D2-C2-S2: Implement script.js to Fetch and Display Data
+  - [x] D2-C2-S2: Implement script.js to Fetch and Display Data
     *Details:*
     On page load, use fetch to make a GET request to the (local for now) backend endpoint /api/get-latest-answer.
     On successful response, parse the JSON and update the textContent of the <span id="answer"> element.
@@ -105,7 +105,7 @@
             });
     });
     ```
-  - [ ] D2-C2-S3: Style the Page (Optional)
+  - [x] D2-C2-S3: Style the Page (Optional)
     *Details:* Add any desired CSS to style.css.
 
 - [ ] **D2-C3: Local Frontend Testing**
@@ -209,6 +209,31 @@
     *Details:* pm2 logs flashcard-backend and pm2 logs flashcard-frontend to see console output and troubleshoot if needed.
   - [ ] D3-C7-S6: Configure PM2 to Start on System Reboot (as per provided guide)
     *Details:* pm2 startup (follow instructions, it will output a command to run, likely with sudo). Then pm2 save.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Phase D4: Final Testing & Submission
 **Goal:** Thoroughly test the deployed application and submit the required URLs.
