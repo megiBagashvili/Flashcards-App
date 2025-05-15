@@ -129,7 +129,7 @@
 
 - [ ] **D3-C1: AWS Account & EC2 Instance Launch**
   *Goal: Set up the AWS environment and launch a virtual server.*
-  - [ ] D3-C1-S1: Create/Login to AWS Account (as per provided guide)
+  - [x] D3-C1-S1: Create/Login to AWS Account (as per provided guide)
   - [ ] D3-C1-S2: Launch EC2 Instance (as per provided guide)
     *Details:* Name your instance. Choose AMI: "Amazon Linux 2023". Instance Type: "t2.micro".
   - [ ] D3-C1-S3: Create and Download New Key Pair (.pem) (as per provided guide)
