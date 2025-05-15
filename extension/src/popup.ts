@@ -51,15 +51,14 @@ let lastDetectedGesture: Gesture = Gesture.Unknown;
 let currentGestureConfidence: number = 0;
 
 
-// --- Webcam and Model Setup ---
 /**
  * Attempts to access the user's webcam and stream it to the video element.
  * Sets up the hidden canvas dimensions based on the video stream.
  *
  * @returns {Promise<boolean>} True if webcam access and stream setup succeeded, false otherwise.
- * @spec.requires `videoElement`, `tfStatusElement`, `canvasElement` are assigned to valid DOM elements.
- * @spec.effects Requests webcam permission from the user. If granted, starts video stream, updates `tfStatusElement` text, sets `canvasElement` dimensions. If denied or error occurs, updates `tfStatusElement` with an error message. Modifies `videoElement.srcObject`.
- * @spec.modifies `videoElement`, `tfStatusElement`, `canvasElement`.
+ * @spec.requires videoElement, tfStatusElement, canvasElement are assigned to valid DOM elements.
+ * @spec.effects Requests webcam permission from the user. If granted, starts video stream, updates tfStatusElement text, sets canvasElement dimensions. If denied or error occurs, updates tfStatusElement with an error message. Modifies videoElement.srcObject.
+ * @spec.modifies videoElement, tfStatusElement, canvasElement.
  */
 async function setupWebcam(): Promise<boolean> {
     if (!videoElement || !tfStatusElement || !canvasElement) return false;
@@ -100,12 +99,12 @@ async function setupWebcam(): Promise<boolean> {
 }
 
 /**
- * Loads the TensorFlow.js Hand Pose Detection model (MediaPipeHands).
+ * Loads the TensorFlow.js Hand Pose Detection model.
  *
  * @returns {Promise<handPoseDetection.HandDetector | null>} The loaded detector instance, or null if loading failed.
- * @spec.requires `tfStatusElement` is assigned to a valid DOM element. TFJS backend (`webgl`) is available.
- * @spec.effects Asynchronously downloads and initializes the hand pose model. Updates `tfStatusElement` text during loading and on completion/error.
- * @spec.modifies `tfStatusElement`.
+ * @spec.requires tfStatusElement is assigned to a valid DOM element. TFJS backend (webgl) is available.
+ * @spec.effects Asynchronously downloads and initializes the hand pose model. Updates tfStatusElement text during loading and on completion/error.
+ * @spec.modifies tfStatusElement.
  */
 async function loadHandPoseModel(): Promise<handPoseDetection.HandDetector | null> {
      if (!tfStatusElement) return null;
@@ -119,14 +118,13 @@ async function loadHandPoseModel(): Promise<handPoseDetection.HandDetector | nul
     } catch (error) { console.error("Error loading hand pose model:", error); if (tfStatusElement) tfStatusElement.textContent = "Error loading model."; return null; }
 }
 
-// --- Detection Loop Control ---
 /**
  * Starts the hand detection loop if prerequisites are met.
- * Sets the `isDetecting` flag to true and calls `detectHandsLoop`.
+ * Sets the isDetecting flag to true and calls detectHandsLoop.
  *
- * @spec.requires `handPoseModel`, `gestureRecognizerInstance`, `videoElement` are initialized and ready.
- * @spec.effects If not already detecting, sets `isDetecting` to true and schedules the first frame of `detectHandsLoop`. Updates `gestureStatusElement` if prerequisites are not met.
- * @spec.modifies `isDetecting`, `gestureStatusElement` (potentially).
+ * @spec.requires handPoseModel, gestureRecognizerInstance, videoElement are initialized and ready.
+ * @spec.effects If not already detecting, sets isDetecting to true and schedules the first frame of detectHandsLoop. Updates gestureStatusElement if prerequisites are not met.
+ * @spec.modifies isDetecting, gestureStatusElement (potentially).
  */
 function startDetectionLoop() {
     if (!isDetecting && handPoseModel && gestureRecognizerInstance && videoElement && videoElement.readyState >= 3) {
@@ -136,41 +134,40 @@ function startDetectionLoop() {
 }
 
 /**
- * Stops the hand detection loop by setting the `isDetecting` flag to false.
+ * Stops the hand detection loop by setting the isDetecting flag to false.
  * The currently executing animation frame will finish, but no new frames will be requested.
  *
- * @spec.effects Sets `isDetecting` to false. Updates `gestureStatusElement` text.
- * @spec.modifies `isDetecting`, `gestureStatusElement`.
+ * @spec.effects Sets isDetecting to false. Updates gestureStatusElement text.
+ * @spec.modifies isDetecting, gestureStatusElement.
  */
 function stopDetectionLoop() {
     if (isDetecting) { console.log("Stopping detection loop."); isDetecting = false; if (gestureStatusElement) { gestureStatusElement.textContent = "Detection Paused / Idle"; } }
 }
 
-// --- Core Detection and Review Logic ---
 /**
- * The main loop function, called via `requestAnimationFrame`.
+ * The main loop function, called via requestAnimationFrame.
  * Performs hand detection, gesture recognition, debouncing, and triggers API updates for reviews.
  * Handles pausing and resuming detection flow.
  *
- * @spec.requires `isDetecting` is true. `handPoseModel`, `videoElement`, `gestureRecognizerInstance`, `canvasElement`, `canvasCtx` are initialized.
+ * @spec.requires isDetecting is true. handPoseModel, videoElement, gestureRecognizerInstance, canvasElement, canvasCtx are initialized.
  * @spec.effects Continuously:
  *   - Draws video frame to canvas.
- *   - Calls `handPoseModel.estimateHands`.
- *   - Calls `gestureRecognizerInstance.recognizeGesture`.
- *   - Updates `currentGestureConfidence` and `lastDetectedGesture` state.
- *   - If a confident gesture is detected and a card is displayed (`currentDisplayedCard` is not null):
- *     - Maps gesture to `AnswerDifficulty`.
- *     - Pauses detection (`isDetecting = false`).
- *     - Updates `gestureStatusElement` to "Updating...".
- *     - Sends a `fetch` request to `POST /api/update` with `cardId` and `difficulty`.
- *     - On API success: Updates `gestureStatusElement` to "Action... Updated.", waits `POST_REVIEW_SUCCESS_DELAY_MS`, increments `currentPracticeIndex`, calls `displayCardForReview`.
- *     - On API error: Updates `gestureStatusElement` with error message, keeps current card displayed.
- *     - Resets `currentGestureConfidence`, `lastDetectedGesture`.
- *     - Schedules `startDetectionLoop` via `setTimeout` after `REVIEW_ACTION_DELAY_MS`.
+ *   - Calls handPoseModel.estimateHands.
+ *   - Calls gestureRecognizerInstance.recognizeGesture.
+ *   - Updates currentGestureConfidence and lastDetectedGesture state.
+ *   - If a confident gesture is detected and a card is displayed (currentDisplayedCard is not null):
+ *     - Maps gesture to AnswerDifficulty.
+ *     - Pauses detection (isDetecting = false).
+ *     - Updates gestureStatusElement to "Updating...".
+ *     - Sends a fetch request to POST /api/update with cardId and difficulty.
+ *     - On API success: Updates gestureStatusElement to "Action... Updated.", waits POST_REVIEW_SUCCESS_DELAY_MS, increments currentPracticeIndex, calls displayCardForReview.
+ *     - On API error: Updates gestureStatusElement with error message, keeps current card displayed.
+ *     - Resets currentGestureConfidence, lastDetectedGesture.
+ *     - Schedules startDetectionLoop via setTimeout after REVIEW_ACTION_DELAY_MS.
  *     - Returns early to prevent immediate next frame request.
- *   - If no action taken, updates `gestureStatusElement` with current detected gesture and confidence.
- *   - If `isDetecting` remains true, schedules the next call via `requestAnimationFrame`.
- * @spec.modifies `currentGestureConfidence`, `lastDetectedGesture`, `isDetecting`, `gestureStatusElement`, potentially calls `displayCardForReview` (which modifies other state).
+ *   - If no action taken, updates gestureStatusElement with current detected gesture and confidence.
+ *   - If isDetecting remains true, schedules the next call via requestAnimationFrame.
+ * @spec.modifies currentGestureConfidence, lastDetectedGesture, isDetecting, gestureStatusElement, potentially calls displayCardForReview (which modifies other state).
  */
 async function detectHandsLoop() {
     if (!isDetecting) { console.log("isDetecting is false, loop stopping."); return; }
@@ -274,14 +271,14 @@ async function detectHandsLoop() {
 
 /**
  * Fetches the current practice session from the backend API if needed,
- * updates the internal state (`currentPracticeCards`, `currentPracticeIndex`, `currentPracticeDay`),
+ * updates the internal state (currentPracticeCards, currentPracticeIndex, currentPracticeDay),
  * and displays the next card for review or a "no cards" message.
  * Handles fetching errors and updates UI elements accordingly.
  * Starts the detection loop if a card is displayed.
  *
- * @spec.requires All relevant DOM elements (`reviewFrontElement`, `reviewBackElement`, etc.) are assigned. Backend API (`/api/practice`) is reachable and returns data in the expected format `{ cards: BackendCardType[], day: number }`.
- * @spec.effects Makes a `fetch` request to `/api/practice` if `currentPracticeIndex >= currentPracticeCards.length`. Modifies module state variables: `currentPracticeCards`, `currentPracticeIndex`, `currentDisplayedCard`, `currentPracticeDay`. Updates text content and display style of DOM elements: `reviewContainerElement`, `noCardsMessageElement`, `reviewFrontElement`, `reviewBackElement`, `showAnswerButton`, `gestureStatusElement`. Calls `startDetectionLoop()` or `stopDetectionLoop()`.
- * @spec.modifies `currentPracticeCards`, `currentPracticeIndex`, `currentDisplayedCard`, `currentPracticeDay`, DOM elements.
+ * @spec.requires All relevant DOM elements (reviewFrontElement, reviewBackElement, etc.) are assigned. Backend API (/api/practice) is reachable and returns data in the expected format { cards: BackendCardType[], day: number }.
+ * @spec.effects Makes a fetch request to /api/practice if currentPracticeIndex >= currentPracticeCards.length. Modifies module state variables: currentPracticeCards, currentPracticeIndex, currentDisplayedCard, currentPracticeDay. Updates text content and display style of DOM elements: reviewContainerElement, noCardsMessageElement, reviewFrontElement, reviewBackElement, showAnswerButton, gestureStatusElement. Calls startDetectionLoop() or stopDetectionLoop().
+ * @spec.modifies currentPracticeCards, currentPracticeIndex, currentDisplayedCard, currentPracticeDay, DOM elements.
  */
 async function displayCardForReview() {
     console.log("Attempting to display card for review...");
@@ -321,12 +318,12 @@ async function displayCardForReview() {
 }
 
 /**
- * Helper function to fetch practice cards from the backend. Includes basic retry logic.
+ * Helper function to fetch practice cards from the backend.
  *
  * @returns {Promise<boolean>} True if fetch succeeded (even if 0 cards returned), false if a network/API error occurred.
- * @spec.requires `API_BASE_URL` is correct. Backend is running. DOM elements `#gesture-status`, `#no-cards-message` exist.
- * @spec.effects Makes one or two `fetch` requests to `GET /api/practice`. Modifies `currentPracticeCards`, `currentPracticeDay`, `currentPracticeIndex`. Updates `#gesture-status`, `#no-cards-message` DOM elements based on fetch outcome. Calls `stopDetectionLoop` on error.
- * @spec.modifies `currentPracticeCards`, `currentPracticeDay`, `currentPracticeIndex`, `gestureStatusElement`, `noCardsMessageElement`.
+ * @spec.requires API_BASE_URL is correct. Backend is running. DOM elements #gesture-status, #no-cards-message exist.
+ * @spec.effects Makes one or two fetch requests to GET /api/practice. Modifies currentPracticeCards, currentPracticeDay, currentPracticeIndex. Updates #gesture-status, #no-cards-message DOM elements based on fetch outcome. Calls stopDetectionLoop on error.
+ * @spec.modifies currentPracticeCards, currentPracticeDay, currentPracticeIndex, gestureStatusElement, noCardsMessageElement.
  */
 async function fetchPracticeData(): Promise<boolean> {
     console.log("Fetching new practice session from API...");
@@ -359,11 +356,11 @@ async function fetchPracticeData(): Promise<boolean> {
 
 /**
  * Sends a message to the content script of the active tab to retrieve selected text.
- * Updates the `#card-front` textarea with the result.
+ * Updates the #card-front textarea with the result.
  *
- * @spec.requires `chrome.tabs` and `chrome.runtime` APIs are available. `cardFrontTextArea` element exists. Content script (`content.js`) is injected and listening for `GET_SELECTED_TEXT` action in the active tab.
- * @spec.effects Sends a message via `chrome.tabs.sendMessage`. Updates the `value` or `placeholder` of `cardFrontTextArea` based on the response or errors.
- * @spec.modifies `cardFrontTextArea`.
+ * @spec.requires chrome.tabs and chrome.runtime APIs are available. cardFrontTextArea element exists. Content script (content.js) is injected and listening for GET_SELECTED_TEXT action in the active tab.
+ * @spec.effects Sends a message via chrome.tabs.sendMessage. Updates the value or placeholder of cardFrontTextArea based on the response or errors.
+ * @spec.modifies cardFrontTextArea.
  */
 function fetchSelectedText() {
     if (!cardFrontTextArea) { console.error("Cannot fetch text, front text area element not found initially."); return; }
@@ -390,9 +387,9 @@ function fetchSelectedText() {
  * Event handler for the "Show Answer" button.
  * Displays the back text of the currently displayed card.
  *
- * @spec.requires `currentDisplayedCard` is not null. `reviewBackElement` and `showAnswerButton` elements exist.
- * @spec.effects Updates the `textContent` and `display` style of `reviewBackElement`. Updates the `disabled` and `display` style of `showAnswerButton`.
- * @spec.modifies `reviewBackElement`, `showAnswerButton`.
+ * @spec.requires currentDisplayedCard is not null. reviewBackElement and showAnswerButton elements exist.
+ * @spec.effects Updates the textContent and display style of reviewBackElement. Updates the disabled and display style of showAnswerButton.
+ * @spec.modifies reviewBackElement, showAnswerButton.
  */
 function handleShowAnswerClick() {
     console.log("Show Answer button clicked.");
@@ -406,12 +403,12 @@ function handleShowAnswerClick() {
 
 /**
  * Event handler for the "Save Card" button.
- * Validates input, sends card data to the backend API via `POST /api/cards`,
+ * Validates input, sends card data to the backend API via POST /api/cards,
  * handles the response, updates UI status, and invalidates the local practice list on success.
  *
- * @spec.requires `cardFrontTextArea`, `cardBackTextArea`, `saveStatusMessageElement`, `saveButtonElement` elements exist. Backend API (`/api/cards`) is reachable.
- * @spec.effects Makes a `fetch` request to `POST /api/cards`. Modifies `textContent` and `style.color` of `saveStatusMessageElement`. Modifies `disabled` state and `textContent` of `saveButtonElement`. Clears `cardBackTextArea.value` on success. Modifies `currentPracticeCards` and `currentPracticeIndex` on success by resetting them.
- * @spec.modifies `saveStatusMessageElement`, `saveButtonElement`, `cardBackTextArea`, `currentPracticeCards`, `currentPracticeIndex`.
+ * @spec.requires cardFrontTextArea, cardBackTextArea, saveStatusMessageElement, saveButtonElement elements exist. Backend API (/api/cards) is reachable.
+ * @spec.effects Makes a fetch request to POST /api/cards. Modifies textContent and style.color of saveStatusMessageElement. Modifies disabled state and textContent of saveButtonElement. Clears cardBackTextArea.value on success. Modifies currentPracticeCards and currentPracticeIndex on success by resetting them.
+ * @spec.modifies saveStatusMessageElement, saveButtonElement, cardBackTextArea, currentPracticeCards, currentPracticeIndex.
  */
 async function handleSaveCardClick() {
     if (!cardFrontTextArea || !cardBackTextArea || !saveStatusMessageElement || !saveButtonElement) { console.error("Save card UI elements not found!"); return; }
@@ -452,9 +449,9 @@ async function handleSaveCardClick() {
  * fetches initial data, and attaches event listeners.
  * Runs once the popup's DOM is fully loaded.
  *
- * @spec.requires All necessary DOM elements defined in the variable assignments exist in `popup.html`. `chrome` APIs are available (if run as an extension).
- * @spec.effects Assigns DOM elements to module variables. Calls `fetchSelectedText`, `setupWebcam`, `loadHandPoseModel`, `displayCardForReview`. Initializes `gestureRecognizerInstance`. Attaches click listeners to buttons. Updates `tfStatusElement` based on setup progress/outcome.
- * @spec.modifies All module-level state variables and potentially the entire `document.body.innerHTML` on fatal error.
+ * @spec.requires All necessary DOM elements defined in the variable assignments exist in popup.html. chrome APIs are available (if run as an extension).
+ * @spec.effects Assigns DOM elements to module variables. Calls fetchSelectedText, setupWebcam, loadHandPoseModel, displayCardForReview. Initializes gestureRecognizerInstance. Attaches click listeners to buttons. Updates tfStatusElement based on setup progress/outcome.
+ * @spec.modifies All module-level state variables and potentially the entire document.body.innerHTML on fatal error.
  */
 async function initializeApp() {
     console.log("Initializing app...");
