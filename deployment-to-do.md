@@ -6,7 +6,7 @@
 
 - [ ] **D1-C1: New Endpoint Implementation**
   *Goal: Define and implement the new backend routes and data handling logic.*
-  - [ ] D1-C1-S1: Define New Routes in backend/src/routes/apiRoutes.ts
+  - [x] D1-C1-S1: Define New Routes in backend/src/routes/apiRoutes.ts
     *Details:* Add route definitions for POST /api/create-answer and GET /api/get-latest-answer.
   - [ ] D1-C1-S2: Implement In-Memory Storage for "Latest Answer"
     *Details:* In a suitable backend file (e.g., create a new backend/src/assignmentStore.ts or add to server.ts if very simple), declare a variable to hold the most recent string received by /api/create-answer.
