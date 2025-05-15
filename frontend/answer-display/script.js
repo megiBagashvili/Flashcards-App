@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * This will point to the local backend during development and will need to be
      * updated to the live EC2 public IP address during deployment.
      */
-    const apiUrl = 'http://13.48.195.184:3001/api/get-latest-answer';
+    const apiUrl = 'http://16.170.233.147:3001/api/get-latest-answer';
 
     if (!answerSpan) {
         console.error("Error: Could not find the #answer span element in the DOM.");
