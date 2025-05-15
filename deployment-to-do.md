@@ -46,13 +46,13 @@
 ## Phase D2: Frontend Page Creation for Deployment Assignment
 **Goal:** Create a new, simple, standalone HTML page within the Flashcards-app/frontend directory that fetches and displays the most recent answer from the backend.
 
-- [ ] **D2-C1: Create Basic Frontend Files**
+- [x] **D2-C1: Create Basic Frontend Files**
   *Goal: Set up the HTML, JavaScript, and optional CSS files for the display page.*
   - [x] D2-C1-S1: Create frontend/answer-display/index.html
     *Details:* Create a new directory answer-display inside Flashcards-app/frontend. Add a basic index.html file.
   - [x] D2-C1-S2: Create frontend/answer-display/script.js
     *Details:* Create a corresponding JavaScript file.
-  - [ ] D2-C1-S3: Create frontend/answer-display/style.css (Optional)
+  - [x] D2-C1-S3: Create frontend/answer-display/style.css (Optional)
     *Details:* Create if you want to add any custom styling.
 
 - [ ] **D2-C2: Implement Frontend Logic**
