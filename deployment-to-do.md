@@ -4,7 +4,7 @@
 ## Phase D1: Backend Modification for Deployment Assignment
 **Goal:** Adapt the existing Flashcards-app/backend to include a new endpoint /api/create-answer that stores (in-memory for simplicity for this assignment) and allows retrieval of the most recent text submission.
 
-- [ ] **D1-C1: New Endpoint Implementation**
+- [x] **D1-C1: New Endpoint Implementation**
   *Goal: Define and implement the new backend routes and data handling logic.*
   - [x] D1-C1-S1: Define New Routes in backend/src/routes/apiRoutes.ts
     *Details:* Add route definitions for POST /api/create-answer and GET /api/get-latest-answer.
@@ -31,7 +31,7 @@
 
 - [ ] **D1-C2: Local Backend Testing**
   *Goal: Ensure the new backend endpoints function correctly locally.*
-  - [ ] D1-C2-S1: Write Basic Tests for New Endpoints (Optional but Recommended)
+  - [x] D1-C2-S1: Write Basic Tests for New Endpoints (Optional but Recommended)
     *Details:* Add new test cases in backend/src/routes/api.test.ts for /api/create-answer and /api/get-latest-answer.
   - [ ] D1-C2-S2: Test POST /api/create-answer Locally
     *Details:* Run the backend (npm run dev). Use Postman or curl to send a POST request with the specified JSON body to http://localhost:3001/api/create-answer. Verify the success response.

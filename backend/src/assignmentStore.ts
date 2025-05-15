@@ -4,7 +4,7 @@
  * This module will hold the most recently submitted text data from the
  * `/api/create-answer` endpoint and provide functions to set and get this data.
  *
- * This is a volatile in-memory store. Data will be lost on server restart.
+ * Note: This is a volatile in-memory store. Data will be lost on server restart.
  * It is designed specifically for the simplicity of the deployment assignment.
  */
 
@@ -18,11 +18,11 @@ let latestSubmittedData: string | null = null;
 
 /**
  * @function setLatestSubmittedData
- * @description Updates the `latestSubmittedData` with the new data string.
- * @param {string} data - The text data string to store.
+ * @description Updates the `latestSubmittedData` with the new data string, or resets it to null.
+ * @param {string | null} data - The text data string to store, or null to reset.
  * @spec.effects Modifies the module-scoped `latestSubmittedData` variable.
  */
-export const setLatestSubmittedData = (data: string): void => {
+export const setLatestSubmittedData = (data: string | null): void => {
     console.log(`[AssignmentStore] Setting latest data to: "${data}"`);
     latestSubmittedData = data;
 };
