@@ -4,11 +4,11 @@
 ## Phase D1: Backend Modification for Deployment Assignment
 **Goal:** Adapt the existing Flashcards-app/backend to include a new endpoint /api/create-answer that stores (in-memory for simplicity for this assignment) and allows retrieval of the most recent text submission.
 
-- [ ] **D1-C1: New Endpoint Implementation**
+- [x] **D1-C1: New Endpoint Implementation**
   *Goal: Define and implement the new backend routes and data handling logic.*
-  - [ ] D1-C1-S1: Define New Routes in backend/src/routes/apiRoutes.ts
+  - [x] D1-C1-S1: Define New Routes in backend/src/routes/apiRoutes.ts
     *Details:* Add route definitions for POST /api/create-answer and GET /api/get-latest-answer.
-  - [ ] D1-C1-S2: Implement In-Memory Storage for "Latest Answer"
+  - [x] D1-C1-S2: Implement In-Memory Storage for "Latest Answer"
     *Details:* In a suitable backend file (e.g., create a new backend/src/assignmentStore.ts or add to server.ts if very simple), declare a variable to hold the most recent string received by /api/create-answer.
     ```typescript
     // Example for assignmentStore.ts
@@ -16,29 +16,29 @@
     export const setLatestAnswer = (data: string) => { latestAnswer = data; };
     export const getLatestAnswer = (): string | null => latestAnswer;
     ```
-  - [ ] D1-C1-S3: Implement POST /api/create-answer Logic
+  - [x] D1-C1-S3: Implement POST /api/create-answer Logic
     *Details:* In apiRoutes.ts:
     The handler should expect a JSON body: { "data": "some-text-here" }.
     Validate the request body.
     Store the received data string using the mechanism from D1-C1-S2 (e.g., setLatestAnswer(req.body.data)).
     Respond with a success message (e.g., 201 Created or 200 OK).
-  - [ ] D1-C1-S4: Implement GET /api/get-latest-answer Logic
+  - [x] D1-C1-S4: Implement GET /api/get-latest-answer Logic
     *Details:* In apiRoutes.ts:
     The handler should retrieve the stored string using the mechanism from D1-C1-S2 (e.g., getLatestAnswer()).
     Respond with 200 OK and a JSON body like { "latestData": "the-stored-text-here" } or { "latestData": null } if nothing has been posted yet.
-  - [ ] D1-C1-S5: Update Backend Types (Optional)
+  - [x] D1-C1-S5: Update Backend Types (Optional)
     *Details:* If desired, add new interfaces in backend/src/types/index.ts for the request/response bodies of these new endpoints.
 
-- [ ] **D1-C2: Local Backend Testing**
+- [x] **D1-C2: Local Backend Testing**
   *Goal: Ensure the new backend endpoints function correctly locally.*
-  - [ ] D1-C2-S1: Write Basic Tests for New Endpoints (Optional but Recommended)
+  - [x] D1-C2-S1: Write Basic Tests for New Endpoints (Optional but Recommended)
     *Details:* Add new test cases in backend/src/routes/api.test.ts for /api/create-answer and /api/get-latest-answer.
-  - [ ] D1-C2-S2: Test POST /api/create-answer Locally
+  - [x] D1-C2-S2: Test POST /api/create-answer Locally
     *Details:* Run the backend (npm run dev). Use Postman or curl to send a POST request with the specified JSON body to http://localhost:3001/api/create-answer. Verify the success response.
-  - [ ] D1-C2-S3: Test GET /api/get-latest-answer Locally
+  - [x] D1-C2-S3: Test GET /api/get-latest-answer Locally
     *Details:* After posting data, use Postman, curl, or a browser to send a GET request to http://localhost:3001/api/get-latest-answer. Verify it returns the data you posted.
 
-- [ ] **D1-C3: Git Commit Backend Changes**
+- [x] **D1-C3: Git Commit Backend Changes**
   *Goal: Save the backend modifications to version control.*
   - [ ] D1-C3-S1: Commit New Endpoint and Storage Logic
     *Details:* Stage and commit the changes to apiRoutes.ts, the new storage mechanism file (if any), and test files. Use a descriptive commit message (e.g., feat(backend): add /create-answer and /get-latest-answer for deployment assignment).
@@ -46,18 +46,18 @@
 ## Phase D2: Frontend Page Creation for Deployment Assignment
 **Goal:** Create a new, simple, standalone HTML page within the Flashcards-app/frontend directory that fetches and displays the most recent answer from the backend.
 
-- [ ] **D2-C1: Create Basic Frontend Files**
+- [x] **D2-C1: Create Basic Frontend Files**
   *Goal: Set up the HTML, JavaScript, and optional CSS files for the display page.*
-  - [ ] D2-C1-S1: Create frontend/answer-display/index.html
+  - [x] D2-C1-S1: Create frontend/answer-display/index.html
     *Details:* Create a new directory answer-display inside Flashcards-app/frontend. Add a basic index.html file.
-  - [ ] D2-C1-S2: Create frontend/answer-display/script.js
+  - [x] D2-C1-S2: Create frontend/answer-display/script.js
     *Details:* Create a corresponding JavaScript file.
-  - [ ] D2-C1-S3: Create frontend/answer-display/style.css (Optional)
+  - [x] D2-C1-S3: Create frontend/answer-display/style.css (Optional)
     *Details:* Create if you want to add any custom styling.
 
-- [ ] **D2-C2: Implement Frontend Logic**
+- [x] **D2-C2: Implement Frontend Logic**
   *Goal: Add HTML structure and JavaScript to fetch and display data.*
-  - [ ] D2-C2-S1: Structure index.html
+  - [x] D2-C2-S1: Structure index.html
     *Details:* Include a <span> element with id="answer" as required by the assignment. Link script.js and style.css (if created).
     ```html
     <!DOCTYPE html>
@@ -74,7 +74,7 @@
     </body>
     </html>
     ```
-  - [ ] D2-C2-S2: Implement script.js to Fetch and Display Data
+  - [x] D2-C2-S2: Implement script.js to Fetch and Display Data
     *Details:*
     On page load, use fetch to make a GET request to the (local for now) backend endpoint /api/get-latest-answer.
     On successful response, parse the JSON and update the textContent of the <span id="answer"> element.
@@ -105,21 +105,21 @@
             });
     });
     ```
-  - [ ] D2-C2-S3: Style the Page (Optional)
+  - [x] D2-C2-S3: Style the Page (Optional)
     *Details:* Add any desired CSS to style.css.
 
-- [ ] **D2-C3: Local Frontend Testing**
+- [x] **D2-C3: Local Frontend Testing**
   *Goal: Ensure the frontend page correctly interacts with the local backend.*
-  - [ ] D2-C3-S1: Serve index.html Locally
+  - [x] D2-C3-S1: Serve index.html Locally
     *Details:* Open frontend/answer-display/index.html directly in your browser, or use a simple HTTP server (e.g., VS Code Live Server extension, or run npx serve ./frontend/answer-display from the project root).
-  - [ ] D2-C3-S2: Test Interaction with Local Backend
+  - [x] D2-C3-S2: Test Interaction with Local Backend
     *Details:*
     Ensure your local backend is running.
     Use Postman/curl to POST some data to http://localhost:3001/api/create-answer.
     Refresh the index.html page in your browser and verify the submitted data appears.
     Post different data and refresh again to see it update.
 
-- [ ] **D2-C4: Git Commit Frontend Page**
+- [x] **D2-C4: Git Commit Frontend Page**
   *Goal: Save the new frontend page to version control.*
   - [ ] D2-C4-S1: Commit New Frontend Page Files
     *Details:* Stage and commit the new frontend/answer-display directory. Use a descriptive commit message (e.g., feat(frontend): add answer display page for deployment assignment).
@@ -209,6 +209,31 @@
     *Details:* pm2 logs flashcard-backend and pm2 logs flashcard-frontend to see console output and troubleshoot if needed.
   - [ ] D3-C7-S6: Configure PM2 to Start on System Reboot (as per provided guide)
     *Details:* pm2 startup (follow instructions, it will output a command to run, likely with sudo). Then pm2 save.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Phase D4: Final Testing & Submission
 **Goal:** Thoroughly test the deployed application and submit the required URLs.

@@ -1,13 +1,12 @@
 import express, { Request, Response, Router } from 'express';
 import pool from '../db';
-import * as state from '../state'; 
+import * as state from '../state';
 import { Flashcard, AnswerDifficulty } from '../logic/flashcards';
 import { getHint as calculateHint } from '../logic/algorithm';
 import { ProgressStats } from '../types';
+import { setLatestSubmittedData, getLatestSubmittedData } from '../assignmentStore';
 
 const router: Router = express.Router();
-
-// API Route Handlers
 
 /**
  * @name GET /api/practice
@@ -19,11 +18,11 @@ const router: Router = express.Router();
  *
  * @spec.requires Database pool is connected and the cards table exists. state.getCurrentDay() returns the current day number.
  * @spec.effects
- *   - Reads the current day from state.
- *   - Queries the database for up to 10 cards where due_date is less than or equal to the current time (NOW()), ordered randomly.
- *   - Constructs an array of plain card data objects, including id, front, back, hint, tags, due_date (as ISO string).
- *   - On success: Sends a 200 OK response with a JSON body { cards: BackendCardType[], day: number }.
- *   - On database error: Logs the error and sends a 500 Internal Server Error response with JSON body { error: string }.
+ * - Reads the current day from state.
+ * - Queries the database for up to 10 cards where due_date is less than or equal to the current time (NOW()), ordered randomly.
+ * - Constructs an array of plain card data objects, including id, front, back, hint, tags, due_date (as ISO string).
+ * - On success: Sends a 200 OK response with a JSON body { cards: BackendCardType[], day: number }.
+ * - On database error: Logs the error and sends a 500 Internal Server Error response with JSON body { error: string }.
  * @spec.modifies res object (sends response).
  */
 router.get('/practice', async (req: Request, res: Response) => {
@@ -68,13 +67,13 @@ router.get('/practice', async (req: Request, res: Response) => {
  *
  * @spec.requires Database pool is connected and the cards table exists. req.body contains cardId (number) and difficulty (valid AnswerDifficulty enum value: 0, 1, or 2).
  * @spec.effects
- *   - Validates the request body for presence and type of cardId and difficulty.
- *   - Calculates a new due_date based on the difficulty using predefined intervals (1 day for Easy, 10 mins for Hard, 1 min for Wrong).
- *   - Executes an UPDATE query on the cards table for the given cardId, setting the new due_date and updating updated_at to NOW().
- *   - On successful update (rowCount > 0): Sends a 200 OK response with JSON body { message: "Card review updated successfully" }.
- *   - If cardId is not found (rowCount === 0): Sends a 404 Not Found response with JSON body { error: "Card not found for the provided ID" }.
- *   - If validation fails: Sends a 400 Bad Request response with JSON body { error: string }.
- *   - On database error: Logs the error and sends a 500 Internal Server Error response with JSON body { error: string }.
+ * - Validates the request body for presence and type of cardId and difficulty.
+ * - Calculates a new due_date based on the difficulty using predefined intervals (1 day for Easy, 10 mins for Hard, 1 min for Wrong).
+ * - Executes an UPDATE query on the cards table for the given cardId, setting the new due_date and updating updated_at to NOW().
+ * - On successful update (rowCount > 0): Sends a 200 OK response with JSON body { message: "Card review updated successfully" }.
+ * - If cardId is not found (rowCount === 0): Sends a 404 Not Found response with JSON body { error: "Card not found for the provided ID" }.
+ * - If validation fails: Sends a 400 Bad Request response with JSON body { error: string }.
+ * - On database error: Logs the error and sends a 500 Internal Server Error response with JSON body { error: string }.
  * @spec.modifies cards table in the database (updates due_date, updated_at for one row), res object (sends response).
  */
 router.post('/update', async (req: Request, res: Response) => {
@@ -139,12 +138,12 @@ router.post('/update', async (req: Request, res: Response) => {
  *
  * @spec.requires Database pool is connected and the cards table exists. req.query contains non-empty cardFront and cardBack strings. logic/algorithm.ts contains a getHint function.
  * @spec.effects
- *   - Validates the presence and type of query parameters.
- *   - Queries the database for a card matching the trimmed cardFront and cardBack.
- *   - If card found: Creates a Flashcard object (from logic/flashcards) and calls calculateHint to get the hint text. Sends a 200 OK response with JSON body { hint: string }.
- *   - If card not found: Sends a 404 Not Found response with JSON body { error: "Card not found" }.
- *   - If validation fails: Sends a 400 Bad Request response with JSON body { error: string }.
- *   - On database error: Logs the error and sends a 500 Internal Server Error response with JSON body { error: string }.
+ * - Validates the presence and type of query parameters.
+ * - Queries the database for a card matching the trimmed cardFront and cardBack.
+ * - If card found: Creates a Flashcard object (from logic/flashcards) and calls calculateHint to get the hint text. Sends a 200 OK response with JSON body { hint: string }.
+ * - If card not found: Sends a 404 Not Found response with JSON body { error: "Card not found" }.
+ * - If validation fails: Sends a 400 Bad Request response with JSON body { error: string }.
+ * - On database error: Logs the error and sends a 500 Internal Server Error response with JSON body { error: string }.
  * @spec.modifies res object (sends response).
  */
 router.get('/hint', async (req: Request, res: Response) => {
@@ -192,11 +191,11 @@ router.get('/hint', async (req: Request, res: Response) => {
  *
  * @spec.requires Database pool is connected and the cards table exists with an interval column. types/index.ts defines ProgressStats interface.
  * @spec.effects
- *   - Queries the database to count cards grouped by their interval value (treating NULL intervals as 0).
- *   - Constructs a bucketDistribution object mapping interval number to card count.
- *   - Sets placeholder values for accuracyRate (0) and averageDifficulty (undefined).
- *   - On success: Sends a 200 OK response with a JSON body conforming to ProgressStats (omitting averageDifficulty if undefined).
- *   - On database error: Logs the error and sends a 500 Internal Server Error response with JSON body { error: string }.
+ * - Queries the database to count cards grouped by their interval value (treating NULL intervals as 0).
+ * - Constructs a bucketDistribution object mapping interval number to card count.
+ * - Sets placeholder values for accuracyRate (0) and averageDifficulty (undefined).
+ * - On success: Sends a 200 OK response with a JSON body conforming to ProgressStats (omitting averageDifficulty if undefined).
+ * - On database error: Logs the error and sends a 500 Internal Server Error response with JSON body { error: string }.
  * @spec.modifies res object (sends response).
  */
 router.get('/progress', async (req: Request, res: Response) => {
@@ -265,13 +264,13 @@ router.post('/day/next', (req: Request, res: Response) => {
  *
  * @spec.requires Database pool is connected and the cards table exists with columns front, back, hint, tags, due_date, created_at, updated_at. req.body contains valid front and back strings.
  * @spec.effects
- *   - Validates front and back fields in the request body.
- *   - Sanitizes optional hint and tags fields.
- *   - Executes an INSERT query into the cards table with the provided data, setting due_date, created_at, updated_at to NOW().
- *   - Uses RETURNING * to get the newly created row data.
- *   - On successful insert: Sends a 201 Created response with the full new card object (including database-generated id) as JSON.
- *   - If validation fails: Sends a 400 Bad Request response with JSON body { error: string }.
- *   - On database error (e.g., unique constraint violation, connection issue): Logs the error and sends a 500 Internal Server Error response with JSON body { error: string }.
+ * - Validates front and back fields in the request body.
+ * - Sanitizes optional hint and tags fields.
+ * - Executes an INSERT query into the cards table with the provided data, setting due_date, created_at, updated_at to NOW().
+ * - Uses RETURNING * to get the newly created row data.
+ * - On successful insert: Sends a 201 Created response with the full new card object (including database-generated id) as JSON.
+ * - If validation fails: Sends a 400 Bad Request response with JSON body { error: string }.
+ * - On database error (e.g., unique constraint violation, connection issue): Logs the error and sends a 500 Internal Server Error response with JSON body { error: string }.
  * @spec.modifies cards table in the database (inserts one row), res object (sends response).
  */
 router.post("/cards", async (req: Request, res: Response) => {
@@ -306,5 +305,76 @@ router.post("/cards", async (req: Request, res: Response) => {
         res.status(500).json({ error: "Failed to insert card into database" });
     }
 });
+
+/**
+ * @name POST /api/create-answer
+ * @description Endpoint for the deployment assignment. Accepts a JSON body containing
+ * a "data" field with text, stores this text in-memory as the latest answer.
+ * @route POST /api/create-answer
+ * @param {Request} req The Express request object. Expects JSON body: { "data": "some-text-here" }.
+ * @param {Response} res The Express response object.
+ * @returns {void}
+ *
+ * @spec.requires `req.body` contains a `data` property which is a non-empty string. `assignmentStore.setLatestSubmittedData` function is available.
+ * @spec.effects
+ * - Validates that `req.body.data` exists and is a non-empty string.
+ * - If valid, calls `setLatestSubmittedData` with the trimmed data string.
+ * - Sends a 201 Created response with a success message and the received data.
+ * - If invalid, sends a 400 Bad Request response with an error message.
+ * - On other errors, sends a 500 Internal Server Error response.
+ * @spec.modifies In-memory store via `setLatestSubmittedData`, `res` object (sends response).
+ */
+router.post('/create-answer', (req: Request, res: Response) => {
+    console.log(`[API] POST /api/create-answer received with body:`, req.body);
+    try {
+        const data = req.body.data;
+        if (typeof data !== 'string' || data.trim() === '') {
+            console.warn('[API /create-answer] Invalid request: "data" field is missing, not a string, or empty.');
+            return res.status(400).json({ error: 'Invalid request: "data" field must be a non-empty string.' });
+        }
+
+        const trimmedData = data.trim();
+        setLatestSubmittedData(trimmedData);
+
+        console.log(`[API /create-answer] Stored data: "${trimmedData}"`);
+        res.status(201).json({ message: 'Data created successfully.', receivedData: trimmedData });
+
+    } catch (error) {
+        console.error("[API] Error in /api/create-answer:", error);
+        res.status(500).json({ error: "Failed to process create-answer request." });
+    }
+});
+
+/**
+ * @name GET /api/get-latest-answer
+ * @description Endpoint for the deployment assignment. Retrieves the most recently stored answer
+ * from the in-memory store.
+ * @route GET /api/get-latest-answer
+ * @param {Request} req The Express request object.
+ * @param {Response} res The Express response object.
+ * @returns {void}
+ *
+ * @spec.requires `assignmentStore.getLatestSubmittedData` function is available.
+ * @spec.effects
+ * - Calls `getLatestSubmittedData` to retrieve the stored string.
+ * - Sends a 200 OK response with JSON body `{ latestData: string | null }`.
+ * - On other errors, sends a 500 Internal Server Error response.
+ * @spec.modifies `res` object (sends response).
+ */
+router.get('/get-latest-answer', (req: Request, res: Response) => {
+    console.log(`[API] GET /api/get-latest-answer received`);
+    try {
+        // Retrieve the stored data using the imported function
+        const latestData = getLatestSubmittedData();
+
+        console.log(`[API /get-latest-answer] Sending latest data: "${latestData}"`);
+        res.status(200).json({ latestData: latestData });
+
+    } catch (error) {
+        console.error("[API] Error in /api/get-latest-answer:", error);
+        res.status(500).json({ error: "Failed to process get-latest-answer request." });
+    }
+});
+
 
 export default router;

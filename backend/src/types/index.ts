@@ -63,6 +63,47 @@ export interface ProgressStats {
   averageDifficulty?: number;
 }
 
+/**
+ * @interface CreateAnswerRequest
+ * @description Defines the expected structure of the request body for the
+ * `POST /api/create-answer` endpoint.
+ */
+export interface CreateAnswerRequest {
+    /**
+     * @property {string} data - The text data to be submitted and stored.
+     */
+    data: string;
+}
+
+/**
+ * @interface CreateAnswerResponse
+ * @description Defines the structure of the success response body for the
+ * `POST /api/create-answer` endpoint.
+ */
+export interface CreateAnswerResponse {
+    /**
+     * @property {string} message - A success message indicating the data was received.
+     */
+    message: string;
+    /**
+     * @property {string} receivedData - The data that was received and stored.
+     */
+    receivedData: string;
+}
+
+/**
+ * @interface GetLatestAnswerResponse
+ * @description Defines the structure of the response body for the
+ * `GET /api/get-latest-answer` endpoint.
+ */
+export interface GetLatestAnswerResponse {
+    /**
+     * @property {string | null} latestData - The most recently submitted text data,
+     * or `null` if no data has been submitted yet.
+     */
+    latestData: string | null;
+}
+
 export {
   Flashcard,
   AnswerDifficulty,
