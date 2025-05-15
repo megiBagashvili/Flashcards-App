@@ -1,6 +1,6 @@
 import express, { Request, Response, Router } from 'express';
 import pool from '../db';
-import * as state from '../state'; 
+import * as state from '../state';
 import { Flashcard, AnswerDifficulty } from '../logic/flashcards';
 import { getHint as calculateHint } from '../logic/algorithm';
 import { ProgressStats } from '../types';
@@ -19,11 +19,11 @@ const router: Router = express.Router();
  *
  * @spec.requires Database pool is connected and the cards table exists. state.getCurrentDay() returns the current day number.
  * @spec.effects
- *   - Reads the current day from state.
- *   - Queries the database for up to 10 cards where due_date is less than or equal to the current time (NOW()), ordered randomly.
- *   - Constructs an array of plain card data objects, including id, front, back, hint, tags, due_date (as ISO string).
- *   - On success: Sends a 200 OK response with a JSON body { cards: BackendCardType[], day: number }.
- *   - On database error: Logs the error and sends a 500 Internal Server Error response with JSON body { error: string }.
+ * - Reads the current day from state.
+ * - Queries the database for up to 10 cards where due_date is less than or equal to the current time (NOW()), ordered randomly.
+ * - Constructs an array of plain card data objects, including id, front, back, hint, tags, due_date (as ISO string).
+ * - On success: Sends a 200 OK response with a JSON body { cards: BackendCardType[], day: number }.
+ * - On database error: Logs the error and sends a 500 Internal Server Error response with JSON body { error: string }.
  * @spec.modifies res object (sends response).
  */
 router.get('/practice', async (req: Request, res: Response) => {
@@ -68,13 +68,13 @@ router.get('/practice', async (req: Request, res: Response) => {
  *
  * @spec.requires Database pool is connected and the cards table exists. req.body contains cardId (number) and difficulty (valid AnswerDifficulty enum value: 0, 1, or 2).
  * @spec.effects
- *   - Validates the request body for presence and type of cardId and difficulty.
- *   - Calculates a new due_date based on the difficulty using predefined intervals (1 day for Easy, 10 mins for Hard, 1 min for Wrong).
- *   - Executes an UPDATE query on the cards table for the given cardId, setting the new due_date and updating updated_at to NOW().
- *   - On successful update (rowCount > 0): Sends a 200 OK response with JSON body { message: "Card review updated successfully" }.
- *   - If cardId is not found (rowCount === 0): Sends a 404 Not Found response with JSON body { error: "Card not found for the provided ID" }.
- *   - If validation fails: Sends a 400 Bad Request response with JSON body { error: string }.
- *   - On database error: Logs the error and sends a 500 Internal Server Error response with JSON body { error: string }.
+ * - Validates the request body for presence and type of cardId and difficulty.
+ * - Calculates a new due_date based on the difficulty using predefined intervals (1 day for Easy, 10 mins for Hard, 1 min for Wrong).
+ * - Executes an UPDATE query on the cards table for the given cardId, setting the new due_date and updating updated_at to NOW().
+ * - On successful update (rowCount > 0): Sends a 200 OK response with JSON body { message: "Card review updated successfully" }.
+ * - If cardId is not found (rowCount === 0): Sends a 404 Not Found response with JSON body { error: "Card not found for the provided ID" }.
+ * - If validation fails: Sends a 400 Bad Request response with JSON body { error: string }.
+ * - On database error: Logs the error and sends a 500 Internal Server Error response with JSON body { error: string }.
  * @spec.modifies cards table in the database (updates due_date, updated_at for one row), res object (sends response).
  */
 router.post('/update', async (req: Request, res: Response) => {
@@ -139,12 +139,12 @@ router.post('/update', async (req: Request, res: Response) => {
  *
  * @spec.requires Database pool is connected and the cards table exists. req.query contains non-empty cardFront and cardBack strings. logic/algorithm.ts contains a getHint function.
  * @spec.effects
- *   - Validates the presence and type of query parameters.
- *   - Queries the database for a card matching the trimmed cardFront and cardBack.
- *   - If card found: Creates a Flashcard object (from logic/flashcards) and calls calculateHint to get the hint text. Sends a 200 OK response with JSON body { hint: string }.
- *   - If card not found: Sends a 404 Not Found response with JSON body { error: "Card not found" }.
- *   - If validation fails: Sends a 400 Bad Request response with JSON body { error: string }.
- *   - On database error: Logs the error and sends a 500 Internal Server Error response with JSON body { error: string }.
+ * - Validates the presence and type of query parameters.
+ * - Queries the database for a card matching the trimmed cardFront and cardBack.
+ * - If card found: Creates a Flashcard object (from logic/flashcards) and calls calculateHint to get the hint text. Sends a 200 OK response with JSON body { hint: string }.
+ * - If card not found: Sends a 404 Not Found response with JSON body { error: "Card not found" }.
+ * - If validation fails: Sends a 400 Bad Request response with JSON body { error: string }.
+ * - On database error: Logs the error and sends a 500 Internal Server Error response with JSON body { error: string }.
  * @spec.modifies res object (sends response).
  */
 router.get('/hint', async (req: Request, res: Response) => {
@@ -192,11 +192,11 @@ router.get('/hint', async (req: Request, res: Response) => {
  *
  * @spec.requires Database pool is connected and the cards table exists with an interval column. types/index.ts defines ProgressStats interface.
  * @spec.effects
- *   - Queries the database to count cards grouped by their interval value (treating NULL intervals as 0).
- *   - Constructs a bucketDistribution object mapping interval number to card count.
- *   - Sets placeholder values for accuracyRate (0) and averageDifficulty (undefined).
- *   - On success: Sends a 200 OK response with a JSON body conforming to ProgressStats (omitting averageDifficulty if undefined).
- *   - On database error: Logs the error and sends a 500 Internal Server Error response with JSON body { error: string }.
+ * - Queries the database to count cards grouped by their interval value (treating NULL intervals as 0).
+ * - Constructs a bucketDistribution object mapping interval number to card count.
+ * - Sets placeholder values for accuracyRate (0) and averageDifficulty (undefined).
+ * - On success: Sends a 200 OK response with a JSON body conforming to ProgressStats (omitting averageDifficulty if undefined).
+ * - On database error: Logs the error and sends a 500 Internal Server Error response with JSON body { error: string }.
  * @spec.modifies res object (sends response).
  */
 router.get('/progress', async (req: Request, res: Response) => {
@@ -265,13 +265,13 @@ router.post('/day/next', (req: Request, res: Response) => {
  *
  * @spec.requires Database pool is connected and the cards table exists with columns front, back, hint, tags, due_date, created_at, updated_at. req.body contains valid front and back strings.
  * @spec.effects
- *   - Validates front and back fields in the request body.
- *   - Sanitizes optional hint and tags fields.
- *   - Executes an INSERT query into the cards table with the provided data, setting due_date, created_at, updated_at to NOW().
- *   - Uses RETURNING * to get the newly created row data.
- *   - On successful insert: Sends a 201 Created response with the full new card object (including database-generated id) as JSON.
- *   - If validation fails: Sends a 400 Bad Request response with JSON body { error: string }.
- *   - On database error (e.g., unique constraint violation, connection issue): Logs the error and sends a 500 Internal Server Error response with JSON body { error: string }.
+ * - Validates front and back fields in the request body.
+ * - Sanitizes optional hint and tags fields.
+ * - Executes an INSERT query into the cards table with the provided data, setting due_date, created_at, updated_at to NOW().
+ * - Uses RETURNING * to get the newly created row data.
+ * - On successful insert: Sends a 201 Created response with the full new card object (including database-generated id) as JSON.
+ * - If validation fails: Sends a 400 Bad Request response with JSON body { error: string }.
+ * - On database error (e.g., unique constraint violation, connection issue): Logs the error and sends a 500 Internal Server Error response with JSON body { error: string }.
  * @spec.modifies cards table in the database (inserts one row), res object (sends response).
  */
 router.post("/cards", async (req: Request, res: Response) => {
@@ -306,5 +306,55 @@ router.post("/cards", async (req: Request, res: Response) => {
         res.status(500).json({ error: "Failed to insert card into database" });
     }
 });
+
+/**
+ * @name POST /api/create-answer
+ * @description Endpoint for the deployment assignment. Accepts text data and stores it.
+ * (Placeholder implementation - logic to be added in D1-C1-S3)
+ * @route POST /api/create-answer
+ * @param {Request} req The Express request object. Expects JSON body: { "data": "some text here" }.
+ * @param {Response} res The Express response object.
+ * @returns {Promise<void>}
+ */
+router.post('/create-answer', async (req: Request, res: Response) => {
+    console.log(`[API] POST /api/create-answer received with body:`, req.body);
+    // Logic to validate req.body.data and store it will be added in D1-C1-S2/S3
+    try {
+        // Placeholder logic for now
+        const data = req.body.data;
+        if (typeof data !== 'string') {
+            return res.status(400).json({ error: 'Invalid request body: "data" field must be a string.' });
+        }
+        console.log(`[API /create-answer] Received data: "${data}" - (Logic to store it TBD)`);
+        res.status(201).json({ message: 'Answer received successfully (placeholder).', receivedData: data });
+    } catch (error) {
+        console.error("[API] Error in /api/create-answer:", error);
+        res.status(500).json({ error: "Failed to process create-answer request." });
+    }
+});
+
+/**
+ * @name GET /api/get-latest-answer
+ * @description Endpoint for the deployment assignment. Retrieves the most recently stored answer.
+ * (Placeholder implementation - logic to be added in D1-C1-S4)
+ * @route GET /api/get-latest-answer
+ * @param {Request} req The Express request object.
+ * @param {Response} res The Express response object.
+ * @returns {Promise<void>}
+ */
+router.get('/get-latest-answer', async (req: Request, res: Response) => {
+    console.log(`[API] GET /api/get-latest-answer received`);
+    // Logic to retrieve the stored answer will be added in D1-C1-S2/S4
+    try {
+        // Placeholder logic for now
+        const latestData = "Placeholder: This is the latest answer from backend."; // This will come from the storage mechanism
+        console.log(`[API /get-latest-answer] Sending latest data: "${latestData}" - (Logic to retrieve it TBD)`);
+        res.status(200).json({ latestData: latestData });
+    } catch (error) {
+        console.error("[API] Error in /api/get-latest-answer:", error);
+        res.status(500).json({ error: "Failed to process get-latest-answer request." });
+    }
+});
+
 
 export default router;
