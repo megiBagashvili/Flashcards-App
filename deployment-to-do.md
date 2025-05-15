@@ -22,7 +22,7 @@
     Validate the request body.
     Store the received data string using the mechanism from D1-C1-S2 (e.g., setLatestAnswer(req.body.data)).
     Respond with a success message (e.g., 201 Created or 200 OK).
-  - [ ] D1-C1-S4: Implement GET /api/get-latest-answer Logic
+  - [x] D1-C1-S4: Implement GET /api/get-latest-answer Logic
     *Details:* In apiRoutes.ts:
     The handler should retrieve the stored string using the mechanism from D1-C1-S2 (e.g., getLatestAnswer()).
     Respond with 200 OK and a JSON body like { "latestData": "the-stored-text-here" } or { "latestData": null } if nothing has been posted yet.

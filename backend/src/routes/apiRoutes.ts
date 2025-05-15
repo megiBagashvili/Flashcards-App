@@ -4,11 +4,9 @@ import * as state from '../state';
 import { Flashcard, AnswerDifficulty } from '../logic/flashcards';
 import { getHint as calculateHint } from '../logic/algorithm';
 import { ProgressStats } from '../types';
-import { setLatestSubmittedData } from '../assignmentStore';
+import { setLatestSubmittedData, getLatestSubmittedData } from '../assignmentStore';
 
 const router: Router = express.Router();
-
-// API Route Handlers
 
 /**
  * @name GET /api/practice
@@ -326,7 +324,7 @@ router.post("/cards", async (req: Request, res: Response) => {
  * - On other errors, sends a 500 Internal Server Error response.
  * @spec.modifies In-memory store via `setLatestSubmittedData`, `res` object (sends response).
  */
-router.post('/create-answer', (req: Request, res: Response) => { // Changed to synchronous for simplicity with in-memory store
+router.post('/create-answer', (req: Request, res: Response) => {
     console.log(`[API] POST /api/create-answer received with body:`, req.body);
     try {
         const data = req.body.data;
@@ -349,21 +347,29 @@ router.post('/create-answer', (req: Request, res: Response) => { // Changed to s
 
 /**
  * @name GET /api/get-latest-answer
- * @description Endpoint for the deployment assignment. Retrieves the most recently stored answer.
- * (Placeholder implementation - logic to be added in D1-C1-S4)
+ * @description Endpoint for the deployment assignment. Retrieves the most recently stored answer
+ * from the in-memory store.
  * @route GET /api/get-latest-answer
  * @param {Request} req The Express request object.
  * @param {Response} res The Express response object.
- * @returns {Promise<void>}
+ * @returns {void}
+ *
+ * @spec.requires `assignmentStore.getLatestSubmittedData` function is available.
+ * @spec.effects
+ * - Calls `getLatestSubmittedData` to retrieve the stored string.
+ * - Sends a 200 OK response with JSON body `{ latestData: string | null }`.
+ * - On other errors, sends a 500 Internal Server Error response.
+ * @spec.modifies `res` object (sends response).
  */
-router.get('/get-latest-answer', async (req: Request, res: Response) => {
+router.get('/get-latest-answer', (req: Request, res: Response) => {
     console.log(`[API] GET /api/get-latest-answer received`);
-    // Logic to retrieve the stored answer will be added in D1-C1-S2/S4
     try {
-        // Placeholder logic for now
-        const latestData = "Placeholder: This is the latest answer from backend."; // This will come from the storage mechanism
-        console.log(`[API /get-latest-answer] Sending latest data: "${latestData}" - (Logic to retrieve it TBD)`);
+        // Retrieve the stored data using the imported function
+        const latestData = getLatestSubmittedData();
+
+        console.log(`[API /get-latest-answer] Sending latest data: "${latestData}"`);
         res.status(200).json({ latestData: latestData });
+
     } catch (error) {
         console.error("[API] Error in /api/get-latest-answer:", error);
         res.status(500).json({ error: "Failed to process get-latest-answer request." });
