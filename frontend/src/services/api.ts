@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Flashcard, AnswerDifficulty, PracticeSession, ProgressStats } from '../types';
 
-const API_BASE_URL = 'http://13.48.195.184:3001/api';
+const API_BASE_URL = 'http://16.170.233.147:3001/api';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
