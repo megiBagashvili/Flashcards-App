@@ -37,7 +37,11 @@ const PracticeView: React.FC = () => {
         if (!practiceCards.length) return;
         const currentCard = practiceCards[currentCardIndex];
         try {
-            await submitAnswer(currentCard.front, currentCard.back, difficulty);
+            if (currentCard && typeof currentCard.id === 'number') {
+    await submitAnswer(currentCard.id, difficulty);
+} else {
+    console.error("Cannot submit answer: currentCard or currentCard.id is missing.", currentCard);
+}
             if (currentCardIndex + 1 < practiceCards.length) {
                 setCurrentCardIndex((prev) => prev + 1);
                 setShowBack(false);

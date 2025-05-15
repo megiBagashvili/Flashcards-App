@@ -1,9 +1,11 @@
 export interface Flashcard {
-    front: string;
-    back: string;
-    hint?: string;
-    tags: string[];
-  }
+  id: number;
+  front: string;
+  back: string;
+  hint?: string | null;
+  tags?: string[] | null;
+  due_date?: string;
+}
   
   export enum AnswerDifficulty {
     Wrong = 0,
@@ -12,9 +14,9 @@ export interface Flashcard {
   }
   
   export interface PracticeSession {
-    cards: Flashcard[];
-    day: number;
-  }
+  cards: Flashcard[];
+  day: number;
+}
   
   export interface UpdateRequest {
     cardFront: string;
