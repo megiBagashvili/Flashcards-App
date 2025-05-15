@@ -26,7 +26,7 @@
     *Details:* In apiRoutes.ts:
     The handler should retrieve the stored string using the mechanism from D1-C1-S2 (e.g., getLatestAnswer()).
     Respond with 200 OK and a JSON body like { "latestData": "the-stored-text-here" } or { "latestData": null } if nothing has been posted yet.
-  - [ ] D1-C1-S5: Update Backend Types (Optional)
+  - [x] D1-C1-S5: Update Backend Types (Optional)
     *Details:* If desired, add new interfaces in backend/src/types/index.ts for the request/response bodies of these new endpoints.
 
 - [ ] **D1-C2: Local Backend Testing**
