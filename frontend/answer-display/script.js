@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * @const {HTMLElement | null} answerSpan
      * @description The HTML <span> element where the fetched data will be displayed.
-     * Its `id` is "answer".
+     * Its id is "answer".
      */
     const answerSpan = document.getElementById('answer');
 
