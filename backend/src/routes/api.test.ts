@@ -23,7 +23,7 @@ import { setLatestSubmittedData, getLatestSubmittedData } from '../assignmentSto
  * @description Jest hook that runs once before all tests in this file.
  * Used here to perform an initial check that the database pool can connect.
  * @param {Function} callback - The async function containing the setup logic.
- * @effects Attempts a simple query (`SELECT 1`) to verify DB connectivity. Logs success or failure.
+ * @effects Attempts a simple query (SELECT 1) to verify DB connectivity. Logs success or failure.
  */
 beforeAll(async () => {
     try {
@@ -39,8 +39,8 @@ beforeAll(async () => {
  * @description Jest hook that runs once after all tests in this file have completed.
  * Used here to close the database connection pool gracefully.
  * @param {Function} callback - The async function containing the teardown logic.
- * @effects Calls `pool.end()` to close all connections in the pool. Logs confirmation.
- * @modifies `pool` state (closes connections).
+ * @effects Calls pool.end() to close all connections in the pool. Logs confirmation.
+ * @modifies pool state (closes connections).
  */
 afterAll(async () => {
     await pool.end();
@@ -49,12 +49,12 @@ afterAll(async () => {
 
 /**
  * @function beforeEach (Top Level)
- * @description Jest hook that runs before each individual test case (`it` block) across all describe blocks in this file.
+ * @description Jest hook that runs before each individual test case (it block) across all describe blocks in this file.
  * Used here to ensure a clean database state for each test by deleting all rows
- * from the `cards` table. This is for tests interacting with the main flashcard functionality.
+ * from the cards table. This is for tests interacting with the main flashcard functionality.
  * @param {Function} callback - The async function containing the per-test setup logic.
- * @effects Executes `DELETE FROM cards`. Logs start message or error if deletion fails.
- * @modifies `cards` table in the database.
+ * @effects Executes DELETE FROM cards. Logs start message or error if deletion fails.
+ * @modifies cards table in the database.
  */
 beforeEach(async () => {
     try {
@@ -68,7 +68,7 @@ beforeEach(async () => {
 
 /**
  * @function afterEach (Top Level)
- * @description Jest hook that runs after each individual test case (`it` block) across all describe blocks.
+ * @description Jest hook that runs after each individual test case (it block) across all describe blocks.
  * Used here primarily for logging the end of a test case.
  * @param {Function} callback - The async function containing the per-test teardown logic.
  * @effects Logs an end message to the console.
@@ -90,8 +90,8 @@ describe('Flashcard API Endpoints', () => {
     describe('GET /api/practice', () => {
         /**
          * @it should return status 200 and only due cards
-         * @description Verifies that the endpoint correctly returns only cards whose `due_date` is in the past or present, ignoring future cards. Checks status code, response array length, and basic content of the returned card.
-         * @effects Inserts one due card and one future card into the DB. Sends a GET request to `/api/practice`. Asserts response status and content.
+         * @description Verifies that the endpoint correctly returns only cards whose due_date is in the past or present, ignoring future cards. Checks status code, response array length, and basic content of the returned card.
+         * @effects Inserts one due card and one future card into the DB. Sends a GET request to /api/practice. Asserts response status and content.
          */
         it('should return status 200 and only due cards', async () => {
             // Arrange: Insert one card due now, one due later
@@ -111,8 +111,8 @@ describe('Flashcard API Endpoints', () => {
 
         /**
          * @it should return an empty cards array if no cards are due
-         * @description Verifies that the endpoint returns an empty array when all cards in the database have a future `due_date`.
-         * @effects Inserts only a future card. Sends a GET request to `/api/practice`. Asserts response status and that the `cards` array is empty.
+         * @description Verifies that the endpoint returns an empty array when all cards in the database have a future due_date.
+         * @effects Inserts only a future card. Sends a GET request to /api/practice. Asserts response status and that the cards array is empty.
          */
          it('should return an empty cards array if no cards are due', async () => {
              // Arrange: Insert only a future card
@@ -129,14 +129,14 @@ describe('Flashcard API Endpoints', () => {
 
     /**
      * @describe POST /api/update
-     * @description Tests for the endpoint that updates a card's review status (specifically `due_date`).
+     * @description Tests for the endpoint that updates a card's review status (specifically due_date).
      * Note: These tests reflect the simplified SRS logic currently in apiRoutes.ts (only updating due_date).
      */
     describe('POST /api/update', () => {
         /**
          * @it should return status 200 and update due_date for existing card (Easy)
-         * @description Verifies that sending `difficulty: Easy` correctly updates the card's `due_date` to approximately 1 day from now.
-         * @effects Inserts a card. Sends a POST request to `/api/update` with the card's ID and `difficulty: Easy`. Queries the DB to verify the `due_date` was updated correctly within a tolerance.
+         * @description Verifies that sending difficulty: Easy correctly updates the card's due_date to approximately 1 day from now.
+         * @effects Inserts a card. Sends a POST request to /api/update with the card's ID and difficulty: Easy. Queries the DB to verify the due_date was updated correctly within a tolerance.
          */
         it('should return status 200 and update due_date for existing card (Easy)', async () => {
             // Arrange: Insert a card and get its ID
@@ -167,8 +167,8 @@ describe('Flashcard API Endpoints', () => {
 
          /**
          * @it should return 404 if card to update is not found
-         * @description Verifies that the endpoint returns a 404 status code if the provided `cardId` does not exist in the database.
-         * @effects Sends a POST request to `/api/update` with a non-existent `cardId`. Asserts the response status code is 404.
+         * @description Verifies that the endpoint returns a 404 status code if the provided cardId does not exist in the database.
+         * @effects Sends a POST request to /api/update with a non-existent cardId. Asserts the response status code is 404.
          */
         it('should return 404 if card to update is not found', async () => {
              // Arrange: No card needed, just use an invalid ID
@@ -185,8 +185,8 @@ describe('Flashcard API Endpoints', () => {
         
         /**
          * @it should return 400 if cardId is missing
-         * @description Verifies that the endpoint returns a 400 status code if the `cardId` field is missing from the request body.
-         * @effects Sends a POST request to `/api/update` without `cardId`. Asserts response status code is 400 and checks error message.
+         * @description Verifies that the endpoint returns a 400 status code if the cardId field is missing from the request body.
+         * @effects Sends a POST request to /api/update without cardId. Asserts response status code is 400 and checks error message.
          */
         it('should return 400 if cardId is missing', async () => {
              // Act: Call the API endpoint without cardId
@@ -202,8 +202,8 @@ describe('Flashcard API Endpoints', () => {
 
         /**
          * @it should return 400 if difficulty is missing
-         * @description Verifies that the endpoint returns a 400 status code if the `difficulty` field is missing from the request body.
-         * @effects Inserts a card. Sends a POST request to `/api/update` without `difficulty`. Asserts response status code is 400 and checks error message.
+         * @description Verifies that the endpoint returns a 400 status code if the difficulty field is missing from the request body.
+         * @effects Inserts a card. Sends a POST request to /api/update without difficulty. Asserts response status code is 400 and checks error message.
          */
         it('should return 400 if difficulty is missing', async () => {
              // Arrange: Insert a card and get its ID
@@ -222,8 +222,8 @@ describe('Flashcard API Endpoints', () => {
 
         /**
          * @it should return 400 if difficulty is invalid
-         * @description Verifies that the endpoint returns a 400 status code if the provided `difficulty` value is not a valid `AnswerDifficulty` enum member.
-         * @effects Inserts a card. Sends a POST request to `/api/update` with an invalid numeric difficulty. Asserts response status code is 400 and checks error message.
+         * @description Verifies that the endpoint returns a 400 status code if the provided difficulty value is not a valid AnswerDifficulty enum member.
+         * @effects Inserts a card. Sends a POST request to /api/update with an invalid numeric difficulty. Asserts response status code is 400 and checks error message.
          */
         it('should return 400 if difficulty is invalid', async () => {
             // Arrange: Insert a card and get its ID
@@ -248,8 +248,8 @@ describe('Flashcard API Endpoints', () => {
     describe('GET /api/hint', () => {
         /**
          * @it should return 200 and the specific or default hint
-         * @description Verifies that the endpoint returns the card's specific `hint` if it exists, otherwise generates and returns a default hint.
-         * @effects Inserts two cards (one with a hint, one without). Sends GET requests to `/api/hint` for both cards. Asserts status code and the correct hint text in each response.
+         * @description Verifies that the endpoint returns the card's specific hint if it exists, otherwise generates and returns a default hint.
+         * @effects Inserts two cards (one with a hint, one without). Sends GET requests to /api/hint for both cards. Asserts status code and the correct hint text in each response.
          */
         it('should return 200 and the specific or default hint', async () => {
             // Arrange: Insert cards with and without specific hints
@@ -269,8 +269,8 @@ describe('Flashcard API Endpoints', () => {
 
         /**
          * @it should return 404 if card for hint is not found
-         * @description Verifies that the endpoint returns 404 if no card matches the provided `cardFront` and `cardBack`.
-         * @effects Sends a GET request to `/api/hint` with non-existent card details. Asserts response status code is 404.
+         * @description Verifies that the endpoint returns 404 if no card matches the provided cardFront and cardBack.
+         * @effects Sends a GET request to /api/hint with non-existent card details. Asserts response status code is 404.
          */
         it('should return 404 if card for hint is not found', async () => {
             // Act: Request hint for a non-existent card
@@ -281,8 +281,8 @@ describe('Flashcard API Endpoints', () => {
 
         /**
          * @it should return 400 if query parameters are missing
-         * @description Verifies that the endpoint returns 400 if either `cardFront` or `cardBack` query parameter is missing.
-         * @effects Sends a GET request to `/api/hint` missing the `cardBack` parameter. Asserts response status code is 400.
+         * @description Verifies that the endpoint returns 400 if either cardFront or cardBack query parameter is missing.
+         * @effects Sends a GET request to /api/hint missing the cardBack parameter. Asserts response status code is 400.
          */
         it('should return 400 if query parameters are missing', async () => {
             // Act: Request hint with missing parameter
@@ -299,8 +299,8 @@ describe('Flashcard API Endpoints', () => {
     describe('GET /api/progress', () => {
         /**
          * @it should return 200 and correct progress stats object
-         * @description Verifies that the endpoint correctly calculates the `bucketDistribution` based on the `interval` column in the database. Checks placeholder values for other stats.
-         * @effects Inserts cards with different `interval` values. Sends a GET request to `/api/progress`. Asserts status code and the structure/content of the returned stats object.
+         * @description Verifies that the endpoint correctly calculates the bucketDistribution based on the interval column in the database. Checks placeholder values for other stats.
+         * @effects Inserts cards with different interval values. Sends a GET request to /api/progress. Asserts status code and the structure/content of the returned stats object.
          */
         it('should return 200 and correct progress stats object', async () => {
              // Arrange: Insert cards with different intervals
@@ -320,8 +320,8 @@ describe('Flashcard API Endpoints', () => {
 
         /**
          * @it should return default stats if no cards exist
-         * @description Verifies that the endpoint returns default/empty statistics when the `cards` table is empty.
-         * @effects Sends a GET request to `/api/progress` (database is empty due to `beforeEach`). Asserts status code and default values in the response.
+         * @description Verifies that the endpoint returns default/empty statistics when the cards table is empty.
+         * @effects Sends a GET request to /api/progress (database is empty due to beforeEach). Asserts status code and default values in the response.
          */
         it('should return default stats if no cards exist', async () => {
              // Arrange: DB is empty due to beforeEach
@@ -352,8 +352,8 @@ describe('Flashcard API Endpoints', () => {
 
          /**
           * @it should return 200 and the incremented day number
-          * @description Verifies that the endpoint increments the day counter in `state.ts` and returns the new day number.
-          * @effects Records the current day. Sends a POST request to `/api/day/next`. Asserts status code and that the returned `currentDay` is one greater than the initial day. Also verifies the state module's internal counter was updated.
+          * @description Verifies that the endpoint increments the day counter in state.ts and returns the new day number.
+          * @effects Records the current day. Sends a POST request to /api/day/next. Asserts status code and that the returned currentDay is one greater than the initial day. Also verifies the state module's internal counter was updated.
           */
          it('should return 200 and the incremented day number', async () => {
              // Arrange: Get the day number before the API call
@@ -377,7 +377,7 @@ describe('Flashcard API Endpoints', () => {
          /**
           * @it should return 201 and the created card data with defaults
           * @description Verifies that a new card can be created with only front/back provided, and that the response includes the full card data with database defaults (ID, null hint/tags, default SRS values, timestamps). Also verifies the card exists in the DB.
-          * @effects Sends a POST request to `/api/cards` with minimal data. Asserts status code 201 and checks properties of the returned card object. Queries the DB to confirm insertion.
+          * @effects Sends a POST request to /api/cards with minimal data. Asserts status code 201 and checks properties of the returned card object. Queries the DB to confirm insertion.
           */
          it('should return 201 and the created card data with defaults', async () => {
              // Arrange: Define minimal card data
@@ -406,7 +406,7 @@ describe('Flashcard API Endpoints', () => {
          /**
           * @it should return 201 when hint and tags are provided
           * @description Verifies that a new card can be created with optional hint and tags, and that these values are correctly stored and returned.
-          * @effects Sends a POST request to `/api/cards` including hint and tags. Asserts status code 201 and checks that the returned hint and tags match the input.
+          * @effects Sends a POST request to /api/cards including hint and tags. Asserts status code 201 and checks that the returned hint and tags match the input.
           */
          it('should return 201 when hint and tags are provided', async () => {
              // Arrange: Define card data with optional fields
@@ -423,8 +423,8 @@ describe('Flashcard API Endpoints', () => {
 
          /**
           * @it should return 400 if front or back is missing
-          * @description Verifies that the endpoint returns 400 Bad Request if either the required `front` or `back` field is missing from the request body.
-          * @effects Sends two POST requests to `/api/cards`, one missing `front`, one missing `back`. Asserts status code is 400 for both and checks the error messages.
+          * @description Verifies that the endpoint returns 400 Bad Request if either the required front or back field is missing from the request body.
+          * @effects Sends two POST requests to /api/cards, one missing front, one missing back. Asserts status code is 400 for both and checks the error messages.
           */
          it('should return 400 if front or back is missing', async () => {
              // Act & Assert: Missing front
@@ -450,7 +450,7 @@ describe('Deployment Assignment Endpoints', () => {
     /**
      * @function beforeEach (Deployment Assignment)
      * @description Resets the in-memory store for the latest answer before each test in this suite.
-     * @effects Calls `setLatestSubmittedData(null)` from `assignmentStore`.
+     * @effects Calls setLatestSubmittedData(null) from assignmentStore.
      */
     beforeEach(() => {
         setLatestSubmittedData(null);
