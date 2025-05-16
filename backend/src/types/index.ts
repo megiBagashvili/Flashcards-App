@@ -66,7 +66,7 @@ export interface ProgressStats {
 /**
  * @interface CreateAnswerRequest
  * @description Defines the expected structure of the request body for the
- * `POST /api/create-answer` endpoint.
+ * POST /api/create-answer endpoint.
  */
 export interface CreateAnswerRequest {
     /**
@@ -78,7 +78,7 @@ export interface CreateAnswerRequest {
 /**
  * @interface CreateAnswerResponse
  * @description Defines the structure of the success response body for the
- * `POST /api/create-answer` endpoint.
+ * POST /api/create-answer endpoint.
  */
 export interface CreateAnswerResponse {
     /**
@@ -94,12 +94,12 @@ export interface CreateAnswerResponse {
 /**
  * @interface GetLatestAnswerResponse
  * @description Defines the structure of the response body for the
- * `GET /api/get-latest-answer` endpoint.
+ * GET /api/get-latest-answer endpoint.
  */
 export interface GetLatestAnswerResponse {
     /**
      * @property {string | null} latestData - The most recently submitted text data,
-     * or `null` if no data has been submitted yet.
+     * or null if no data has been submitted yet.
      */
     latestData: string | null;
 }

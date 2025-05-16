@@ -60,4 +60,3 @@ pool.query('SELECT NOW()')
  * (for exxample, API route handlers) to execute database queries.
  */    
 export default pool;
-
